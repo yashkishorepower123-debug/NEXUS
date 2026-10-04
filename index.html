@@ -525,11 +525,17 @@
     .person-name {
       font-weight: 700;
       font-size: 14px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .person-user {
       color: #666;
       font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .follow-btn {
@@ -540,6 +546,281 @@
       border-radius: 9px;
       font-size: 12px;
       font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* =========================================================
+       USER SEARCH
+    ========================================================= */
+
+    .user-search {
+      width: 100%;
+      background: #181818;
+      color: #fff;
+      border: 1px solid #292929;
+      border-radius: 11px;
+      padding: 10px 12px;
+      outline: none;
+      margin-bottom: 13px;
+    }
+
+    .user-search:focus {
+      border-color: #555;
+    }
+
+    .search-result-count {
+      color: #555;
+      font-size: 11px;
+      margin: -6px 0 10px;
+    }
+
+    /* =========================================================
+       CHAT / WHATSAPP STYLE
+    ========================================================= */
+
+    .chat-layout {
+      display: grid;
+      grid-template-columns: 230px minmax(0,1fr);
+      height: 650px;
+      min-height: 500px;
+      background: #101010;
+      border: 1px solid #252525;
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .chat-list {
+      border-right: 1px solid #252525;
+      background: #0d0d0d;
+      overflow-y: auto;
+    }
+
+    .chat-list-header {
+      padding: 16px;
+      border-bottom: 1px solid #222;
+    }
+
+    .chat-list-title {
+      font-size: 20px;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+
+    .chat-search {
+      width: 100%;
+      background: #181818;
+      border: 1px solid #292929;
+      color: #fff;
+      border-radius: 10px;
+      padding: 9px 10px;
+      outline: none;
+      font-size: 13px;
+    }
+
+    .chat-search:focus {
+      border-color: #555;
+    }
+
+    .chat-search-results {
+      padding: 7px;
+      border-bottom: 1px solid #222;
+    }
+
+    .chat-search-label {
+      color: #666;
+      font-size: 11px;
+      padding: 5px 7px;
+    }
+
+    .chat-person {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-align: left;
+      padding: 10px;
+      border-radius: 11px;
+      margin-bottom: 2px;
+    }
+
+    .chat-person:hover,
+    .chat-person.selected {
+      background: #1c1c1c;
+    }
+
+    .chat-person-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .chat-person-name {
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-person-preview {
+      color: #666;
+      font-size: 11px;
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-person-time {
+      color: #555;
+      font-size: 10px;
+      align-self: flex-start;
+      white-space: nowrap;
+    }
+
+    .chat-window {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background:
+        radial-gradient(circle at center,#151515,#0c0c0c);
+    }
+
+    .chat-header {
+      height: 64px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-bottom: 1px solid #252525;
+      background: rgba(15,15,15,.92);
+    }
+
+    .chat-header-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .chat-header-name {
+      font-weight: 900;
+    }
+
+    .chat-header-username {
+      color: #666;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+
+    .chat-back {
+      display: none;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      font-size: 22px;
+      padding: 4px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .message-row {
+      display: flex;
+      width: 100%;
+    }
+
+    .message-row.mine {
+      justify-content: flex-end;
+    }
+
+    .message-row.theirs {
+      justify-content: flex-start;
+    }
+
+    .message-bubble {
+      max-width: 75%;
+      padding: 9px 12px;
+      border-radius: 14px;
+      line-height: 1.4;
+      font-size: 14px;
+      word-break: break-word;
+    }
+
+    .message-row.mine .message-bubble {
+      background: #fff;
+      color: #000;
+      border-bottom-right-radius: 4px;
+    }
+
+    .message-row.theirs .message-bubble {
+      background: #202020;
+      color: #fff;
+      border-bottom-left-radius: 4px;
+    }
+
+    .message-time {
+      font-size: 9px;
+      opacity: .5;
+      margin-top: 4px;
+      text-align: right;
+    }
+
+    .chat-composer {
+      flex-shrink: 0;
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      border-top: 1px solid #252525;
+      background: #101010;
+    }
+
+    .chat-composer input {
+      flex: 1;
+      min-width: 0;
+      background: #1b1b1b;
+      color: #fff;
+      border: 1px solid #292929;
+      border-radius: 12px;
+      padding: 11px 13px;
+      outline: none;
+    }
+
+    .chat-composer button {
+      border: 0;
+      background: #fff;
+      color: #000;
+      border-radius: 11px;
+      padding: 0 15px;
+      font-weight: 800;
+    }
+
+    .chat-empty {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #666;
+      padding: 30px;
+    }
+
+    .chat-empty-icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    .chat-empty-title {
+      color: #aaa;
+      font-weight: 800;
+      margin-bottom: 5px;
     }
 
     /* =========================================================
@@ -704,6 +985,10 @@
       .mobile-follow {
         display: block;
       }
+
+      .chat-layout {
+        grid-template-columns: 210px minmax(0,1fr);
+      }
     }
 
     @media(max-width:700px) {
@@ -762,6 +1047,43 @@
 
       .follow-btn {
         padding: 8px 12px;
+      }
+
+      /* MOBILE CHAT */
+
+      .chat-layout {
+        height: calc(100vh - 150px);
+        min-height: 500px;
+        display: block;
+        position: relative;
+      }
+
+      .chat-list {
+        width: 100%;
+        height: 100%;
+        border-right: 0;
+      }
+
+      .chat-window {
+        display: none;
+        width: 100%;
+        height: 100%;
+      }
+
+      .chat-layout.chat-open .chat-list {
+        display: none;
+      }
+
+      .chat-layout.chat-open .chat-window {
+        display: flex;
+      }
+
+      .chat-back {
+        display: block;
+      }
+
+      .message-bubble {
+        max-width: 85%;
       }
     }
   </style>
@@ -1029,14 +1351,6 @@ function useAuth() {
 
 
             if (!snapshot.exists) {
-
-              /*
-                NEW USER
-
-                Do not use Yash as the default
-                name. Every Firebase anonymous
-                account has a unique UID.
-              */
 
               const shortId =
                 currentUser.uid
@@ -2795,6 +3109,7 @@ function EditProfileModal({
 
 /* =========================================================
    WHO TO FOLLOW
+   UPDATED WITH USER SEARCH
 ========================================================= */
 
 function WhoToFollow({
@@ -2804,14 +3119,57 @@ function WhoToFollow({
   follows
 }) {
 
+  const [search,setSearch] =
+    useState("");
+
+
   const candidates =
-    users
-      .filter(
-        x =>
-          x.uid !==
-          currentUser?.uid
-      )
-      .slice(0,5);
+    useMemo(() => {
+
+      const query =
+        search
+          .trim()
+          .toLowerCase();
+
+
+      return users
+        .filter(
+          person =>
+            person.uid !==
+            currentUser?.uid
+        )
+        .filter(person => {
+
+          if (!query) {
+            return true;
+          }
+
+
+          const name =
+            String(
+              person.displayName || ""
+            ).toLowerCase();
+
+
+          const username =
+            String(
+              person.username || ""
+            ).toLowerCase();
+
+
+          return (
+            name.includes(query) ||
+            username.includes(query)
+          );
+
+        })
+        .slice(0,10);
+
+    },[
+      users,
+      currentUser?.uid,
+      search
+    ]);
 
 
   async function toggleFollow(
@@ -2909,6 +3267,32 @@ function WhoToFollow({
       </div>
 
 
+      <input
+        className="user-search"
+        value={search}
+        onChange={e =>
+          setSearch(
+            e.target.value
+          )
+        }
+        placeholder="🔎 Search users..."
+      />
+
+
+      {search.trim() && (
+
+        <div className="search-result-count">
+
+          {candidates.length} matching user
+          {candidates.length === 1
+            ? ""
+            : "s"}
+
+        </div>
+
+      )}
+
+
       {candidates.length === 0 && (
 
         <div
@@ -2917,7 +3301,9 @@ function WhoToFollow({
             fontSize:13
           }}
         >
-          No suggestions yet.
+          {search.trim()
+            ? "No users found."
+            : "No suggestions yet."}
         </div>
 
       )}
@@ -2953,11 +3339,13 @@ function WhoToFollow({
               <div className="person-info">
 
                 <div className="person-name">
-                  {person.displayName}
+                  {person.displayName ||
+                    "User"}
                 </div>
 
                 <div className="person-user">
-                  @{person.username}
+                  @{person.username ||
+                    "user"}
                 </div>
 
               </div>
@@ -3457,6 +3845,7 @@ function NotificationsView({
 
 /* =========================================================
    MESSAGES
+   WHATSAPP-STYLE SEPARATE CHATS
 ========================================================= */
 
 function MessagingView({
@@ -3465,7 +3854,10 @@ function MessagingView({
   data
 }) {
 
-  const [recipient,setRecipient] =
+  const [selectedUserId,setSelectedUserId] =
+    useState(null);
+
+  const [search,setSearch] =
     useState("");
 
   const [text,setText] =
@@ -3475,40 +3867,326 @@ function MessagingView({
     useState(false);
 
 
+  /*
+    All messages belonging to the current user.
+  */
+
+  const myMessages =
+    useMemo(() => {
+
+      return data.messages
+        .filter(
+          message =>
+            message.senderId ===
+              user.uid ||
+            message.receiverId ===
+              user.uid
+        )
+        .sort(
+          (a,b) =>
+            timestampMillis(
+              b.createdAt
+            ) -
+            timestampMillis(
+              a.createdAt
+            )
+        );
+
+    },[
+      data.messages,
+      user.uid
+    ]);
+
+
+  /*
+    Find users who already have a conversation
+    with the current user.
+  */
+
+  const chatUsers =
+    useMemo(() => {
+
+      const map = new Map();
+
+
+      myMessages.forEach(
+        message => {
+
+          const otherId =
+            message.senderId ===
+              user.uid
+              ? message.receiverId
+              : message.senderId;
+
+
+          if (!otherId) return;
+
+
+          const person =
+            data.users.find(
+              x =>
+                x.uid ===
+                otherId
+            );
+
+
+          if (!person) {
+
+            /*
+              Older messages can still exist
+              even if the profile is unavailable.
+            */
+
+            if (
+              !map.has(otherId)
+            ) {
+
+              map.set(
+                otherId,
+                {
+                  uid:
+                    otherId,
+
+                  displayName:
+                    message.senderId ===
+                      user.uid
+                      ? (
+                        message.receiverName ||
+                        "Nexus User"
+                      )
+                      : (
+                        message.senderName ||
+                        "Nexus User"
+                      ),
+
+                  username:
+                    "",
+
+                  missing:
+                    true
+
+                }
+              );
+
+            }
+
+            return;
+
+          }
+
+
+          if (
+            !map.has(
+              person.uid
+            )
+          ) {
+
+            map.set(
+              person.uid,
+              person
+            );
+
+          }
+
+        }
+      );
+
+
+      return Array.from(
+        map.values()
+      ).sort(
+        (a,b) => {
+
+          const lastA =
+            myMessages.find(
+              message =>
+                message.senderId ===
+                  a.uid ||
+                message.receiverId ===
+                  a.uid
+            );
+
+
+          const lastB =
+            myMessages.find(
+              message =>
+                message.senderId ===
+                  b.uid ||
+                message.receiverId ===
+                  b.uid
+            );
+
+
+          return (
+            timestampMillis(
+              lastB?.createdAt
+            ) -
+            timestampMillis(
+              lastA?.createdAt
+            )
+          );
+
+        }
+      );
+
+    },[
+      myMessages,
+      data.users,
+      user.uid
+    ]);
+
+
+  /*
+    Search users to start a new conversation.
+  */
+
+  const searchResults =
+    useMemo(() => {
+
+      const q =
+        search
+          .trim()
+          .toLowerCase();
+
+
+      if (!q) {
+        return [];
+      }
+
+
+      return data.users
+        .filter(
+          person =>
+            person.uid !==
+            user.uid
+        )
+        .filter(person => {
+
+          const name =
+            String(
+              person.displayName || ""
+            ).toLowerCase();
+
+
+          const username =
+            String(
+              person.username || ""
+            ).toLowerCase();
+
+
+          return (
+            name.includes(q) ||
+            username.includes(q)
+          );
+
+        })
+        .slice(0,8);
+
+    },[
+      data.users,
+      search,
+      user.uid
+    ]);
+
+
+  const selectedUser =
+    data.users.find(
+      person =>
+        person.uid ===
+        selectedUserId
+    ) ||
+    chatUsers.find(
+      person =>
+        person.uid ===
+        selectedUserId
+    );
+
+
+  /*
+    Messages for the selected conversation only.
+  */
+
+  const conversation =
+    useMemo(() => {
+
+      if (
+        !selectedUserId
+      ) {
+        return [];
+      }
+
+
+      return data.messages
+        .filter(message => {
+
+          const firstDirection =
+            message.senderId ===
+              user.uid &&
+            message.receiverId ===
+              selectedUserId;
+
+
+          const secondDirection =
+            message.senderId ===
+              selectedUserId &&
+            message.receiverId ===
+              user.uid;
+
+
+          return (
+            firstDirection ||
+            secondDirection
+          );
+
+        })
+        .sort(
+          (a,b) =>
+            timestampMillis(
+              a.createdAt
+            ) -
+            timestampMillis(
+              b.createdAt
+            )
+        );
+
+    },[
+      data.messages,
+      selectedUserId,
+      user.uid
+    ]);
+
+
+  function openChat(person) {
+
+    setSelectedUserId(
+      person.uid
+    );
+
+    setSearch("");
+
+  }
+
+
+  function closeChat() {
+
+    setSelectedUserId(
+      null
+    );
+
+  }
+
+
   async function sendMessage() {
 
+    const clean =
+      text.trim();
+
+
     if (
-      !recipient.trim() ||
-      !text.trim() ||
+      !clean ||
+      !selectedUser ||
       sending
     ) {
-      return;
-    }
-
-
-    const username =
-      recipient
-        .trim()
-        .replace(/^@/,"")
-        .toLowerCase();
-
-
-    const target =
-      data.users.find(
-        x =>
-          String(
-            x.username || ""
-          ).toLowerCase() ===
-          username
-      );
-
-
-    if (!target) {
-
-      alert(
-        "User not found."
-      );
-
       return;
     }
 
@@ -3530,13 +4208,14 @@ function MessagingView({
           "Nexus User",
 
         receiverId:
-          target.uid,
+          selectedUser.uid,
 
         receiverName:
-          target.displayName,
+          selectedUser.displayName ||
+          "Nexus User",
 
         text:
-          text.trim(),
+          clean,
 
         createdAt:
           firebase.firestore
@@ -3565,149 +4244,486 @@ function MessagingView({
   }
 
 
-  const messages =
-    data.messages
-      .filter(
-        message =>
-          message.senderId ===
-            user.uid ||
-          message.receiverId ===
-            user.uid
-      )
-      .sort(
-        (a,b) =>
-          timestampMillis(
-            a.createdAt
-          ) -
-          timestampMillis(
-            b.createdAt
-          )
+  function getLastMessage(
+    personId
+  ) {
+
+    const message =
+      myMessages.find(
+        item =>
+          item.senderId ===
+            personId ||
+          item.receiverId ===
+            personId
       );
+
+
+    return message;
+
+  }
 
 
   return (
 
     <div className="feed">
 
-      <div className="side-card">
-
-        <h2>
-          Messages
-        </h2>
-
-
-        <div className="field">
-
-          <label>
-            Username
-          </label>
-
-          <input
-            value={recipient}
-            onChange={e =>
-              setRecipient(
-                e.target.value
-              )
-            }
-            placeholder="@username"
-          />
-
-        </div>
-
-
-        <div className="field">
-
-          <textarea
-            value={text}
-            onChange={e =>
-              setText(
-                e.target.value
-              )
-            }
-            placeholder="Write a message..."
-          />
-
-        </div>
-
-
-        <button
-          className="primary"
-          disabled={sending}
-          onClick={sendMessage}
-        >
-          {sending
-            ? "Sending..."
-            : "Send message"}
-        </button>
-
-      </div>
-
-
       <div
-        className="side-card"
-        style={{
-          marginTop:15
-        }}
+        className={
+          "chat-layout " +
+          (
+            selectedUserId
+              ? "chat-open"
+              : ""
+          )
+        }
       >
 
-        {messages.length === 0 ? (
+        {/* =================================================
+            CHAT LIST
+        ================================================= */}
 
-          <div className="empty">
-            No messages yet.
+        <div className="chat-list">
+
+          <div className="chat-list-header">
+
+            <div className="chat-list-title">
+              Messages
+            </div>
+
+
+            <input
+              className="chat-search"
+              value={search}
+              onChange={e =>
+                setSearch(
+                  e.target.value
+                )
+              }
+              placeholder="🔎 Search people..."
+            />
+
           </div>
 
-        ) : (
 
-          messages.map(
-            message => (
+          {/* SEARCH RESULTS */}
 
-              <div
-                key={message.id}
-                style={{
-                  padding:"12px 0",
-                  borderBottom:
-                    "1px solid #222"
-                }}
-              >
+          {search.trim() && (
 
-                <strong>
+            <div className="chat-search-results">
 
-                  {message.senderId ===
-                    user.uid
-                    ? "You"
-                    : message.senderName}
+              <div className="chat-search-label">
+                Find someone
+              </div>
 
-                </strong>
 
+              {searchResults.length === 0 ? (
 
                 <div
                   style={{
-                    color:"#ccc",
-                    marginTop:5
+                    color:"#666",
+                    fontSize:12,
+                    padding:"8px"
                   }}
                 >
-                  {message.text}
+                  No users found.
                 </div>
 
+              ) : (
+
+                searchResults.map(
+                  person => (
+
+                    <button
+                      key={person.uid}
+                      className="chat-person"
+                      onClick={() =>
+                        openChat(
+                          person
+                        )
+                      }
+                    >
+
+                      <div className="avatar small">
+                        {getInitials(
+                          person.displayName
+                        )}
+                      </div>
+
+
+                      <div className="chat-person-info">
+
+                        <div className="chat-person-name">
+                          {person.displayName ||
+                            "User"}
+                        </div>
+
+                        <div className="chat-person-preview">
+                          @{person.username ||
+                            "user"}
+                        </div>
+
+                      </div>
+
+                    </button>
+
+                  )
+                )
+
+              )}
+
+            </div>
+
+          )}
+
+
+          {/* EXISTING CHATS */}
+
+          <div
+            style={{
+              padding:"8px"
+            }}
+          >
+
+            {!search.trim() &&
+              chatUsers.length === 0 && (
+
+              <div className="empty">
+                <div
+                  style={{
+                    fontSize:28,
+                    marginBottom:8
+                  }}
+                >
+                  💬
+                </div>
+
+                No chats yet.
 
                 <div
                   style={{
-                    color:"#555",
                     fontSize:11,
                     marginTop:5
                   }}
                 >
-                  {formatTime(
-                    message.createdAt
-                  )}
+                  Search for someone above
+                  to start chatting.
                 </div>
 
               </div>
 
-            )
-          )
+            )}
 
-        )}
+
+            {chatUsers.map(
+              person => {
+
+                const lastMessage =
+                  getLastMessage(
+                    person.uid
+                  );
+
+
+                return (
+
+                  <button
+                    key={person.uid}
+                    className={
+                      "chat-person " +
+                      (
+                        selectedUserId ===
+                        person.uid
+                          ? "selected"
+                          : ""
+                      )
+                    }
+                    onClick={() =>
+                      openChat(
+                        person
+                      )
+                    }
+                  >
+
+                    <div className="avatar small">
+                      {getInitials(
+                        person.displayName
+                      )}
+                    </div>
+
+
+                    <div className="chat-person-info">
+
+                      <div className="chat-person-name">
+                        {person.displayName ||
+                          "User"}
+                      </div>
+
+
+                      <div className="chat-person-preview">
+
+                        {lastMessage
+                          ? (
+                            lastMessage.senderId ===
+                              user.uid
+                              ? "You: "
+                              : ""
+                          ) +
+                          lastMessage.text
+                          : "Start a conversation"}
+
+                      </div>
+
+                    </div>
+
+
+                    {lastMessage && (
+
+                      <div className="chat-person-time">
+
+                        {formatTime(
+                          lastMessage.createdAt
+                        )}
+
+                      </div>
+
+                    )}
+
+                  </button>
+
+                );
+
+              }
+            )}
+
+          </div>
+
+        </div>
+
+
+        {/* =================================================
+            CHAT WINDOW
+        ================================================= */}
+
+        <div className="chat-window">
+
+          {!selectedUser ? (
+
+            <div className="chat-empty">
+
+              <div>
+
+                <div className="chat-empty-icon">
+                  💬
+                </div>
+
+                <div className="chat-empty-title">
+                  Your messages
+                </div>
+
+                <div>
+                  Select a chat or search for
+                  someone to start a conversation.
+                </div>
+
+              </div>
+
+            </div>
+
+          ) : (
+
+            <>
+
+              {/* CHAT HEADER */}
+
+              <div className="chat-header">
+
+                <button
+                  className="chat-back"
+                  onClick={closeChat}
+                  title="Back"
+                >
+                  ←
+                </button>
+
+
+                <div className="avatar small">
+                  {getInitials(
+                    selectedUser.displayName
+                  )}
+                </div>
+
+
+                <div className="chat-header-info">
+
+                  <div className="chat-header-name">
+                    {selectedUser.displayName ||
+                      "User"}
+                  </div>
+
+                  <div className="chat-header-username">
+
+                    {selectedUser.username
+                      ? "@" +
+                        selectedUser.username
+                      : "Nexus user"}
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              {/* MESSAGES */}
+
+              <div
+                className="chat-messages"
+                ref={element => {
+
+                  if (element) {
+
+                    setTimeout(() => {
+
+                      element.scrollTop =
+                        element.scrollHeight;
+
+                    },0);
+
+                  }
+
+                }}
+              >
+
+                {conversation.length === 0 ? (
+
+                  <div className="chat-empty">
+
+                    <div>
+
+                      <div className="chat-empty-icon">
+                        👋
+                      </div>
+
+                      <div className="chat-empty-title">
+                        Start the conversation
+                      </div>
+
+                      <div>
+                        Send a message to{" "}
+                        {selectedUser.displayName}.
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                ) : (
+
+                  conversation.map(
+                    message => {
+
+                      const mine =
+                        message.senderId ===
+                        user.uid;
+
+
+                      return (
+
+                        <div
+                          key={message.id}
+                          className={
+                            "message-row " +
+                            (
+                              mine
+                                ? "mine"
+                                : "theirs"
+                            )
+                          }
+                        >
+
+                          <div className="message-bubble">
+
+                            <div>
+                              {message.text}
+                            </div>
+
+                            <div className="message-time">
+                              {formatTime(
+                                message.createdAt
+                              )}
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                      );
+
+                    }
+                  )
+
+                )}
+
+              </div>
+
+
+              {/* COMPOSER */}
+
+              <div className="chat-composer">
+
+                <input
+                  value={text}
+                  onChange={e =>
+                    setText(
+                      e.target.value
+                    )
+                  }
+                  onKeyDown={e => {
+
+                    if (
+                      e.key === "Enter" &&
+                      !e.shiftKey
+                    ) {
+
+                      e.preventDefault();
+
+                      sendMessage();
+
+                    }
+
+                  }}
+                  placeholder={
+                    "Message " +
+                    (
+                      selectedUser.displayName ||
+                      "user"
+                    ) +
+                    "..."
+                  }
+                  maxLength={2000}
+                />
+
+
+                <button
+                  disabled={
+                    sending ||
+                    !text.trim()
+                  }
+                  onClick={
+                    sendMessage
+                  }
+                >
+                  {sending
+                    ? "..."
+                    : "Send"}
+                </button>
+
+              </div>
+
+            </>
+
+          )}
+
+        </div>
 
       </div>
 
