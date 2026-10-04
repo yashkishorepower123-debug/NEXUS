@@ -1,1079 +1,689 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Nexus — Social Platform</title>
-
-<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
-
-<style>
-*{box-sizing:border-box}
-
-html,body,#root{
-  margin:0;
-  width:100%;
-  min-height:100%;
-  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:#050505;
-  color:#fff;
-}
-
-body{min-height:100vh}
-
-button,input,textarea{font:inherit}
-button{cursor:pointer}
-button:disabled{opacity:.5;cursor:not-allowed}
-
-/* BOOT */
-
-#boot-screen{
-  position:fixed;
-  inset:0;
-  z-index:99999;
-  background:radial-gradient(circle at top,#1c1c1c,#090909 40%,#000);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transition:opacity .4s ease,visibility .4s ease;
-}
-
-#boot-screen.hide{
-  opacity:0;
-  visibility:hidden;
-  pointer-events:none;
-}
-
-.boot-box{text-align:center}
-
-.boot-logo{
-  width:78px;
-  height:78px;
-  margin:auto auto 18px;
-  border-radius:22px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:42px;
-  font-weight:900;
-  background:linear-gradient(135deg,#fff,#888);
-  color:#000;
-}
-
-.boot-title{
-  font-size:32px;
-  font-weight:900;
-}
-
-.boot-made{
-  color:#aaa;
-  margin-top:6px;
-  font-size:14px;
-}
-
-.boot-spinner{
-  width:26px;
-  height:26px;
-  border:3px solid #333;
-  border-top-color:#fff;
-  border-radius:50%;
-  animation:spin .8s linear infinite;
-  margin:25px auto 12px;
-}
-
-.boot-loading{
-  color:#777;
-  font-size:13px;
-}
-
-@keyframes spin{
-  to{transform:rotate(360deg)}
-}
-
-/* APP */
-
-.app{
-  min-height:100vh;
-  background:radial-gradient(circle at 50% -10%,#1c1c1c,#080808 35%,#050505 70%);
-}
-
-.topbar{
-  position:sticky;
-  top:0;
-  z-index:100;
-  height:64px;
-  border-bottom:1px solid #222;
-  background:rgba(5,5,5,.9);
-  backdrop-filter:blur(18px);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 18px;
-}
-
-.brand{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-size:20px;
-  font-weight:900;
-}
-
-.brand-logo{
-  width:36px;
-  height:36px;
-  border-radius:11px;
-  background:#fff;
-  color:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:900;
-}
-
-.icon-btn{
-  width:40px;
-  height:40px;
-  border:1px solid #292929;
-  background:#111;
-  color:#fff;
-  border-radius:12px;
-}
-
-.layout{
-  width:min(1180px,100%);
-  margin:auto;
-  display:grid;
-  grid-template-columns:230px minmax(0,650px) 260px;
-  gap:22px;
-  padding:24px 16px;
-}
-
-.sidebar{
-  position:sticky;
-  top:88px;
-  height:fit-content;
-}
-
-.nav-card,.side-card{
-  background:rgba(15,15,15,.85);
-  border:1px solid #242424;
-  border-radius:18px;
-  padding:10px;
-}
-
-.nav-item{
-  width:100%;
-  border:0;
-  background:transparent;
-  color:#aaa;
-  padding:12px;
-  border-radius:12px;
-  text-align:left;
-  font-weight:700;
-  margin-bottom:3px;
-}
-
-.nav-item:hover,.nav-item.active{
-  background:#1b1b1b;
-  color:#fff;
-}
-
-main,.feed{min-width:0}
-
-/* SEARCH */
-
-.search-box{
-  margin-bottom:17px;
-}
-
-.search-box input{
-  width:100%;
-  background:#111;
-  color:#fff;
-  border:1px solid #282828;
-  border-radius:13px;
-  padding:12px 14px;
-  outline:none;
-}
-
-/* COMPOSER */
-
-.composer{
-  background:#101010;
-  border:1px solid #252525;
-  border-radius:18px;
-  padding:16px;
-  margin-bottom:18px;
-}
-
-.composer textarea{
-  width:100%;
-  min-height:90px;
-  resize:vertical;
-  border:0;
-  outline:0;
-  background:transparent;
-  color:#fff;
-  font-size:16px;
-}
-
-.composer-bottom{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  margin-top:10px;
-}
-
-.primary{
-  border:0;
-  background:#fff;
-  color:#000;
-  padding:10px 17px;
-  border-radius:11px;
-  font-weight:800;
-}
-
-.primary:hover{background:#ddd}
-
-.secondary{
-  border:1px solid #303030;
-  background:#151515;
-  color:#fff;
-  padding:9px 15px;
-  border-radius:11px;
-}
-
-/* POSTS */
-
-.post{
-  background:#101010;
-  border:1px solid #252525;
-  border-radius:18px;
-  padding:17px;
-  margin-bottom:15px;
-}
-
-.post-header{
-  display:flex;
-  align-items:center;
-  gap:11px;
-}
-
-.avatar{
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  background:linear-gradient(135deg,#fff,#777);
-  color:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:900;
-  flex-shrink:0;
-}
-
-.avatar.small{
-  width:34px;
-  height:34px;
-  font-size:13px;
-}
-
-.post-author{font-weight:800}
-
-.post-time{
-  color:#666;
-  font-size:12px;
-  margin-top:2px;
-}
-
-.post-content{
-  white-space:pre-wrap;
-  word-break:break-word;
-  margin:15px 0;
-  line-height:1.55;
-  color:#eee;
-}
-
-.hashtag{color:#8ab4ff}
-
-.post-actions{
-  display:flex;
-  gap:5px;
-  border-top:1px solid #202020;
-  padding-top:11px;
-}
-
-.action-btn{
-  border:0;
-  background:transparent;
-  color:#888;
-  padding:8px 10px;
-  border-radius:9px;
-}
-
-.action-btn:hover{
-  background:#1b1b1b;
-  color:#fff;
-}
-
-.action-btn.liked{color:#ff6b8a}
-
-.post-menu{
-  border:0;
-  background:transparent;
-  color:#777;
-  font-size:19px;
-}
-
-/* COMMENTS */
-
-.comments{
-  margin-top:12px;
-  border-top:1px solid #202020;
-  padding-top:12px;
-}
-
-.comment{
-  display:flex;
-  gap:9px;
-  margin-bottom:10px;
-}
-
-.comment-body{
-  background:#181818;
-  border-radius:12px;
-  padding:8px 11px;
-  flex:1;
-}
-
-.comment-name{
-  font-size:12px;
-  font-weight:800;
-  color:#aaa;
-}
-
-.comment-text{
-  font-size:14px;
-  margin-top:3px;
-  line-height:1.4;
-}
-
-.comment-input{
-  width:100%;
-  background:#181818;
-  border:1px solid #292929;
-  border-radius:11px;
-  padding:10px;
-  color:#fff;
-  outline:none;
-  margin-top:7px;
-}
-
-/* PROFILE */
-
-.profile-card{
-  background:#101010;
-  border:1px solid #252525;
-  border-radius:18px;
-  overflow:hidden;
-  margin-bottom:18px;
-}
-
-.profile-cover{
-  height:150px;
-  background:
-    radial-gradient(circle at 20% 20%,#555,transparent 35%),
-    linear-gradient(135deg,#292929,#050505);
-}
-
-.profile-main{
-  padding:0 20px 20px;
-}
-
-.profile-avatar{
-  width:86px;
-  height:86px;
-  margin-top:-43px;
-  border:5px solid #101010;
-  border-radius:50%;
-  background:linear-gradient(135deg,#fff,#777);
-  color:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:30px;
-  font-weight:900;
-}
-
-.profile-name{
-  font-size:24px;
-  font-weight:900;
-  margin-top:12px;
-}
-
-.profile-username{
-  color:#777;
-  margin-top:3px;
-}
-
-.profile-bio{
-  color:#ccc;
-  margin-top:13px;
-  line-height:1.5;
-}
-
-.profile-stats{
-  display:flex;
-  gap:25px;
-  margin-top:18px;
-}
-
-.stat strong{
-  display:block;
-  font-size:18px;
-}
-
-.stat span{
-  color:#777;
-  font-size:12px;
-}
-
-/* SIDE */
-
-.side-title{
-  font-weight:800;
-  margin-bottom:13px;
-}
-
-.person{
-  display:flex;
-  align-items:center;
-  gap:9px;
-  margin-bottom:12px;
-}
-
-.person-info{
-  min-width:0;
-  flex:1;
-}
-
-.person-name{
-  font-weight:700;
-  font-size:14px;
-}
-
-.person-user{
-  color:#666;
-  font-size:12px;
-}
-
-.follow-btn{
-  border:1px solid #333;
-  background:#fff;
-  color:#000;
-  padding:6px 10px;
-  border-radius:9px;
-  font-size:12px;
-  font-weight:800;
-}
-
-/* MOBILE FOLLOW */
-
-.mobile-follow{
-  display:none;
-}
-
-/* PROFILE SETUP */
-
-.profile-setup{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  background:radial-gradient(circle at top,#1c1c1c,#080808 45%,#050505);
-}
-
-.profile-setup-card{
-  width:min(480px,100%);
-  background:#111;
-  border:1px solid #303030;
-  border-radius:22px;
-  padding:25px;
-}
-
-.profile-setup-card h1{margin-top:0}
-
-.profile-setup-card p{
-  color:#888;
-  line-height:1.5;
-}
-
-/* MODAL */
-
-.modal-backdrop{
-  position:fixed;
-  inset:0;
-  z-index:500;
-  background:rgba(0,0,0,.75);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-}
-
-.modal{
-  width:min(500px,100%);
-  background:#111;
-  border:1px solid #303030;
-  border-radius:20px;
-  padding:20px;
-}
-
-.field{margin-bottom:13px}
-
-.field label{
-  display:block;
-  color:#888;
-  font-size:12px;
-  margin-bottom:6px;
-}
-
-.field input,.field textarea{
-  width:100%;
-  background:#181818;
-  border:1px solid #303030;
-  border-radius:11px;
-  padding:11px;
-  color:#fff;
-  outline:none;
-}
-
-.field textarea{
-  min-height:90px;
-  resize:vertical;
-}
-
-.modal-actions{
-  display:flex;
-  justify-content:flex-end;
-  gap:8px;
-  margin-top:18px;
-}
-
-/* ERROR */
-
-.error-page{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  background:#050505;
-}
-
-.error-card{
-  width:min(650px,100%);
-  background:#111;
-  border:1px solid #3b2222;
-  border-radius:20px;
-  padding:25px;
-}
-
-.error-message{
-  background:#190d0d;
-  border:1px solid #3c1d1d;
-  border-radius:12px;
-  padding:12px;
-  color:#ffb5b5;
-  font-family:monospace;
-  word-break:break-word;
-  margin:15px 0;
-}
-
-.setup-list{
-  color:#bbb;
-  line-height:1.7;
-}
-
-.empty{
-  text-align:center;
-  padding:50px 20px;
-  color:#666;
-}
-
-.status{
-  font-size:12px;
-  color:#555;
-  margin:-8px 0 15px;
-}
-
-/* MOBILE */
-
-@media(max-width:950px){
-
-  .layout{
-    grid-template-columns:190px minmax(0,1fr);
-  }
-
-  .right-sidebar{
-    display:none;
-  }
-
-  .mobile-follow{
-    display:block;
-  }
-}
-
-@media(max-width:700px){
-
-  .layout{
-    display:block;
-    padding:15px 10px 80px;
-  }
-
-  .sidebar{
-    position:fixed;
-    left:0;
-    right:0;
-    bottom:0;
-    top:auto;
-    z-index:200;
-    padding:7px;
-    background:rgba(5,5,5,.94);
-    border-top:1px solid #222;
-  }
-
-  .nav-card{
-    display:flex;
-    justify-content:space-around;
-    padding:3px;
-  }
-
-  .nav-item{
-    width:auto;
-    margin:0;
-    text-align:center;
-    font-size:12px;
-  }
-
-  .topbar{height:58px}
-
-  .post,.composer,.profile-card{
-    border-radius:14px;
-  }
-
-  .mobile-follow{
-    margin-top:18px;
-  }
-
-  .mobile-follow .side-card{
-    border-radius:14px;
-  }
-
-  .person{padding:4px 0}
-
-  .follow-btn{
-    padding:8px 12px;
-  }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Nexus — Social Platform</title>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
+
+  <style>
+    *{
+      box-sizing:border-box
+    }
+
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:#f5f7fb;
+      color:#172033
+    }
+
+    button,input,textarea{
+      font:inherit
+    }
+
+    button{
+      cursor:pointer;
+      border:0
+    }
+
+    .app{
+      min-height:100vh
+    }
+
+    .top{
+      position:sticky;
+      top:0;
+      z-index:20;
+      background:#fff;
+      border-bottom:1px solid #e7eaf0;
+      padding:12px 18px;
+      display:flex;
+      align-items:center;
+      gap:16px
+    }
+
+    .brand{
+      font-weight:900;
+      font-size:22px;
+      color:#5b5ce2
+    }
+
+    .search{
+      flex:1;
+      max-width:620px;
+      margin:auto
+    }
+
+    .search input{
+      width:100%;
+      padding:11px 14px;
+      border:1px solid #dfe3eb;
+      border-radius:12px;
+      outline:none
+    }
+
+    .layout{
+      max-width:1200px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:210px minmax(0,1fr) 280px;
+      gap:20px;
+      padding:20px
+    }
+
+    .card{
+      background:#fff;
+      border:1px solid #e7eaf0;
+      border-radius:16px;
+      box-shadow:0 4px 18px rgba(30,40,70,.04)
+    }
+
+    .side{
+      position:sticky;
+      top:82px;
+      height:max-content
+    }
+
+    .nav button{
+      width:100%;
+      background:none;
+      text-align:left;
+      padding:12px 15px;
+      border-radius:10px;
+      color:#4d5668
+    }
+
+    .nav button.active,
+    .nav button:hover{
+      background:#eef0ff;
+      color:#4d50d6;
+      font-weight:700
+    }
+
+    .profile-mini{
+      padding:16px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      border-bottom:1px solid #eee
+    }
+
+    .avatar{
+      width:44px;
+      height:44px;
+      border-radius:50%;
+      object-fit:cover;
+      background:#ddd
+    }
+
+    .avatar.sm{
+      width:36px;
+      height:36px
+    }
+
+    .avatar.xs{
+      width:30px;
+      height:30px
+    }
+
+    .muted{
+      color:#788294;
+      font-size:13px
+    }
+
+    .main{
+      min-width:0
+    }
+
+    .composer{
+      padding:16px;
+      margin-bottom:14px
+    }
+
+    .row{
+      display:flex;
+      align-items:center;
+      gap:10px
+    }
+
+    .composer textarea{
+      width:100%;
+      border:1px solid #e1e5ed;
+      border-radius:12px;
+      padding:12px;
+      resize:vertical;
+      min-height:72px;
+      outline:none
+    }
+
+    .actions{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-top:10px
+    }
+
+    .primary{
+      background:#5b5ce2;
+      color:#fff;
+      padding:10px 15px;
+      border-radius:10px;
+      font-weight:700
+    }
+
+    .secondary{
+      background:#eef0f5;
+      color:#343b4b;
+      padding:9px 13px;
+      border-radius:10px
+    }
+
+    .danger{
+      color:#d34a4a;
+      background:#fff0f0;
+      padding:8px 10px;
+      border-radius:9px
+    }
+
+    .post{
+      padding:16px;
+      margin-bottom:14px
+    }
+
+    .post-head{
+      display:flex;
+      gap:10px;
+      align-items:center
+    }
+
+    .post-menu{
+      margin-left:auto
+    }
+
+    .post-body{
+      white-space:pre-wrap;
+      line-height:1.55;
+      margin:13px 0
+    }
+
+    .tags{
+      color:#5358d9
+    }
+
+    .post-actions{
+      display:flex;
+      gap:7px;
+      border-top:1px solid #edf0f4;
+      padding-top:10px
+    }
+
+    .post-actions button{
+      background:none;
+      color:#626b7b;
+      padding:7px 9px;
+      border-radius:8px
+    }
+
+    .post-actions button:hover{
+      background:#f3f4f7
+    }
+
+    .liked{
+      color:#d64b69!important
+    }
+
+    .comment{
+      display:flex;
+      gap:8px;
+      margin-top:10px
+    }
+
+    .comment-body{
+      background:#f3f5f8;
+      border-radius:11px;
+      padding:8px 10px;
+      flex:1
+    }
+
+    .comment-form{
+      display:flex;
+      gap:8px;
+      margin-top:10px
+    }
+
+    .comment-form input{
+      flex:1;
+      border:1px solid #e0e4eb;
+      border-radius:10px;
+      padding:9px
+    }
+
+    .right-card{
+      padding:15px;
+      margin-bottom:14px
+    }
+
+    .trend{
+      padding:9px 0;
+      border-bottom:1px solid #edf0f4
+    }
+
+    .trend:last-child{
+      border-bottom:0
+    }
+
+    .person{
+      display:flex;
+      gap:9px;
+      align-items:center;
+      padding:9px 0
+    }
+
+    .person .grow{
+      flex:1
+    }
+
+    .follow{
+      background:#eef0ff;
+      color:#5154d7;
+      padding:7px 10px;
+      border-radius:8px;
+      font-weight:700
+    }
+
+    .following{
+      background:#e9f7ef;
+      color:#20814c
+    }
+
+    .page-title{
+      margin:0 0 14px
+    }
+
+    .profile-cover{
+      padding:20px
+    }
+
+    .profile-top{
+      display:flex;
+      gap:14px;
+      align-items:center
+    }
+
+    .profile-big{
+      width:82px;
+      height:82px
+    }
+
+    .profile-edit{
+      margin-left:auto
+    }
+
+    /* WhatsApp-style messaging */
+
+    .messages{
+      height:620px;
+      display:grid;
+      grid-template-columns:280px 1fr;
+      overflow:hidden
+    }
+
+    .users{
+      border-right:1px solid #e8ebf0;
+      overflow:auto;
+      background:#fff
+    }
+
+    .messages-title{
+      padding:16px;
+      font-size:20px;
+      font-weight:800;
+      border-bottom:1px solid #e8ebf0
+    }
+
+    .user-item{
+      padding:12px 14px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      cursor:pointer;
+      border-bottom:1px solid #f0f1f4
+    }
+
+    .user-item.active,
+    .user-item:hover{
+      background:#f1f3ff
+    }
+
+    .user-item-info{
+      flex:1;
+      min-width:0
+    }
+
+    .user-item-name{
+      font-weight:700;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis
+    }
+
+    .chat-preview{
+      color:#788294;
+      font-size:13px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      margin-top:3px
+    }
+
+    .chat-time{
+      font-size:11px;
+      color:#929aaa;
+      align-self:flex-start;
+      white-space:nowrap
+    }
+
+    .chat{
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+      background:#f8f9fc
+    }
+
+    .chat-head{
+      padding:12px 16px;
+      border-bottom:1px solid #e8ebf0;
+      background:#fff;
+      display:flex;
+      align-items:center;
+      gap:10px
+    }
+
+    .chat-head-info{
+      flex:1
+    }
+
+    .chat-list{
+      flex:1;
+      overflow:auto;
+      padding:16px;
+      display:flex;
+      flex-direction:column
+    }
+
+    .bubble{
+      max-width:72%;
+      padding:9px 12px;
+      border-radius:13px;
+      margin:4px 0;
+      word-wrap:break-word;
+      white-space:pre-wrap
+    }
+
+    .mine{
+      background:#5b5ce2;
+      color:#fff;
+      margin-left:auto;
+      border-bottom-right-radius:4px
+    }
+
+    .theirs{
+      background:#eef1f5;
+      color:#172033;
+      margin-right:auto;
+      border-bottom-left-radius:4px
+    }
+
+    .bubble-time{
+      font-size:10px;
+      opacity:.7;
+      margin-top:4px;
+      text-align:right
+    }
+
+    .chat-form{
+      display:flex;
+      gap:8px;
+      padding:12px;
+      border-top:1px solid #e8ebf0;
+      background:#fff
+    }
+
+    .chat-form input{
+      flex:1;
+      border:1px solid #dde2ea;
+      border-radius:20px;
+      padding:10px 14px;
+      outline:none
+    }
+
+    .back-chat{
+      display:none
+    }
+
+    .notice{
+      padding:12px;
+      border-bottom:1px solid #edf0f4;
+      cursor:pointer
+    }
+
+    .notice.unread{
+      background:#f3f4ff
+    }
+
+    .modal-bg{
+      position:fixed;
+      inset:0;
+      background:rgba(15,20,35,.45);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:50;
+      padding:18px
+    }
+
+    .modal{
+      background:#fff;
+      width:min(520px,100%);
+      border-radius:16px;
+      padding:18px
+    }
+
+    .modal textarea{
+      width:100%;
+      min-height:150px;
+      border:1px solid #dde2ea;
+      border-radius:10px;
+      padding:10px
+    }
+
+    .modal-actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      margin-top:12px
+    }
+
+    .empty{
+      padding:35px;
+      text-align:center;
+      color:#7a8495
+    }
+
+    .loading{
+      padding:50px;
+      text-align:center
+    }
+
+    .auth{
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:20px
+    }
+
+    .auth .card{
+      width:min(460px,100%);
+      padding:28px;
+      text-align:center
+    }
+
+    @media(max-width:980px){
+      .layout{
+        grid-template-columns:180px minmax(0,1fr)
+      }
+
+      .right{
+        display:none
+      }
+    }
+
+    @media(max-width:700px){
+      .layout{
+        display:block;
+        padding:10px
+      }
+
+      .side{
+        position:static;
+        margin-bottom:10px
+      }
+
+      .nav{
+        display:flex;
+        overflow:auto
+      }
+
+      .nav button{
+        white-space:nowrap;
+        width:auto
+      }
+
+      .messages{
+        height:70vh;
+        display:block
+      }
+
+      .users{
+        display:block;
+        height:100%
+      }
+
+      .messages.mobile-chat-open .users{
+        display:none
+      }
+
+      .messages.mobile-chat-open .chat{
+        display:flex
+      }
+
+      .messages:not(.mobile-chat-open) .chat{
+        display:none
+      }
+
+      .back-chat{
+        display:block
+      }
+
+      .top{
+        padding:10px
+      }
+
+      .brand{
+        font-size:19px
+      }
+
+      .search{
+        max-width:none
+      }
+
+      .bubble{
+        max-width:82%
+      }
+    }
+  </style>
 </head>
 
 <body>
-
-<div id="boot-screen">
-  <div class="boot-box">
-    <div class="boot-logo">N</div>
-    <div class="boot-title">Nexus</div>
-    <div class="boot-made">Made by Yash</div>
-    <div class="boot-spinner"></div>
-    <div class="boot-loading">Connecting to Firebase...</div>
-  </div>
-</div>
 
 <div id="root"></div>
 
 <script type="text/babel">
 
-const {
-  useState,
-  useEffect,
-  useMemo
-} = React;
+const {useEffect,useMemo,useState}=React;
 
 
-/* =========================================================
+/* =========================
    FIREBASE
-========================================================= */
+========================= */
 
-const firebaseConfig = {
-  apiKey:"AIzaSyDTrvD7c1TUtPUUOSX7_-0VV9itC28LOg0",
-  authDomain:"nexus-37600.firebaseapp.com",
-  projectId:"nexus-37600",
-  storageBucket:"nexus-37600.firebasestorage.app",
-  messagingSenderId:"61496309341",
-  appId:"1:61496309341:web:fdb3711264df47f318bfb4",
-  measurementId:"G-41S50YF5RF"
-};
+const appId =
+  typeof __app_id !== "undefined"
+    ? __app_id
+    : "nexus-social";
 
-const APP_ID = "nexus-37600";
+const firebaseConfig =
+  typeof __firebase_config !== "undefined"
+    ? JSON.parse(__firebase_config)
+    : null;
 
-let auth = null;
-let db = null;
-
-try{
-
-  if(!firebase.apps.length){
-    firebase.initializeApp(firebaseConfig);
-  }
-
-  auth = firebase.auth();
-  db = firebase.firestore();
-
-}catch(error){
-
-  console.error(
-    "Firebase initialization failed:",
-    error
+const firebaseReady =
+  !!(
+    firebaseConfig &&
+    firebaseConfig.apiKey &&
+    firebaseConfig.projectId &&
+    firebaseConfig.appId
   );
 
+if(firebaseReady){
+  firebase.initializeApp(firebaseConfig);
 }
 
+const auth =
+  firebaseReady
+    ? firebase.auth()
+    : null;
 
-function collectionPath(name){
+const db =
+  firebaseReady
+    ? firebase.firestore()
+    : null;
 
-  if(!db){
-    throw new Error(
-      "Firestore is not initialized."
-    );
-  }
-
-  return db
+const rootPath = name =>
+  db
     .collection("artifacts")
-    .doc(APP_ID)
+    .doc(appId)
     .collection("public")
     .doc("data")
     .collection(name);
-}
 
+const now = () =>
+  firebase.firestore.FieldValue.serverTimestamp();
 
-/* =========================================================
-   HELPERS
-========================================================= */
+const makeId = () =>
+  db.collection("_").doc().id;
 
-function timestampMillis(value){
+const avatarFor = seed =>
+  `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(
+    seed || "User"
+  )}`;
 
-  if(!value) return 0;
 
-  try{
-
-    if(typeof value.toMillis === "function"){
-      return value.toMillis();
-    }
-
-    if(typeof value.seconds === "number"){
-      return value.seconds * 1000;
-    }
-
-    if(value instanceof Date){
-      return value.getTime();
-    }
-
-    const date = new Date(value);
-
-    return Number.isFinite(date.getTime())
-      ? date.getTime()
-      : 0;
-
-  }catch{
-
-    return 0;
-
-  }
-}
-
-
-function formatTime(timestamp){
-
-  const time = timestampMillis(timestamp);
-
-  if(!time) return "now";
-
-  const diff = Math.max(
-    0,
-    Date.now() - time
-  );
-
-  const seconds = Math.floor(diff / 1000);
-
-  if(seconds < 60){
-    return `${seconds}s`;
-  }
-
-  const minutes = Math.floor(seconds / 60);
-
-  if(minutes < 60){
-    return `${minutes}m`;
-  }
-
-  const hours = Math.floor(minutes / 60);
-
-  if(hours < 24){
-    return `${hours}h`;
-  }
-
-  const days = Math.floor(hours / 24);
-
-  if(days < 30){
-    return `${days}d`;
-  }
-
-  return new Date(time).toLocaleDateString();
-}
-
-
-function getInitials(name){
-
-  if(!name) return "N";
-
-  return name
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0,2)
-    .map(x => x[0])
-    .join("")
-    .toUpperCase() || "N";
-}
-
-
-function makeHashtags(text){
-
-  if(!text) return [];
-
-  return [
-    ...new Set(
-      (
-        text.match(/#[a-zA-Z0-9_]+/g) || []
-      ).map(x => x.toLowerCase())
-    )
-  ];
-}
-
-
-/* =========================================================
-   AUTH
-========================================================= */
-
-function useAuth(){
-
-  const [user,setUser] = useState(null);
-
-  const [profile,setProfile] = useState(null);
-
-  const [loading,setLoading] = useState(true);
-
-  const [error,setError] = useState(null);
-
-  const [
-    needsProfileSetup,
-    setNeedsProfileSetup
-  ] = useState(false);
-
-
-  useEffect(() => {
-
-    if(!auth || !db){
-
-      setError({
-        code:"firebase/init-failed",
-        message:"Firebase could not initialize."
-      });
-
-      setLoading(false);
-
-      return;
-    }
-
-    let cancelled = false;
-
-    const unsubscribe =
-      auth.onAuthStateChanged(
-        async currentUser => {
-
-          if(cancelled) return;
-
-          try{
-
-            if(!currentUser){
-
-              await auth.signInAnonymously();
-
-              return;
-            }
-
-            setUser(currentUser);
-
-            const userRef =
-              collectionPath("users")
-                .doc(currentUser.uid);
-
-            const snapshot =
-              await userRef.get();
-
-
-            if(!snapshot.exists){
-
-              const shortId =
-                currentUser.uid
-                  .slice(0,6)
-                  .toUpperCase();
-
-              const newProfile = {
-
-                uid:currentUser.uid,
-
-                displayName:
-                  "Nexus User " + shortId,
-
-                username:
-                  "user_" +
-                  currentUser.uid.slice(0,6),
-
-                bio:"Welcome to Nexus 👋",
-
-                followers:0,
-
-                following:0,
-
-                createdAt:
-                  firebase.firestore
-                    .FieldValue
-                    .serverTimestamp()
-
-              };
-
-              await userRef.set(newProfile);
-
-              setProfile({
-                ...newProfile,
-                uid:currentUser.uid
-              });
-
-              setNeedsProfileSetup(true);
-
-            }else{
-
-              const existingProfile = {
-                uid:currentUser.uid,
-                ...snapshot.data()
-              };
-
-              setProfile(existingProfile);
-
-              setNeedsProfileSetup(false);
-
-            }
-
-            setError(null);
-            setLoading(false);
-
-            setTimeout(() => {
-
-              const screen =
-                document.getElementById(
-                  "boot-screen"
-                );
-
-              if(screen){
-                screen.classList.add("hide");
-              }
-
-            },300);
-
-          }catch(error){
-
-            console.error(error);
-
-            setError({
-              code:
-                error.code ||
-                "firebase/error",
-              message:
-                error.message ||
-                "Could not connect to Firebase."
-            });
-
-            setLoading(false);
-
-            const screen =
-              document.getElementById(
-                "boot-screen"
-              );
-
-            if(screen){
-              screen.classList.add("hide");
-            }
-
-          }
-
-        }
-      );
-
-
-    return () => {
-
-      cancelled = true;
-
-      if(unsubscribe){
-        unsubscribe();
-      }
-
-    };
-
-  },[]);
-
-
-  return {
-    user,
-    profile,
-    setProfile,
-    loading,
-    error,
-    needsProfileSetup,
-    setNeedsProfileSetup
-  };
-
-}
-
-
-/* =========================================================
+/* =========================
    REALTIME DATA
-========================================================= */
-
-const COLLECTIONS = [
-  "users",
-  "posts",
-  "comments",
-  "likes",
-  "follows",
-  "notifications",
-  "messages"
-];
-
+========================= */
 
 function useRealtimeData(uid){
 
   const [data,setData] = useState({
-
     users:[],
     posts:[],
     comments:[],
@@ -1081,2424 +691,502 @@ function useRealtimeData(uid){
     follows:[],
     notifications:[],
     messages:[]
-
   });
 
   const [ready,setReady] = useState(false);
 
-  const [
-    firestoreError,
-    setFirestoreError
-  ] = useState(null);
+  useEffect(()=>{
 
+    if(!uid) return;
 
-  useEffect(() => {
+    const unsubs=[];
 
-    if(!uid || !db){
-      return;
-    }
+    const collections=[
+      "users",
+      "posts",
+      "comments",
+      "likes",
+      "follows",
+      "notifications",
+      "messages"
+    ];
 
-    setReady(false);
-    setFirestoreError(null);
+    collections.forEach(name=>{
 
-    const loaded = new Set();
+      const q =
+        name === "notifications"
 
-    const unsubscribers = [];
+          ? rootPath(name)
+              .where("recipientId","==",uid)
+              .limit(100)
 
+          : name === "messages"
 
-    COLLECTIONS.forEach(name => {
+          ? rootPath(name)
+              .where("participants","array-contains",uid)
+              .limit(300)
 
-      const unsubscribe =
-        collectionPath(name)
-          .onSnapshot(
+          : rootPath(name);
 
-            snapshot => {
-
-              const items =
-                snapshot.docs.map(
-                  doc => ({
-                    id:doc.id,
-                    ...doc.data()
-                  })
-                );
-
-              setData(previous => ({
-                ...previous,
-                [name]:items
-              }));
-
-              loaded.add(name);
-
-              if(
-                loaded.size ===
-                COLLECTIONS.length
-              ){
-                setReady(true);
-              }
-
-            },
-
-            error => {
-
-              console.error(
-                `Firestore ${name} error:`,
-                error
-              );
-
-              setFirestoreError({
-                collection:name,
-                code:error.code,
-                message:error.message
-              });
-
-              loaded.add(name);
-
-              if(
-                loaded.size ===
-                COLLECTIONS.length
-              ){
-                setReady(true);
-              }
-
-            }
-
-          );
-
-      unsubscribers.push(unsubscribe);
+      unsubs.push(
+        q.onSnapshot(
+          s =>
+            setData(d => ({
+              ...d,
+              [name]:
+                s.docs.map(x => ({
+                  id:x.id,
+                  ...x.data()
+                }))
+            })),
+          e =>
+            console.error(name,e)
+        )
+      );
 
     });
 
+    setReady(true);
 
-    return () => {
-
-      unsubscribers.forEach(
-        unsubscribe =>
-          unsubscribe()
-      );
-
-    };
+    return () =>
+      unsubs.forEach(u=>u());
 
   },[uid]);
 
-
   return {
     data,
-    ready,
-    firestoreError
+    ready
   };
-
 }
 
 
-/* =========================================================
-   ERROR SCREEN
-========================================================= */
+/* =========================
+   AUTH
+========================= */
 
-function FirebaseErrorScreen({
-  error,
-  retry
-}){
+function useAuth(){
 
-  return(
+  const [user,setUser] = useState(null);
+  const [profile,setProfile] = useState(null);
+  const [loading,setLoading] = useState(true);
 
-    <div className="error-page">
+  useEffect(()=>{
 
-      <div className="error-card">
+    let alive=true;
 
-        <div style={{fontSize:40}}>
-          ⚠️
-        </div>
+    const unsub =
+      auth.onAuthStateChanged(async u=>{
 
-        <h1>Firebase Error</h1>
+        if(!alive) return;
 
-        <p style={{color:"#aaa"}}>
-          Nexus could not access Firebase correctly.
-        </p>
+        setUser(u);
 
-        <div className="error-message">
+        if(!u){
 
-          <strong>
-            {error?.code || "unknown-error"}
-          </strong>
+          setProfile(null);
+          setLoading(false);
+          return;
 
-          <br/><br/>
-
-          {error?.message ||
-            "Unknown Firebase error."}
-
-        </div>
-
-        <h3>Check these settings</h3>
-
-        <ol className="setup-list">
-
-          <li>
-            Firebase project:
-            <strong> nexus-37600</strong>
-          </li>
-
-          <li>
-            Authentication →
-            <strong>
-              Sign-in method →
-              Anonymous → Enabled
-            </strong>
-          </li>
-
-          <li>
-            Firestore Database must exist.
-          </li>
-
-          <li>
-            Firestore rules must allow
-            the Nexus path to be read.
-          </li>
-
-          <li>
-            Reload Nexus after changing Firebase.
-          </li>
-
-        </ol>
-
-        <button
-          className="primary"
-          onClick={retry}
-        >
-          Retry
-        </button>
-
-      </div>
-
-    </div>
-
-  );
-
-}
-
-
-/* =========================================================
-   FIRESTORE ERROR BANNER
-========================================================= */
-
-function FirestoreErrorBanner({error}){
-
-  if(!error) return null;
-
-  return(
-
-    <div
-      style={{
-        background:"#190d0d",
-        border:"1px solid #4a2222",
-        color:"#ffbaba",
-        borderRadius:12,
-        padding:12,
-        marginBottom:15,
-        fontSize:13
-      }}
-    >
-
-      <strong>Firestore warning</strong>
-
-      <div style={{marginTop:5}}>
-        Collection: {error.collection}
-      </div>
-
-      <div style={{marginTop:3}}>
-        {error.message}
-      </div>
-
-      <div
-        style={{
-          marginTop:7,
-          color:"#aaa"
-        }}
-      >
-        Check your Firestore security rules.
-      </div>
-
-    </div>
-
-  );
-
-}
-
-
-/* =========================================================
-   PROFILE SETUP
-========================================================= */
-
-function ProfileSetup({
-  user,
-  profile,
-  onComplete
-}){
-
-  const [name,setName] = useState("");
-
-  const [username,setUsername] = useState("");
-
-  const [bio,setBio] =
-    useState("Welcome to Nexus 👋");
-
-  const [saving,setSaving] = useState(false);
-
-
-  async function saveProfile(){
-
-    const cleanName = name.trim();
-
-    if(!cleanName){
-
-      alert("Please enter your name.");
-
-      return;
-    }
-
-    if(saving) return;
-
-    setSaving(true);
-
-    try{
-
-      let cleanUsername =
-        username
-          .trim()
-          .replace(/^@/,"")
-          .replace(/\s+/g,"_")
-          .replace(/[^a-zA-Z0-9_]/g,"")
-          .toLowerCase();
-
-      if(!cleanUsername){
-
-        cleanUsername =
-          "user_" +
-          user.uid.slice(0,6);
-
-      }
-
-      cleanUsername =
-        cleanUsername.slice(0,30);
-
-
-      const updated = {
-
-        uid:user.uid,
-
-        displayName:cleanName,
-
-        username:cleanUsername,
-
-        bio:bio.trim(),
-
-        followers:profile?.followers || 0,
-
-        following:profile?.following || 0
-
-      };
-
-
-      await collectionPath("users")
-        .doc(user.uid)
-        .update({
-
-          displayName:updated.displayName,
-
-          username:updated.username,
-
-          bio:updated.bio
-
-        });
-
-
-      onComplete(updated);
-
-    }catch(error){
-
-      console.error(error);
-
-      alert(
-        "Could not save your profile:\n\n" +
-        error.message
-      );
-
-    }finally{
-
-      setSaving(false);
-
-    }
-
-  }
-
-
-  return(
-
-    <div className="profile-setup">
-
-      <div className="profile-setup-card">
-
-        <div
-          className="brand"
-          style={{marginBottom:20}}
-        >
-
-          <div className="brand-logo">N</div>
-
-          Nexus
-
-        </div>
-
-        <h1>Welcome to Nexus 👋</h1>
-
-        <p>
-          Create your profile before you
-          start posting and following people.
-        </p>
-
-
-        <div className="field">
-
-          <label>Display name</label>
-
-          <input
-            value={name}
-            onChange={e =>
-              setName(e.target.value)
-            }
-            placeholder="Your name"
-            maxLength={40}
-            autoFocus
-          />
-
-        </div>
-
-
-        <div className="field">
-
-          <label>Username</label>
-
-          <input
-            value={username}
-            onChange={e =>
-              setUsername(e.target.value)
-            }
-            placeholder="@yourusername"
-            maxLength={30}
-          />
-
-        </div>
-
-
-        <div className="field">
-
-          <label>Bio</label>
-
-          <textarea
-            value={bio}
-            onChange={e =>
-              setBio(e.target.value)
-            }
-            placeholder="Tell people about yourself..."
-            maxLength={160}
-          />
-
-        </div>
-
-
-        <button
-          className="primary"
-          style={{
-            width:"100%",
-            marginTop:8
-          }}
-          disabled={
-            saving ||
-            !name.trim()
-          }
-          onClick={saveProfile}
-        >
-          {saving
-            ? "Creating profile..."
-            : "Enter Nexus"}
-        </button>
-
-      </div>
-
-    </div>
-
-  );
-
-}
-
-
-/* =========================================================
-   COMPOSER
-========================================================= */
-
-function Composer({
-  user,
-  profile
-}){
-
-  const [text,setText] = useState("");
-
-  const [saving,setSaving] = useState(false);
-
-
-  async function createPost(){
-
-    const clean = text.trim();
-
-    if(
-      !clean ||
-      !user ||
-      saving
-    ){
-      return;
-    }
-
-    setSaving(true);
-
-    try{
-
-      await collectionPath("posts")
-        .add({
-
-          authorId:user.uid,
-
-          authorName:
-            profile?.displayName ||
-            "Nexus User",
-
-          authorUsername:
-            profile?.username ||
-            (
-              "user_" +
-              user.uid.slice(0,6)
-            ),
-
-          content:clean,
-
-          hashtags:makeHashtags(clean),
-
-          createdAt:
-            firebase.firestore
-              .FieldValue
-              .serverTimestamp()
-
-        });
-
-      setText("");
-
-    }catch(error){
-
-      console.error(error);
-
-      alert(
-        "Could not create post:\n\n" +
-        error.message
-      );
-
-    }finally{
-
-      setSaving(false);
-
-    }
-
-  }
-
-
-  return(
-
-    <div className="composer">
-
-      <textarea
-        value={text}
-        onChange={e =>
-          setText(e.target.value)
         }
-        placeholder="What's happening on Nexus?"
-        maxLength={1000}
-      />
 
-      <div className="composer-bottom">
+        const ref =
+          rootPath("users").doc(u.uid);
 
-        <span
-          style={{
-            color:"#555",
-            fontSize:12,
-            marginRight:"auto"
-          }}
-        >
-          {text.length}/1000
-        </span>
+        const snap =
+          await ref.get();
 
-        <button
-          className="primary"
-          disabled={
-            saving ||
-            !text.trim()
-          }
-          onClick={createPost}
-        >
-          {saving ? "Posting..." : "Post"}
-        </button>
+        if(!snap.exists){
 
-      </div>
+          const handle =
+            `user${u.uid.slice(0,7)}`;
 
-    </div>
+          const p={
+            uid:u.uid,
+            handle,
+            displayName:"New User",
+            bio:"",
+            avatar:avatarFor(handle),
+            createdAt:now()
+          };
 
-  );
+          await ref.set(p);
 
-}
+          setProfile(p);
 
+        }else{
 
-/* =========================================================
-   POST CARD
-========================================================= */
-
-function PostCard({
-  post,
-  currentUser,
-  profile,
-  comments,
-  likes,
-  onProfile,
-  onEdit
-}){
-
-  const [
-    commentText,
-    setCommentText
-  ] = useState("");
-
-  const [
-    showComments,
-    setShowComments
-  ] = useState(false);
-
-  const [
-    sending,
-    setSending
-  ] = useState(false);
-
-
-  const postLikes =
-    likes.filter(
-      x => x.postId === post.id
-    );
-
-
-  const liked =
-    postLikes.some(
-      x =>
-        x.userId ===
-        currentUser?.uid
-    );
-
-
-  const postComments =
-    comments
-      .filter(
-        x =>
-          x.postId === post.id
-      )
-      .sort(
-        (a,b) =>
-          timestampMillis(a.createdAt) -
-          timestampMillis(b.createdAt)
-      );
-
-
-  async function toggleLike(){
-
-    if(!currentUser) return;
-
-    try{
-
-      const existing =
-        postLikes.find(
-          x =>
-            x.userId ===
-            currentUser.uid
-        );
-
-
-      if(existing){
-
-        await collectionPath("likes")
-          .doc(existing.id)
-          .delete();
-
-      }else{
-
-        await collectionPath("likes")
-          .add({
-
-            postId:post.id,
-
-            userId:currentUser.uid,
-
-            createdAt:
-              firebase.firestore
-                .FieldValue
-                .serverTimestamp()
-
-          });
-
-
-        if(
-          post.authorId &&
-          post.authorId !== currentUser.uid
-        ){
-
-          await collectionPath(
-            "notifications"
-          ).add({
-
-            userId:post.authorId,
-
-            actorId:currentUser.uid,
-
-            actorName:
-              profile?.displayName ||
-              "Someone",
-
-            type:"like",
-
-            postId:post.id,
-
-            read:false,
-
-            createdAt:
-              firebase.firestore
-                .FieldValue
-                .serverTimestamp()
-
+          setProfile({
+            id:snap.id,
+            ...snap.data()
           });
 
         }
 
-      }
+        setLoading(false);
 
-    }catch(error){
-
-      alert(
-        "Like failed:\n\n" +
-        error.message
-      );
-
-    }
-
-  }
-
-
-  async function addComment(){
-
-    const clean =
-      commentText.trim();
-
-    if(
-      !clean ||
-      !currentUser ||
-      sending
-    ){
-      return;
-    }
-
-    setSending(true);
-
-    try{
-
-      await collectionPath("comments")
-        .add({
-
-          postId:post.id,
-
-          userId:currentUser.uid,
-
-          userName:
-            profile?.displayName ||
-            "Nexus User",
-
-          text:clean,
-
-          createdAt:
-            firebase.firestore
-              .FieldValue
-              .serverTimestamp()
-
-        });
-
-
-      if(
-        post.authorId &&
-        post.authorId !== currentUser.uid
-      ){
-
-        await collectionPath(
-          "notifications"
-        ).add({
-
-          userId:post.authorId,
-
-          actorId:currentUser.uid,
-
-          actorName:
-            profile?.displayName ||
-            "Someone",
-
-          type:"comment",
-
-          postId:post.id,
-
-          read:false,
-
-          createdAt:
-            firebase.firestore
-              .FieldValue
-              .serverTimestamp()
-
-        });
-
-      }
-
-
-      setCommentText("");
-
-    }catch(error){
-
-      alert(
-        "Comment failed:\n\n" +
-        error.message
-      );
-
-    }finally{
-
-      setSending(false);
-
-    }
-
-  }
-
-
-  async function deletePost(){
-
-    if(!confirm("Delete this post?")){
-      return;
-    }
-
-    try{
-
-      await collectionPath("posts")
-        .doc(post.id)
-        .delete();
-
-
-      const relatedLikes =
-        likes.filter(
-          x => x.postId === post.id
-        );
-
-
-      const relatedComments =
-        comments.filter(
-          x => x.postId === post.id
-        );
-
-
-      await Promise.all([
-
-        ...relatedLikes.map(
-          x =>
-            collectionPath("likes")
-              .doc(x.id)
-              .delete()
-        ),
-
-        ...relatedComments.map(
-          x =>
-            collectionPath("comments")
-              .doc(x.id)
-              .delete()
-        )
-
-      ]);
-
-    }catch(error){
-
-      alert(
-        "Delete failed:\n\n" +
-        error.message
-      );
-
-    }
-
-  }
-
-
-  return(
-
-    <article className="post">
-
-      <div className="post-header">
-
-        <div
-          className="avatar"
-          onClick={() =>
-            onProfile?.(post.authorId)
-          }
-          style={{cursor:"pointer"}}
-        >
-          {getInitials(post.authorName)}
-        </div>
-
-
-        <div
-          onClick={() =>
-            onProfile?.(post.authorId)
-          }
-          style={{cursor:"pointer"}}
-        >
-
-          <div className="post-author">
-            {post.authorName || "User"}
-          </div>
-
-          <div className="post-time">
-
-            @{post.authorUsername || "user"}
-
-            {" · "}
-
-            {formatTime(post.createdAt)}
-
-            {post.editedAt
-              ? " · edited"
-              : ""}
-
-          </div>
-
-        </div>
-
-
-        {post.authorId === currentUser?.uid && (
-
-          <div
-            style={{
-              marginLeft:"auto",
-              display:"flex",
-              gap:5
-            }}
-          >
-
-            <button
-              className="post-menu"
-              onClick={() =>
-                onEdit?.(post)
-              }
-              title="Edit"
-            >
-              ✎
-            </button>
-
-            <button
-              className="post-menu"
-              onClick={deletePost}
-              title="Delete"
-            >
-              🗑
-            </button>
-
-          </div>
-
-        )}
-
-      </div>
-
-
-      <div className="post-content">
-
-        {(post.content || "")
-          .split(/(#[a-zA-Z0-9_]+)/)
-          .map(
-            (part,index) =>
-              part.startsWith("#")
-                ? (
-                  <span
-                    className="hashtag"
-                    key={index}
-                  >
-                    {part}
-                  </span>
-                )
-                : part
-          )}
-
-      </div>
-
-
-      <div className="post-actions">
-
-        <button
-          className={
-            "action-btn " +
-            (liked ? "liked" : "")
-          }
-          onClick={toggleLike}
-        >
-          {liked ? "♥" : "♡"} {postLikes.length}
-        </button>
-
-
-        <button
-          className="action-btn"
-          onClick={() =>
-            setShowComments(x => !x)
-          }
-        >
-          💬 {postComments.length}
-        </button>
-
-
-        <button
-          className="action-btn"
-          onClick={() => {
-
-            if(navigator.clipboard){
-
-              navigator.clipboard
-                .writeText(post.content || "")
-                .then(() => {
-                  alert("Post copied.");
-                })
-                .catch(() => {});
-
-            }
-
-          }}
-        >
-          ↗ Share
-        </button>
-
-      </div>
-
-
-      {showComments && (
-
-        <div className="comments">
-
-          {postComments.map(comment => (
-
-            <div
-              className="comment"
-              key={comment.id}
-            >
-
-              <div className="avatar small">
-                {getInitials(comment.userName)}
-              </div>
-
-              <div className="comment-body">
-
-                <div className="comment-name">
-                  {comment.userName || "User"}
-                </div>
-
-                <div className="comment-text">
-                  {comment.text}
-                </div>
-
-              </div>
-
-            </div>
-
-          ))}
-
-
-          <input
-            className="comment-input"
-            value={commentText}
-            onChange={e =>
-              setCommentText(e.target.value)
-            }
-            onKeyDown={e => {
-
-              if(
-                e.key === "Enter" &&
-                !e.shiftKey
-              ){
-
-                e.preventDefault();
-
-                addComment();
-
-              }
-
-            }}
-            placeholder="Write a comment..."
-          />
-
-        </div>
-
-      )}
-
-    </article>
-
-  );
-
-}
-
-
-/* =========================================================
-   EDIT POST
-========================================================= */
-
-function EditPostModal({
-  post,
-  onClose
-}){
-
-  const [text,setText] =
-    useState(post.content || "");
-
-  const [saving,setSaving] =
-    useState(false);
-
-
-  async function save(){
-
-    const clean = text.trim();
-
-    if(!clean || saving){
-      return;
-    }
-
-    setSaving(true);
-
-    try{
-
-      await collectionPath("posts")
-        .doc(post.id)
-        .update({
-
-          content:clean,
-
-          hashtags:makeHashtags(clean),
-
-          editedAt:
-            firebase.firestore
-              .FieldValue
-              .serverTimestamp()
-
-        });
-
-      onClose();
-
-    }catch(error){
-
-      alert(
-        "Could not edit post:\n\n" +
-        error.message
-      );
-
-    }finally{
-
-      setSaving(false);
-
-    }
-
-  }
-
-
-  return(
-
-    <div className="modal-backdrop">
-
-      <div className="modal">
-
-        <h2>Edit post</h2>
-
-        <div className="field">
-
-          <textarea
-            value={text}
-            onChange={e =>
-              setText(e.target.value)
-            }
-          />
-
-        </div>
-
-
-        <div className="modal-actions">
-
-          <button
-            className="secondary"
-            onClick={onClose}
-          >
-            Cancel
-          </button>
-
-          <button
-            className="primary"
-            disabled={
-              saving ||
-              !text.trim()
-            }
-            onClick={save}
-          >
-            {saving ? "Saving..." : "Save"}
-          </button>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  );
-
-}
-
-
-/* =========================================================
-   EDIT PROFILE
-========================================================= */
-
-function EditProfileModal({
-  user,
-  profile,
-  onSave,
-  onClose
-}){
-
-  const [name,setName] =
-    useState(profile?.displayName || "");
-
-  const [username,setUsername] =
-    useState(profile?.username || "");
-
-  const [bio,setBio] =
-    useState(profile?.bio || "");
-
-  const [saving,setSaving] =
-    useState(false);
-
-
-  async function save(){
-
-    if(!name.trim() || saving){
-      return;
-    }
-
-    setSaving(true);
-
-    try{
-
-      const cleanUsername =
-        username
-          .trim()
-          .replace(/^@/,"")
-          .replace(/\s+/g,"_")
-          .replace(/[^a-zA-Z0-9_]/g,"")
-          .toLowerCase();
-
-
-      const updated = {
-
-        displayName:name.trim(),
-
-        username:
-          cleanUsername ||
-          (
-            "user_" +
-            user.uid.slice(0,6)
-          ),
-
-        bio:bio.trim()
-
-      };
-
-
-      await collectionPath("users")
-        .doc(user.uid)
-        .update(updated);
-
-
-      onSave({
-        ...profile,
-        ...updated
       });
 
-      onClose();
+    (async()=>{
 
-    }catch(error){
+      try{
 
-      alert(
-        "Profile update failed:\n\n" +
-        error.message
-      );
+        if(
+          typeof __initial_auth_token !== "undefined" &&
+          __initial_auth_token
+        ){
 
-    }finally{
+          await auth.signInWithCustomToken(
+            __initial_auth_token
+          );
 
-      setSaving(false);
+        }else if(!auth.currentUser){
 
-    }
+          await auth.signInAnonymously();
 
-  }
+        }
 
+      }catch(e){
 
-  return(
-
-    <div className="modal-backdrop">
-
-      <div className="modal">
-
-        <h2>Edit profile</h2>
-
-
-        <div className="field">
-
-          <label>Display name</label>
-
-          <input
-            value={name}
-            onChange={e =>
-              setName(e.target.value)
-            }
-          />
-
-        </div>
-
-
-        <div className="field">
-
-          <label>Username</label>
-
-          <input
-            value={username}
-            onChange={e =>
-              setUsername(e.target.value)
-            }
-          />
-
-        </div>
-
-
-        <div className="field">
-
-          <label>Bio</label>
-
-          <textarea
-            value={bio}
-            onChange={e =>
-              setBio(e.target.value)
-            }
-          />
-
-        </div>
-
-
-        <div className="modal-actions">
-
-          <button
-            className="secondary"
-            onClick={onClose}
-          >
-            Cancel
-          </button>
-
-          <button
-            className="primary"
-            disabled={saving}
-            onClick={save}
-          >
-            {saving ? "Saving..." : "Save"}
-          </button>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  );
-
-}
-
-
-/* =========================================================
-   WHO TO FOLLOW
-========================================================= */
-
-function WhoToFollow({
-  users,
-  currentUser,
-  currentUserProfile,
-  follows
-}){
-
-  const candidates =
-    users
-      .filter(
-        x =>
-          x.uid !== currentUser?.uid
-      )
-      .slice(0,5);
-
-
-  async function toggleFollow(person){
-
-    if(!currentUser) return;
-
-
-    const existing =
-      follows.find(
-        x =>
-          x.followerId === currentUser.uid &&
-          x.followingId === person.uid
-      );
-
-
-    try{
-
-      if(existing){
-
-        await collectionPath("follows")
-          .doc(existing.id)
-          .delete();
-
-      }else{
-
-        await collectionPath("follows")
-          .add({
-
-            followerId:currentUser.uid,
-
-            followingId:person.uid,
-
-            createdAt:
-              firebase.firestore
-                .FieldValue
-                .serverTimestamp()
-
-          });
-
-
-        await collectionPath("notifications")
-          .add({
-
-            userId:person.uid,
-
-            actorId:currentUser.uid,
-
-            actorName:
-              currentUserProfile?.displayName ||
-              "Someone",
-
-            type:"follow",
-
-            read:false,
-
-            createdAt:
-              firebase.firestore
-                .FieldValue
-                .serverTimestamp()
-
-          });
+        console.error(e);
+        setLoading(false);
 
       }
 
-    }catch(error){
+    })();
 
-      alert(
-        "Follow failed:\n\n" +
-        error.message
-      );
+    return ()=>{
+      alive=false;
+      unsub();
+    };
 
-    }
+  },[]);
 
-  }
-
-
-  return(
-
-    <div className="side-card">
-
-      <div className="side-title">
-        Who to follow
-      </div>
-
-
-      {candidates.length === 0 && (
-
-        <div
-          style={{
-            color:"#666",
-            fontSize:13
-          }}
-        >
-          No suggestions yet.
-        </div>
-
-      )}
-
-
-      {candidates.map(person => {
-
-        const following =
-          follows.some(
-            x =>
-              x.followerId === currentUser?.uid &&
-              x.followingId === person.uid
-          );
-
-
-        return(
-
-          <div
-            className="person"
-            key={person.uid}
-          >
-
-            <div className="avatar small">
-              {getInitials(person.displayName)}
-            </div>
-
-
-            <div className="person-info">
-
-              <div className="person-name">
-                {person.displayName}
-              </div>
-
-              <div className="person-user">
-                @{person.username}
-              </div>
-
-            </div>
-
-
-            <button
-              className="follow-btn"
-              onClick={() =>
-                toggleFollow(person)
-              }
-            >
-              {following
-                ? "Following"
-                : "Follow"}
-            </button>
-
-          </div>
-
-        );
-
-      })}
-
-    </div>
-
-  );
-
+  return {
+    user,
+    profile,
+    loading
+  };
 }
 
 
-/* =========================================================
-   FEED
-========================================================= */
-
-function FeedView({
-  user,
-  profile,
-  data,
-  onProfile,
-  onEdit,
-  firestoreError
-}){
-
-  const [query,setQuery] =
-    useState("");
-
-
-  const posts =
-    useMemo(() => {
-
-      const q =
-        query.trim().toLowerCase();
-
-
-      return [...data.posts]
-        .sort(
-          (a,b) =>
-            timestampMillis(b.createdAt) -
-            timestampMillis(a.createdAt)
-        )
-        .filter(post => {
-
-          if(!q) return true;
-
-
-          return(
-
-            post.content
-              ?.toLowerCase()
-              .includes(q)
-
-            ||
-
-            post.authorName
-              ?.toLowerCase()
-              .includes(q)
-
-            ||
-
-            post.authorUsername
-              ?.toLowerCase()
-              .includes(q)
-
-            ||
-
-            (post.hashtags || [])
-              .some(
-                tag =>
-                  tag
-                    .toLowerCase()
-                    .includes(q)
-              )
-
-          );
-
-        });
-
-    },[
-      data.posts,
-      query
-    ]);
-
-
-  return(
-
-    <div className="feed">
-
-      <FirestoreErrorBanner
-        error={firestoreError}
-      />
-
-
-      <div className="search-box">
-
-        <input
-          placeholder="Search Nexus..."
-          value={query}
-          onChange={e =>
-            setQuery(e.target.value)
-          }
-        />
-
-      </div>
-
-
-      <Composer
-        user={user}
-        profile={profile}
-      />
-
-
-      <div className="status">
-
-        {posts.length} post
-        {posts.length === 1 ? "" : "s"} loaded
-
-      </div>
-
-
-      {posts.length === 0 ? (
-
-        <div className="empty">
-
-          <div style={{fontSize:35}}>
-            ✨
-          </div>
-
-          <div>
-            {query
-              ? "No matching posts."
-              : "No posts yet."}
-          </div>
-
-          <div
-            style={{
-              fontSize:13,
-              marginTop:5
-            }}
-          >
-            {query
-              ? "Try another search."
-              : "Be the first person to post."}
-          </div>
-
-        </div>
-
-      ) : (
-
-        posts.map(post => (
-
-          <PostCard
-            key={post.id}
-            post={post}
-            currentUser={user}
-            profile={profile}
-            comments={data.comments}
-            likes={data.likes}
-            onProfile={onProfile}
-            onEdit={onEdit}
-          />
-
-        ))
-
-      )}
-
-    </div>
-
-  );
-
-}
-
-
-/* =========================================================
-   PROFILE VIEW
-========================================================= */
-
-function ProfileView({
-  profile,
-  user,
-  data,
-  onEditProfile,
-  onProfile
-}){
-
-  const userPosts =
-    data.posts
-      .filter(
-        x =>
-          x.authorId === profile?.uid
-      )
-      .sort(
-        (a,b) =>
-          timestampMillis(b.createdAt) -
-          timestampMillis(a.createdAt)
-      );
-
-
-  const followers =
-    data.follows.filter(
-      x =>
-        x.followingId === profile?.uid
-    ).length;
-
-
-  const following =
-    data.follows.filter(
-      x =>
-        x.followerId === profile?.uid
-    ).length;
-
-
-  if(!profile){
-
-    return(
-      <div className="empty">
-        Profile not found.
-      </div>
-    );
-
-  }
-
-
-  return(
-
-    <div className="feed">
-
-      <div className="profile-card">
-
-        <div className="profile-cover"></div>
-
-        <div className="profile-main">
-
-          <div className="profile-avatar">
-            {getInitials(profile.displayName)}
-          </div>
-
-
-          <div className="profile-name">
-            {profile.displayName}
-          </div>
-
-
-          <div className="profile-username">
-            @{profile.username}
-          </div>
-
-
-          <div className="profile-bio">
-            {profile.bio || "No bio yet."}
-          </div>
-
-
-          <div className="profile-stats">
-
-            <div className="stat">
-              <strong>{followers}</strong>
-              <span>Followers</span>
-            </div>
-
-            <div className="stat">
-              <strong>{following}</strong>
-              <span>Following</span>
-            </div>
-
-            <div className="stat">
-              <strong>{userPosts.length}</strong>
-              <span>Posts</span>
-            </div>
-
-          </div>
-
-
-          {profile.uid === user.uid && (
-
-            <button
-              className="secondary"
-              style={{marginTop:18}}
-              onClick={onEditProfile}
-            >
-              Edit profile
-            </button>
-
-          )}
-
-        </div>
-
-      </div>
-
-
-      {userPosts.map(post => (
-
-        <PostCard
-          key={post.id}
-          post={post}
-          currentUser={user}
-          profile={profile}
-          comments={data.comments}
-          likes={data.likes}
-          onProfile={onProfile}
-          onEdit={() => {}}
-        />
-
-      ))}
-
-
-      {userPosts.length === 0 && (
-
-        <div className="empty">
-          No posts yet.
-        </div>
-
-      )}
-
-    </div>
-
-  );
-
-}
-
-
-/* =========================================================
+/* =========================
    NOTIFICATIONS
-========================================================= */
+========================= */
 
-function NotificationsView({
-  user,
-  data
-}){
+function notify(
+  recipientId,
+  type,
+  actor,
+  postId,
+  extra={}
+){
 
-  const notifications =
-    data.notifications
-      .filter(
-        x =>
-          x.userId === user.uid
-      )
-      .sort(
-        (a,b) =>
-          timestampMillis(b.createdAt) -
-          timestampMillis(a.createdAt)
-      );
+  if(
+    !recipientId ||
+    recipientId===actor.uid
+  ) return;
 
+  return rootPath("notifications").add({
 
-  return(
+    recipientId,
+    type,
+    actorId:actor.uid,
+    postId:postId||null,
+    read:false,
+    createdAt:now(),
 
-    <div className="feed">
+    ...extra
 
-      <div className="side-card">
-
-        <h2>Notifications</h2>
-
-
-        {notifications.length === 0 && (
-
-          <div className="empty">
-            No notifications yet.
-          </div>
-
-        )}
-
-
-        {notifications.map(notification => (
-
-          <div
-            key={notification.id}
-            style={{
-              padding:"14px 0",
-              borderBottom:"1px solid #222"
-            }}
-          >
-
-            <strong>
-              {notification.actorName || "Someone"}
-            </strong>
-
-            {" "}
-
-            {notification.type === "like"
-              ? "liked your post ❤️"
-              : notification.type === "comment"
-              ? "commented on your post 💬"
-              : "followed you 👤"
-            }
-
-
-            <div
-              style={{
-                color:"#666",
-                fontSize:12,
-                marginTop:5
-              }}
-            >
-              {formatTime(notification.createdAt)}
-            </div>
-
-          </div>
-
-        ))}
-
-      </div>
-
-    </div>
-
-  );
+  });
 
 }
 
 
-/* =========================================================
-   MESSAGES
-========================================================= */
+/* =========================
+   APP
+========================= */
 
-function MessagingView({
-  user,
-  profile,
-  data
-}){
+function App(){
 
-  const [recipient,setRecipient] =
-    useState("");
-
-  const [text,setText] =
-    useState("");
-
-  const [sending,setSending] =
-    useState(false);
-
-
-  async function sendMessage(){
-
-    if(
-      !recipient.trim() ||
-      !text.trim() ||
-      sending
-    ){
-      return;
-    }
-
-
-    const username =
-      recipient
-        .trim()
-        .replace(/^@/,"")
-        .toLowerCase();
-
-
-    const target =
-      data.users.find(
-        x =>
-          String(x.username || "")
-            .toLowerCase() === username
-      );
-
-
-    if(!target){
-
-      alert("User not found.");
-
-      return;
-    }
-
-
-    setSending(true);
-
-
-    try{
-
-      await collectionPath("messages")
-        .add({
-
-          senderId:user.uid,
-
-          senderName:
-            profile?.displayName ||
-            "Nexus User",
-
-          receiverId:target.uid,
-
-          receiverName:target.displayName,
-
-          text:text.trim(),
-
-          createdAt:
-            firebase.firestore
-              .FieldValue
-              .serverTimestamp()
-
-        });
-
-
-      setText("");
-
-    }catch(error){
-
-      alert(
-        "Message failed:\n\n" +
-        error.message
-      );
-
-    }finally{
-
-      setSending(false);
-
-    }
-
-  }
-
-
-  const messages =
-    data.messages
-      .filter(
-        message =>
-          message.senderId === user.uid ||
-          message.receiverId === user.uid
-      )
-      .sort(
-        (a,b) =>
-          timestampMillis(a.createdAt) -
-          timestampMillis(b.createdAt)
-      );
-
-
-  return(
-
-    <div className="feed">
-
-      <div className="side-card">
-
-        <h2>Messages</h2>
-
-
-        <div className="field">
-
-          <label>Username</label>
-
-          <input
-            value={recipient}
-            onChange={e =>
-              setRecipient(e.target.value)
-            }
-            placeholder="@username"
-          />
-
-        </div>
-
-
-        <div className="field">
-
-          <textarea
-            value={text}
-            onChange={e =>
-              setText(e.target.value)
-            }
-            placeholder="Write a message..."
-          />
-
-        </div>
-
-
-        <button
-          className="primary"
-          disabled={sending}
-          onClick={sendMessage}
-        >
-          {sending
-            ? "Sending..."
-            : "Send message"}
-        </button>
-
-      </div>
-
-
-      <div
-        className="side-card"
-        style={{marginTop:15}}
-      >
-
-        {messages.length === 0 ? (
-
-          <div className="empty">
-            No messages yet.
-          </div>
-
-        ) : (
-
-          messages.map(message => (
-
-            <div
-              key={message.id}
-              style={{
-                padding:"12px 0",
-                borderBottom:"1px solid #222"
-              }}
-            >
-
-              <strong>
-
-                {message.senderId === user.uid
-                  ? "You"
-                  : message.senderName}
-
-              </strong>
-
-
-              <div
-                style={{
-                  color:"#ccc",
-                  marginTop:5
-                }}
-              >
-                {message.text}
-              </div>
-
-
-              <div
-                style={{
-                  color:"#555",
-                  fontSize:11,
-                  marginTop:5
-                }}
-              >
-                {formatTime(message.createdAt)}
-              </div>
-
-            </div>
-
-          ))
-
-        )}
-
-      </div>
-
-    </div>
-
-  );
-
-}
-
-
-/* =========================================================
-   MAIN NEXUS
-========================================================= */
-
-function Nexus(){
+  if(!firebaseReady)
+    return <SetupScreen/>;
 
   const {
     user,
     profile,
-    setProfile,
-    loading,
-    error,
-    needsProfileSetup,
-    setNeedsProfileSetup
+    loading
   } = useAuth();
 
-
-  const {
-    data,
-    ready,
-    firestoreError
-  } = useRealtimeData(user?.uid);
-
-
-  const [page,setPage] =
-    useState("home");
-
-
-  const [
-    selectedProfile,
-    setSelectedProfile
-  ] = useState(null);
-
-
-  const [
-    editingProfile,
-    setEditingProfile
-  ] = useState(false);
-
-
-  const [
-    editingPost,
-    setEditingPost
-  ] = useState(null);
-
-
-  function retry(){
-    window.location.reload();
-  }
-
-
-  function openProfile(uid){
-
-    if(!uid) return;
-
-
-    const target =
-      data.users.find(
-        x => x.uid === uid
-      );
-
-
-    if(!target){
-
-      if(
-        uid === user?.uid &&
-        profile
-      ){
-
-        setSelectedProfile(profile);
-        setPage("profile");
-
-      }
-
-      return;
-    }
-
-
-    setSelectedProfile(target);
-    setPage("profile");
-
-  }
-
-
-  function openMyProfile(){
-
-    if(!profile) return;
-
-    setSelectedProfile(profile);
-    setPage("profile");
-
-  }
-
-
-  if(loading){
-    return null;
-  }
-
-
-  if(error){
-
-    return(
-
-      <FirebaseErrorScreen
-        error={error}
-        retry={retry}
-      />
-
-    );
-
-  }
-
-
-  if(!user || !profile){
-
-    return(
-
-      <FirebaseErrorScreen
-        error={{
-          code:"auth/no-user",
-          message:
-            "Firebase did not return a signed-in user."
-        }}
-        retry={retry}
-      />
-
-    );
-
-  }
-
-
-  if(needsProfileSetup){
-
-    return(
-
-      <ProfileSetup
-        user={user}
-        profile={profile}
-        onComplete={updated => {
-
-          setProfile(updated);
-          setNeedsProfileSetup(false);
-
-        }}
-      />
-
-    );
-
-  }
-
-
-  if(!ready){
-
-    return(
-
-      <div
-        style={{
-          minHeight:"100vh",
-          display:"flex",
-          alignItems:"center",
-          justifyContent:"center",
-          background:"#050505",
-          color:"#777"
-        }}
-      >
-        Loading Nexus data...
+  if(loading)
+    return (
+      <div className="loading">
+        Loading Nexus…
       </div>
-
     );
 
-  }
+  if(!user || !profile)
+    return <AuthScreen/>;
+
+  return (
+    <Nexus
+      user={user}
+      profile={profile}
+    />
+  );
+}
 
 
-  let content = null;
+/* =========================
+   SETUP
+========================= */
 
+function SetupScreen(){
 
-  if(page === "home"){
+  return (
 
-    content = (
+    <div className="auth">
 
-      <FeedView
-        user={user}
-        profile={profile}
-        data={data}
-        onProfile={openProfile}
-        onEdit={setEditingPost}
-        firestoreError={firestoreError}
-      />
+      <div className="card">
 
-    );
+        <div style={{fontSize:50}}>
+          ⚡
+        </div>
 
-  }
+        <h1>Nexus</h1>
 
+        <p>
+          Firebase configuration is missing.
+        </p>
 
-  if(page === "profile"){
+        <p className="muted">
 
-    content = (
+          This happens when the HTML file is
+          opened directly in Chrome.
 
-      <ProfileView
-        profile={
-          selectedProfile || profile
-        }
-        user={user}
-        data={data}
-        onEditProfile={() =>
-          setEditingProfile(true)
-        }
-        onProfile={openProfile}
-      />
+          Put your Firebase Web App config
+          into the firebaseConfig section
+          near the top of this file.
 
-    );
+        </p>
 
-  }
+        <div
+          style={{
+            textAlign:"left",
+            background:"#f4f6fb",
+            padding:14,
+            borderRadius:10,
+            fontSize:13
+          }}
+        >
 
+          <b>Firebase setup:</b>
 
-  if(page === "notifications"){
+          <br/>
 
-    content = (
+          1. Firebase Console →
+          Project settings → Your apps → Web app
 
-      <NotificationsView
-        user={user}
-        data={data}
-      />
+          <br/>
 
-    );
+          2. Copy the config object
 
-  }
+          <br/>
 
+          3. Enable Authentication → Anonymous
 
-  if(page === "messages"){
+          <br/>
 
-    content = (
+          4. Create Cloud Firestore
 
-      <MessagingView
-        user={user}
-        profile={profile}
-        data={data}
-      />
+          <br/>
 
-    );
-
-  }
-
-
-  return(
-
-    <div className="app">
-
-      <header className="topbar">
-
-        <div className="brand">
-
-          <div className="brand-logo">
-            N
-          </div>
-
-          Nexus
+          5. Paste the config into this file
+          and reload.
 
         </div>
 
+      </div>
+
+    </div>
+
+  );
+}
+
+
+/* =========================
+   AUTH SCREEN
+========================= */
+
+function AuthScreen(){
+
+  const login=async()=>{
+
+    try{
+
+      if(
+        typeof __initial_auth_token !== "undefined" &&
+        __initial_auth_token
+      ){
+
+        await auth.signInWithCustomToken(
+          __initial_auth_token
+        );
+
+      }else{
+
+        await auth.signInAnonymously();
+
+      }
+
+    }catch(e){
+
+      alert(e.message);
+
+    }
+
+  };
+
+  return (
+
+    <div className="auth">
+
+      <div className="card">
+
+        <h1>Nexus</h1>
+
+        <p className="muted">
+          A realtime social platform.
+        </p>
 
         <button
-          className="icon-btn"
-          onClick={openMyProfile}
-          title="Profile"
+          className="primary"
+          onClick={login}
         >
-          {getInitials(profile.displayName)}
+          Enter Nexus
+        </button>
+
+      </div>
+
+    </div>
+
+  );
+}
+
+
+/* =========================
+   NEXUS
+========================= */
+
+function Nexus({
+  user,
+  profile
+}){
+
+  const {
+    data,
+    ready
+  } = useRealtimeData(user.uid);
+
+  const [view,setView] =
+    useState("home");
+
+  const [selectedUser,setSelectedUser] =
+    useState(null);
+
+  const [selectedPost,setSelectedPost] =
+    useState(null);
+
+  const [search,setSearch] =
+    useState("");
+
+  const unread =
+    data.notifications.filter(
+      n=>!n.read
+    ).length;
+
+  const trending =
+    useMemo(()=>{
+
+      const map={};
+
+      data.posts.forEach(
+        p=>
+          (p.hashtags||[]).forEach(
+            t=>
+              map[t]=(map[t]||0)+1
+          )
+      );
+
+      return Object.entries(map)
+        .sort((a,b)=>b[1]-a[1])
+        .slice(0,8);
+
+    },[data.posts]);
+
+
+  const navigate=(
+    v,
+    payload=null
+  )=>{
+
+    if(v==="profile"){
+
+      setSelectedUser(
+        payload || user.uid
+      );
+
+      setView("profile");
+
+    }else if(v==="post"){
+
+      setSelectedPost(payload);
+      setView("post");
+
+    }else{
+
+      setView(v);
+      setSelectedPost(null);
+
+    }
+
+  };
+
+
+  if(!ready)
+    return (
+      <div className="loading">
+        Connecting to Nexus…
+      </div>
+    );
+
+
+  return (
+
+    <div className="app">
+
+      <header className="top">
+
+        <div className="brand">
+          Nexus
+        </div>
+
+        <div className="search">
+
+          <input
+            value={search}
+            onChange={
+              e=>setSearch(e.target.value)
+            }
+            placeholder="Search people, posts, #hashtags…"
+          />
+
+        </div>
+
+        <button
+          className="secondary"
+          onClick={()=>auth.signOut()}
+        >
+          Sign out
         </button>
 
       </header>
@@ -3506,25 +1194,45 @@ function Nexus(){
 
       <div className="layout">
 
-        <aside className="sidebar">
 
-          <div className="nav-card">
+        {/* SIDEBAR */}
+
+        <aside className="side card">
+
+          <div className="profile-mini">
+
+            <img
+              className="avatar sm"
+              src={
+                profile.avatar ||
+                avatarFor(profile.handle)
+              }
+            />
+
+            <div>
+
+              <b>
+                {profile.displayName}
+              </b>
+
+              <div className="muted">
+                @{profile.handle}
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <nav className="nav">
 
             <button
               className={
-                "nav-item " +
-                (
-                  page === "home"
-                    ? "active"
-                    : ""
-                )
+                view==="home"
+                  ?"active"
+                  :""
               }
-              onClick={() => {
-
-                setPage("home");
-                setSelectedProfile(null);
-
-              }}
+              onClick={()=>navigate("home")}
             >
               🏠 Home
             </button>
@@ -3532,246 +1240,2022 @@ function Nexus(){
 
             <button
               className={
-                "nav-item " +
-                (
-                  page === "profile"
-                    ? "active"
-                    : ""
-                )
+                view==="notifications"
+                  ?"active"
+                  :""
               }
-              onClick={openMyProfile}
+              onClick={()=>
+                navigate("notifications")
+              }
             >
-              👤 Profile
+              🔔 Notifications{" "}
+              {unread>0 && `(${unread})`}
             </button>
 
 
             <button
               className={
-                "nav-item " +
-                (
-                  page === "notifications"
-                    ? "active"
-                    : ""
-                )
+                view==="messages"
+                  ?"active"
+                  :""
               }
-              onClick={() =>
-                setPage("notifications")
-              }
-            >
-              🔔 Notifications
-            </button>
-
-
-            <button
-              className={
-                "nav-item " +
-                (
-                  page === "messages"
-                    ? "active"
-                    : ""
-                )
-              }
-              onClick={() =>
-                setPage("messages")
+              onClick={()=>
+                navigate("messages")
               }
             >
               💬 Messages
             </button>
 
-          </div>
+
+            <button
+              className={
+                view==="profile"
+                  ?"active"
+                  :""
+              }
+              onClick={()=>
+                navigate(
+                  "profile",
+                  user.uid
+                )
+              }
+            >
+              👤 Profile
+            </button>
+
+          </nav>
 
         </aside>
 
 
-        <main>
+        {/* MAIN */}
 
-          {content}
+        <main className="main">
 
+          {view==="home" && (
 
-          <div className="mobile-follow">
-
-            <WhoToFollow
-              users={data.users}
-              currentUser={user}
-              currentUserProfile={profile}
-              follows={data.follows}
+            <FeedView
+              user={user}
+              profile={profile}
+              data={data}
+              search={search}
+              trending={trending}
+              navigate={navigate}
             />
 
-          </div>
+          )}
+
+
+          {view==="profile" && (
+
+            <ProfileView
+              user={user}
+              profile={profile}
+              data={data}
+              profileId={
+                selectedUser ||
+                user.uid
+              }
+              navigate={navigate}
+            />
+
+          )}
+
+
+          {view==="messages" && (
+
+            <MessagingView
+              user={user}
+              profile={profile}
+              data={data}
+            />
+
+          )}
+
+
+          {view==="notifications" && (
+
+            <NotificationsView
+              user={user}
+              data={data}
+              navigate={navigate}
+            />
+
+          )}
+
+
+          {view==="post" && (
+
+            <PostView
+              user={user}
+              profile={profile}
+              data={data}
+              postId={selectedPost}
+              navigate={navigate}
+            />
+
+          )}
 
         </main>
 
 
-        <aside className="right-sidebar">
+        {/* RIGHT SIDEBAR */}
+
+        <aside className="right">
+
+          <div className="card right-card">
+
+            <b>Trending</b>
+
+            {trending.length ? (
+
+              <>
+
+                {trending.map(
+                  ([t,c])=>(
+                    <div
+                      className="trend"
+                      key={t}
+                    >
+
+                      <span className="tags">
+                        #{t}
+                      </span>
+
+                      <div className="muted">
+                        {c} post
+                        {c===1?"":"s"}
+                      </div>
+
+                    </div>
+                  )
+                )}
+
+              </>
+
+            ):(
+              <div className="empty">
+                No hashtags yet.
+              </div>
+            )}
+
+          </div>
+
 
           <WhoToFollow
-            users={data.users}
-            currentUser={user}
-            currentUserProfile={profile}
-            follows={data.follows}
+            user={user}
+            data={data}
           />
-
-
-          <div
-            className="side-card"
-            style={{marginTop:15}}
-          >
-
-            <div className="side-title">
-              Trending
-            </div>
-
-
-            {(() => {
-
-              const counts = {};
-
-
-              data.posts.forEach(post => {
-
-                (post.hashtags || [])
-                  .forEach(tag => {
-
-                    counts[tag] =
-                      (counts[tag] || 0) + 1;
-
-                  });
-
-              });
-
-
-              const trending =
-                Object.entries(counts)
-                  .sort(
-                    (a,b) =>
-                      b[1] - a[1]
-                  )
-                  .slice(0,5);
-
-
-              if(!trending.length){
-
-                return(
-
-                  <div
-                    style={{
-                      color:"#666",
-                      fontSize:13
-                    }}
-                  >
-                    Start posting with
-                    hashtags to create
-                    trends.
-                  </div>
-
-                );
-
-              }
-
-
-              return trending.map(
-                ([tag,count]) => (
-
-                  <div
-                    key={tag}
-                    style={{
-                      padding:"8px 0"
-                    }}
-                  >
-
-                    <div
-                      style={{
-                        color:"#8ab4ff",
-                        fontWeight:700
-                      }}
-                    >
-                      {tag}
-                    </div>
-
-
-                    <div
-                      style={{
-                        color:"#666",
-                        fontSize:12
-                      }}
-                    >
-                      {count} post
-                      {count === 1 ? "" : "s"}
-                    </div>
-
-                  </div>
-
-                )
-              );
-
-            })()}
-
-          </div>
-
-
-          <div
-            style={{
-              color:"#444",
-              fontSize:11,
-              marginTop:20,
-              textAlign:"center"
-            }}
-          >
-            Nexus • Made by Yash
-          </div>
 
         </aside>
 
       </div>
 
+    </div>
 
-      {editingProfile && (
-
-        <EditProfileModal
-          user={user}
-          profile={profile}
-          onSave={updated => {
-
-            setProfile(updated);
-            setSelectedProfile(updated);
-
-          }}
-          onClose={() =>
-            setEditingProfile(false)
-          }
-        />
-
-      )}
+  );
+}
 
 
-      {editingPost && (
+/* =========================
+   WHO TO FOLLOW
+========================= */
 
-        <EditPostModal
-          post={editingPost}
-          onClose={() =>
-            setEditingPost(null)
-          }
-        />
+function WhoToFollow({
+  user,
+  data
+}){
 
+  const follows =
+    data.follows
+      .filter(
+        f=>f.followerId===user.uid
+      )
+      .map(
+        f=>f.followingId
+      );
+
+  const people =
+    data.users
+      .filter(
+        u=>
+          u.uid!==user.uid &&
+          !follows.includes(u.uid)
+      )
+      .slice(0,5);
+
+
+  const toggle=async target=>{
+
+    const id =
+      `${user.uid}_${target.uid}`;
+
+    const ref =
+      rootPath("follows").doc(id);
+
+    const snap =
+      await ref.get();
+
+    if(snap.exists){
+
+      await ref.delete();
+
+    }else{
+
+      await ref.set({
+
+        followerId:user.uid,
+        followingId:target.uid,
+        createdAt:now()
+
+      });
+
+      await notify(
+        target.uid,
+        "follow",
+        user,
+        null
+      );
+
+    }
+
+  };
+
+
+  return (
+
+    <div className="card right-card">
+
+      <b>Who to follow</b>
+
+      {people.length ? (
+
+        people.map(p=>(
+
+          <div
+            className="person"
+            key={p.uid}
+          >
+
+            <img
+              className="avatar xs"
+              src={
+                p.avatar ||
+                avatarFor(p.handle)
+              }
+            />
+
+            <div className="grow">
+
+              <b>
+                {p.displayName}
+              </b>
+
+              <div className="muted">
+                @{p.handle}
+              </div>
+
+            </div>
+
+            <button
+              className="follow"
+              onClick={()=>toggle(p)}
+            >
+              Follow
+            </button>
+
+          </div>
+
+        ))
+
+      ):(
+        <div className="empty">
+          You're following everyone shown.
+        </div>
       )}
 
     </div>
 
   );
-
 }
 
 
-/* =========================================================
-   START
-========================================================= */
+/* =========================
+   FEED
+========================= */
 
-const root =
-  ReactDOM.createRoot(
-    document.getElementById("root")
+function FeedView({
+  user,
+  profile,
+  data,
+  search,
+  navigate
+}){
+
+  const [tab,setTab] =
+    useState("all");
+
+  const [draft,setDraft] =
+    useState("");
+
+  const [editing,setEditing] =
+    useState(null);
+
+
+  const following =
+    new Set(
+      data.follows
+        .filter(
+          f=>f.followerId===user.uid
+        )
+        .map(
+          f=>f.followingId
+        )
+    );
+
+
+  const posts =
+    data.posts
+      .slice()
+      .sort(
+        (a,b)=>
+          (b.createdAt?.seconds||0) -
+          (a.createdAt?.seconds||0)
+      );
+
+
+  const filtered =
+    posts.filter(p=>{
+
+      if(
+        tab==="following" &&
+        !following.has(p.authorId) &&
+        p.authorId!==user.uid
+      )
+        return false;
+
+
+      if(!search.trim())
+        return true;
+
+
+      const q =
+        search.toLowerCase();
+
+
+      return (
+        (p.content||"")
+          .toLowerCase()
+          .includes(q)
+        ||
+        (p.hashtags||[])
+          .some(
+            t=>
+              t.toLowerCase()
+                .includes(
+                  q.replace("#","")
+                )
+          )
+      );
+
+    });
+
+
+  const create=async()=>{
+
+    const text =
+      draft.trim();
+
+    if(!text)
+      return;
+
+    const hashtags =
+      [
+        ...new Set(
+          (
+            text.match(
+              /#[\p{L}\p{N}_-]+/gu
+            ) || []
+          )
+          .map(
+            x=>x.slice(1).toLowerCase()
+          )
+        )
+      ];
+
+
+    await rootPath("posts").add({
+
+      authorId:user.uid,
+      content:text,
+      hashtags,
+      createdAt:now(),
+      updatedAt:now()
+
+    });
+
+
+    setDraft("");
+
+  };
+
+
+  const update=async()=>{
+
+    if(!editing)
+      return;
+
+    const text =
+      editing.content.trim();
+
+    const hashtags =
+      [
+        ...new Set(
+          (
+            text.match(
+              /#[\p{L}\p{N}_-]+/gu
+            ) || []
+          )
+          .map(
+            x=>x.slice(1).toLowerCase()
+          )
+        )
+      ];
+
+
+    await rootPath("posts")
+      .doc(editing.id)
+      .update({
+
+        content:text,
+        hashtags,
+        updatedAt:now()
+
+      });
+
+
+    setEditing(null);
+
+  };
+
+
+  return (
+
+    <>
+
+      <div className="card composer">
+
+        <div className="row">
+
+          <img
+            className="avatar sm"
+            src={
+              profile.avatar ||
+              avatarFor(profile.handle)
+            }
+          />
+
+          <b>
+            {profile.displayName}
+          </b>
+
+        </div>
+
+
+        <textarea
+          value={draft}
+          onChange={
+            e=>setDraft(e.target.value)
+          }
+          placeholder="What's happening? Use #hashtags"
+        />
+
+
+        <div className="actions">
+
+          <span className="muted">
+            Posts update in realtime.
+          </span>
+
+          <button
+            className="primary"
+            onClick={create}
+          >
+            Post
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div
+        className="row"
+        style={{marginBottom:12}}
+      >
+
+        <button
+          className={
+            tab==="all"
+              ?"primary"
+              :"secondary"
+          }
+          onClick={()=>
+            setTab("all")
+          }
+        >
+          All posts
+        </button>
+
+
+        <button
+          className={
+            tab==="following"
+              ?"primary"
+              :"secondary"
+          }
+          onClick={()=>
+            setTab("following")
+          }
+        >
+          Following
+        </button>
+
+      </div>
+
+
+      {filtered.map(p=>(
+
+        <PostCard
+          key={p.id}
+          post={p}
+          user={user}
+          profile={profile}
+          data={data}
+          navigate={navigate}
+          onEdit={setEditing}
+        />
+
+      ))}
+
+
+      {!filtered.length && (
+
+        <div className="card empty">
+          No posts found.
+        </div>
+
+      )}
+
+
+      {editing && (
+
+        <Modal
+          title="Edit post"
+          onClose={()=>
+            setEditing(null)
+          }
+        >
+
+          <textarea
+            value={editing.content}
+            onChange={
+              e=>
+                setEditing({
+                  ...editing,
+                  content:e.target.value
+                })
+            }
+          />
+
+          <div className="modal-actions">
+
+            <button
+              className="secondary"
+              onClick={()=>
+                setEditing(null)
+              }
+            >
+              Cancel
+            </button>
+
+            <button
+              className="primary"
+              onClick={update}
+            >
+              Save
+            </button>
+
+          </div>
+
+        </Modal>
+
+      )}
+
+    </>
+
   );
+}
 
-root.render(<Nexus />);
+
+/* =========================
+   POST CARD
+========================= */
+
+function PostCard({
+  post,
+  user,
+  data,
+  navigate,
+  onEdit
+}){
+
+  const author =
+    data.users.find(
+      u=>u.uid===post.authorId
+    ) ||
+    {
+      uid:post.authorId,
+      displayName:"User",
+      handle:"user",
+      avatar:avatarFor(
+        post.authorId
+      )
+    };
+
+
+  const liked =
+    data.likes.some(
+      l=>
+        l.postId===post.id &&
+        l.userId===user.uid
+    );
+
+
+  const comments =
+    data.comments
+      .filter(
+        c=>c.postId===post.id
+      )
+      .sort(
+        (a,b)=>
+          (a.createdAt?.seconds||0) -
+          (b.createdAt?.seconds||0)
+      );
+
+
+  const [comment,setComment] =
+    useState("");
+
+
+  const toggleLike=async()=>{
+
+    const id =
+      `${post.id}_${user.uid}`;
+
+    const ref =
+      rootPath("likes").doc(id);
+
+    const snap =
+      await ref.get();
+
+
+    if(snap.exists){
+
+      await ref.delete();
+
+    }else{
+
+      await ref.set({
+
+        postId:post.id,
+        userId:user.uid,
+        createdAt:now()
+
+      });
+
+      await notify(
+        post.authorId,
+        "like",
+        user,
+        post.id
+      );
+
+    }
+
+  };
+
+
+  const addComment=async()=>{
+
+    const text =
+      comment.trim();
+
+    if(!text)
+      return;
+
+
+    await rootPath("comments").add({
+
+      postId:post.id,
+      authorId:user.uid,
+      content:text,
+      createdAt:now()
+
+    });
+
+
+    await notify(
+      post.authorId,
+      "comment",
+      user,
+      post.id
+    );
+
+
+    setComment("");
+
+  };
+
+
+  const remove=async()=>{
+
+    if(
+      !confirm(
+        "Delete this post?"
+      )
+    )
+      return;
+
+
+    await rootPath("posts")
+      .doc(post.id)
+      .delete();
+
+
+    const batch =
+      db.batch();
+
+
+    data.likes
+      .filter(
+        x=>x.postId===post.id
+      )
+      .forEach(
+        x=>
+          batch.delete(
+            rootPath("likes")
+              .doc(x.id)
+          )
+      );
+
+
+    data.comments
+      .filter(
+        x=>x.postId===post.id
+      )
+      .forEach(
+        x=>
+          batch.delete(
+            rootPath("comments")
+              .doc(x.id)
+          )
+      );
+
+
+    await batch.commit();
+
+  };
+
+
+  return (
+
+    <article className="card post">
+
+      <div className="post-head">
+
+        <img
+          className="avatar sm"
+          src={
+            author.avatar ||
+            avatarFor(author.handle)
+          }
+        />
+
+
+        <div>
+
+          <b
+            onClick={()=>
+              navigate(
+                "profile",
+                author.uid
+              )
+            }
+            style={{
+              cursor:"pointer"
+            }}
+          >
+            {author.displayName}
+          </b>
+
+          <div className="muted">
+            @{author.handle}
+          </div>
+
+        </div>
+
+
+        {post.authorId===user.uid && (
+
+          <div className="post-menu">
+
+            <button
+              className="secondary"
+              onClick={()=>
+                onEdit(post)
+              }
+            >
+              Edit
+            </button>
+
+            {" "}
+
+            <button
+              className="danger"
+              onClick={remove}
+            >
+              Delete
+            </button>
+
+          </div>
+
+        )}
+
+      </div>
+
+
+      <div className="post-body">
+        {post.content}
+      </div>
+
+
+      {(post.hashtags||[]).length>0 && (
+
+        <div className="tags">
+
+          {post.hashtags.map(
+            t=>(
+              <span key={t}>
+                #{t}{" "}
+              </span>
+            )
+          )}
+
+        </div>
+
+      )}
+
+
+      <div className="post-actions">
+
+        <button
+          className={
+            liked
+              ?"liked"
+              :""
+          }
+          onClick={toggleLike}
+        >
+          ♥{" "}
+          {
+            data.likes.filter(
+              l=>l.postId===post.id
+            ).length
+          }
+        </button>
+
+
+        <button
+          onClick={()=>
+            document
+              .getElementById(
+                `comment-${post.id}`
+              )
+              ?.focus()
+          }
+        >
+          💬 {comments.length}
+        </button>
+
+
+        <button
+          onClick={()=>
+            navigate(
+              "post",
+              post.id
+            )
+          }
+        >
+          Open
+        </button>
+
+      </div>
+
+
+      <div>
+
+        {comments
+          .slice(-3)
+          .map(c=>{
+
+            const u =
+              data.users.find(
+                x=>x.uid===c.authorId
+              ) ||
+              {
+                displayName:"User",
+                avatar:avatarFor(
+                  c.authorId
+                )
+              };
+
+
+            return (
+
+              <div
+                className="comment"
+                key={c.id}
+              >
+
+                <img
+                  className="avatar xs"
+                  src={u.avatar}
+                />
+
+                <div className="comment-body">
+
+                  <b>
+                    {u.displayName}
+                  </b>
+
+                  {" "}
+
+                  <span>
+                    {c.content}
+                  </span>
+
+                </div>
+
+              </div>
+
+            );
+
+          })}
+
+      </div>
+
+
+      <div className="comment-form">
+
+        <input
+          id={`comment-${post.id}`}
+          value={comment}
+          onChange={
+            e=>setComment(e.target.value)
+          }
+          onKeyDown={
+            e=>
+              e.key==="Enter" &&
+              addComment()
+          }
+          placeholder="Write a comment…"
+        />
+
+        <button
+          className="primary"
+          onClick={addComment}
+        >
+          Send
+        </button>
+
+      </div>
+
+    </article>
+
+  );
+}
+
+
+/* =========================
+   POST VIEW
+========================= */
+
+function PostView({
+  user,
+  profile,
+  data,
+  postId,
+  navigate
+}){
+
+  const p =
+    data.posts.find(
+      x=>x.id===postId
+    );
+
+
+  return (
+
+    <>
+
+      <button
+        className="secondary"
+        onClick={()=>
+          navigate("home")
+        }
+      >
+        ← Back
+      </button>
+
+
+      {p ? (
+
+        <div style={{marginTop:12}}>
+
+          <PostCard
+            post={p}
+            user={user}
+            profile={profile}
+            data={data}
+            navigate={navigate}
+            onEdit={()=>{}}
+          />
+
+        </div>
+
+      ):(
+        <div
+          className="card empty"
+          style={{marginTop:12}}
+        >
+          Post not found.
+        </div>
+      )}
+
+    </>
+
+  );
+}
+
+
+/* =========================
+   PROFILE
+========================= */
+
+function ProfileView({
+  user,
+  profile,
+  data,
+  profileId,
+  navigate
+}){
+
+  const p =
+    data.users.find(
+      x=>x.uid===profileId
+    ) ||
+    profile;
+
+
+  const own =
+    p.uid===user.uid;
+
+
+  const following =
+    data.follows.some(
+      f=>
+        f.followerId===user.uid &&
+        f.followingId===p.uid
+    );
+
+
+  const followers =
+    data.follows.filter(
+      f=>f.followingId===p.uid
+    ).length;
+
+
+  const followingCount =
+    data.follows.filter(
+      f=>f.followerId===p.uid
+    ).length;
+
+
+  const [edit,setEdit] =
+    useState(false);
+
+
+  const [name,setName] =
+    useState(
+      p.displayName || ""
+    );
+
+
+  const [bio,setBio] =
+    useState(
+      p.bio || ""
+    );
+
+
+  const [avatar,setAvatar] =
+    useState(
+      p.avatar || ""
+    );
+
+
+  const toggle=async()=>{
+
+    const id =
+      `${user.uid}_${p.uid}`;
+
+    const ref =
+      rootPath("follows").doc(id);
+
+    const snap =
+      await ref.get();
+
+
+    if(snap.exists){
+
+      await ref.delete();
+
+    }else{
+
+      await ref.set({
+
+        followerId:user.uid,
+        followingId:p.uid,
+        createdAt:now()
+
+      });
+
+      await notify(
+        p.uid,
+        "follow",
+        user
+      );
+
+    }
+
+  };
+
+
+  const save=async()=>{
+
+    await rootPath("users")
+      .doc(user.uid)
+      .update({
+
+        displayName:
+          name.trim() || "User",
+
+        bio,
+
+        avatar:
+          avatar.trim() ||
+          avatarFor(name)
+
+      });
+
+
+    setEdit(false);
+
+    location.reload();
+
+  };
+
+
+  const posts =
+    data.posts
+      .filter(
+        x=>x.authorId===p.uid
+      )
+      .sort(
+        (a,b)=>
+          (b.createdAt?.seconds||0) -
+          (a.createdAt?.seconds||0)
+      );
+
+
+  return (
+
+    <>
+
+      <div className="card profile-cover">
+
+        <div className="profile-top">
+
+          <img
+            className="avatar profile-big"
+            src={
+              p.avatar ||
+              avatarFor(p.handle)
+            }
+          />
+
+
+          <div>
+
+            <h2
+              style={{
+                margin:"0 0 4px"
+              }}
+            >
+              {p.displayName}
+            </h2>
+
+            <div className="muted">
+              @{p.handle}
+            </div>
+
+            <p>
+              {p.bio || "No bio yet."}
+            </p>
+
+            <div className="muted">
+              {followers} followers ·{" "}
+              {followingCount} following
+            </div>
+
+          </div>
+
+
+          <div className="profile-edit">
+
+            {own ? (
+
+              <button
+                className="secondary"
+                onClick={()=>
+                  setEdit(true)
+                }
+              >
+                Edit profile
+              </button>
+
+            ):(
+              <button
+                className={
+                  following
+                    ?"secondary"
+                    :"primary"
+                }
+                onClick={toggle}
+              >
+                {
+                  following
+                    ?"Unfollow"
+                    :"Follow"
+                }
+              </button>
+            )}
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <h3
+        className="page-title"
+        style={{marginTop:18}}
+      >
+        Posts
+      </h3>
+
+
+      {posts.map(x=>(
+
+        <PostCard
+          key={x.id}
+          post={x}
+          user={user}
+          profile={profile}
+          data={data}
+          navigate={navigate}
+          onEdit={()=>{}}
+        />
+
+      ))}
+
+
+      {!posts.length && (
+
+        <div className="card empty">
+          No posts yet.
+        </div>
+
+      )}
+
+
+      {edit && (
+
+        <Modal
+          title="Edit profile"
+          onClose={()=>
+            setEdit(false)
+          }
+        >
+
+          <input
+            style={{
+              width:"100%",
+              padding:10,
+              marginBottom:8
+            }}
+            value={name}
+            onChange={
+              e=>setName(e.target.value)
+            }
+            placeholder="Display name"
+          />
+
+
+          <input
+            style={{
+              width:"100%",
+              padding:10,
+              marginBottom:8
+            }}
+            value={avatar}
+            onChange={
+              e=>setAvatar(e.target.value)
+            }
+            placeholder="Avatar image URL"
+          />
+
+
+          <textarea
+            value={bio}
+            onChange={
+              e=>setBio(e.target.value)
+            }
+            placeholder="Bio"
+          />
+
+
+          <div className="modal-actions">
+
+            <button
+              className="secondary"
+              onClick={()=>
+                setEdit(false)
+              }
+            >
+              Cancel
+            </button>
+
+            <button
+              className="primary"
+              onClick={save}
+            >
+              Save
+            </button>
+
+          </div>
+
+        </Modal>
+
+      )}
+
+    </>
+
+  );
+}
+
+
+/* =====================================================
+   WHATSAPP-STYLE MESSAGING
+===================================================== */
+
+function MessagingView({
+  user,
+  data
+}){
+
+  const people =
+    data.users.filter(
+      u=>u.uid!==user.uid
+    );
+
+
+  const [selected,setSelected] =
+    useState(null);
+
+
+  const [text,setText] =
+    useState("");
+
+
+  const [mobileOpen,setMobileOpen] =
+    useState(false);
+
+
+  /*
+     Get the latest message between
+     the current user and another user.
+  */
+
+  const getConversationMessages =
+    partnerId => {
+
+      if(!partnerId)
+        return [];
+
+      return data.messages
+        .filter(
+          m=>
+            m.participants?.includes(
+              user.uid
+            ) &&
+            m.participants?.includes(
+              partnerId
+            )
+        )
+        .sort(
+          (a,b)=>
+            (a.createdAt?.seconds||0) -
+            (b.createdAt?.seconds||0)
+        );
+
+    };
+
+
+  /*
+     Create a WhatsApp-style
+     conversation list.
+
+     Every person gets their
+     own conversation.
+  */
+
+  const conversations =
+    people
+      .map(person=>{
+
+        const messages =
+          getConversationMessages(
+            person.uid
+          );
+
+        const last =
+          messages.length
+            ? messages[messages.length-1]
+            : null;
+
+        return {
+          person,
+          last
+        };
+
+      })
+      .sort((a,b)=>{
+
+        const aTime =
+          a.last?.createdAt?.seconds || 0;
+
+        const bTime =
+          b.last?.createdAt?.seconds || 0;
+
+        return bTime-aTime;
+
+      });
+
+
+  const partner =
+    people.find(
+      p=>p.uid===selected
+    );
+
+
+  const messages =
+    getConversationMessages(
+      selected
+    );
+
+
+  const formatTime =
+    timestamp => {
+
+      if(!timestamp?.seconds)
+        return "";
+
+      const date =
+        new Date(
+          timestamp.seconds*1000
+        );
+
+      return date.toLocaleTimeString(
+        [],
+        {
+          hour:"2-digit",
+          minute:"2-digit"
+        }
+      );
+
+    };
+
+
+  const send=async()=>{
+
+    const t =
+      text.trim();
+
+    if(
+      !t ||
+      !selected
+    )
+      return;
+
+
+    await rootPath("messages").add({
+
+      senderId:user.uid,
+
+      receiverId:selected,
+
+      participants:[
+        user.uid,
+        selected
+      ],
+
+      content:t,
+
+      createdAt:now(),
+
+      read:false
+
+    });
+
+
+    setText("");
+
+  };
+
+
+  const selectPerson =
+    uid => {
+
+      setSelected(uid);
+
+      setMobileOpen(true);
+
+    };
+
+
+  return (
+
+    <div
+      className={
+        "card messages " +
+        (
+          mobileOpen
+            ?"mobile-chat-open"
+            :""
+        )
+      }
+    >
+
+
+      {/* =========================
+          CHAT LIST
+      ========================= */}
+
+      <div className="users">
+
+        <div className="messages-title">
+          Chats
+        </div>
+
+
+        {conversations.length ? (
+
+          conversations.map(
+            ({person,last})=>(
+
+              <div
+                className={
+                  "user-item " +
+                  (
+                    person.uid===selected
+                      ?"active"
+                      :""
+                  )
+                }
+                key={person.uid}
+                onClick={()=>
+                  selectPerson(
+                    person.uid
+                  )
+                }
+              >
+
+                <img
+                  className="avatar"
+                  src={
+                    person.avatar ||
+                    avatarFor(
+                      person.handle
+                    )
+                  }
+                />
+
+
+                <div className="user-item-info">
+
+                  <div className="user-item-name">
+                    {person.displayName}
+                  </div>
+
+
+                  <div className="chat-preview">
+
+                    {last
+                      ? (
+                        last.senderId===user.uid
+                          ?"You: "
+                          :""
+                      ) + last.content
+                      : "No messages yet"
+                    }
+
+                  </div>
+
+                </div>
+
+
+                {last && (
+
+                  <div className="chat-time">
+                    {formatTime(
+                      last.createdAt
+                    )}
+                  </div>
+
+                )}
+
+              </div>
+
+            )
+          )
+
+        ):(
+          <div className="empty">
+            No other users yet.
+          </div>
+        )}
+
+      </div>
+
+
+      {/* =========================
+          CHAT WINDOW
+      ========================= */}
+
+      <div className="chat">
+
+        {partner ? (
+
+          <>
+
+            <div className="chat-head">
+
+              <button
+                className="secondary back-chat"
+                onClick={()=>{
+                  setMobileOpen(false);
+                }}
+              >
+                ←
+              </button>
+
+
+              <img
+                className="avatar sm"
+                src={
+                  partner.avatar ||
+                  avatarFor(
+                    partner.handle
+                  )
+                }
+              />
+
+
+              <div className="chat-head-info">
+
+                <b>
+                  {partner.displayName}
+                </b>
+
+                <div className="muted">
+                  @{partner.handle}
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div className="chat-list">
+
+              {messages.length ? (
+
+                messages.map(m=>(
+
+                  <div
+                    key={m.id}
+                    className={
+                      "bubble " +
+                      (
+                        m.senderId===user.uid
+                          ?"mine"
+                          :"theirs"
+                      )
+                    }
+                  >
+
+                    <div>
+                      {m.content}
+                    </div>
+
+
+                    <div className="bubble-time">
+
+                      {formatTime(
+                        m.createdAt
+                      )}
+
+                    </div>
+
+                  </div>
+
+                ))
+
+              ):(
+                <div className="empty">
+                  Start the conversation.
+                </div>
+              )}
+
+            </div>
+
+
+            <div className="chat-form">
+
+              <input
+                value={text}
+                onChange={
+                  e=>setText(e.target.value)
+                }
+                onKeyDown={
+                  e=>
+                    e.key==="Enter" &&
+                    send()
+                }
+                placeholder="Type a message…"
+              />
+
+
+              <button
+                className="primary"
+                onClick={send}
+              >
+                Send
+              </button>
+
+            </div>
+
+          </>
+
+        ):(
+          <div className="empty">
+            Select a chat to start messaging.
+          </div>
+        )}
+
+      </div>
+
+    </div>
+
+  );
+}
+
+
+/* =========================
+   NOTIFICATIONS
+========================= */
+
+function NotificationsView({
+  user,
+  data,
+  navigate
+}){
+
+  const notes =
+    data.notifications
+      .sort(
+        (a,b)=>
+          (b.createdAt?.seconds||0) -
+          (a.createdAt?.seconds||0)
+      );
+
+
+  const mark=async n=>{
+
+    if(!n.read){
+
+      await rootPath(
+        "notifications"
+      )
+      .doc(n.id)
+      .update({
+        read:true
+      });
+
+    }
+
+
+    if(n.postId)
+      navigate(
+        "post",
+        n.postId
+      );
+
+  };
+
+
+  const text=n=>
+    n.type==="like"
+      ?"liked your post"
+      :n.type==="comment"
+      ?"commented on your post"
+      :"followed you";
+
+
+  return (
+
+    <>
+
+      <h2 className="page-title">
+        Notifications
+      </h2>
+
+
+      <div className="card">
+
+        {notes.map(n=>{
+
+          const a =
+            data.users.find(
+              u=>u.uid===n.actorId
+            ) ||
+            {
+              displayName:"Someone",
+              avatar:avatarFor(
+                n.actorId
+              )
+            };
+
+
+          return (
+
+            <div
+              className={
+                "notice " +
+                (
+                  !n.read
+                    ?"unread"
+                    :""
+                )
+              }
+              key={n.id}
+              onClick={()=>
+                mark(n)
+              }
+            >
+
+              <div className="row">
+
+                <img
+                  className="avatar xs"
+                  src={a.avatar}
+                />
+
+                <span>
+
+                  <b>
+                    {a.displayName}
+                  </b>
+
+                  {" "}
+
+                  {text(n)}.
+
+                </span>
+
+              </div>
+
+            </div>
+
+          );
+
+        })}
+
+
+        {!notes.length && (
+
+          <div className="empty">
+            No notifications yet.
+          </div>
+
+        )}
+
+      </div>
+
+    </>
+
+  );
+}
+
+
+/* =========================
+   MODAL
+========================= */
+
+function Modal({
+  title,
+  onClose,
+  children
+}){
+
+  return (
+
+    <div
+      className="modal-bg"
+      onMouseDown={
+        e=>
+          e.target===e.currentTarget &&
+          onClose()
+      }
+    >
+
+      <div className="modal">
+
+        <div className="row">
+
+          <h3 style={{margin:0}}>
+            {title}
+          </h3>
+
+
+          <button
+            className="secondary"
+            style={{
+              marginLeft:"auto"
+            }}
+            onClick={onClose}
+          >
+            ✕
+          </button>
+
+        </div>
+
+
+        <div style={{marginTop:14}}>
+          {children}
+        </div>
+
+      </div>
+
+    </div>
+
+  );
+}
+
+
+/* =========================
+   START APP
+========================= */
+
+ReactDOM
+  .createRoot(
+    document.getElementById("root")
+  )
+  .render(
+    <App/>
+  );
 
 </script>
 
