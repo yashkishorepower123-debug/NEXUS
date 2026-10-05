@@ -643,6 +643,7 @@ textarea:focus,input:focus{
   .layout{
     grid-template-columns:210px minmax(0,1fr);
   }
+
   .right{display:none}
 }
 
@@ -726,10 +727,12 @@ setTimeout(function(){
       <div class="error-screen">
         <div class="boot-box">
           <h1>React failed to load</h1>
+
           <div class="boot-error">
             The React library could not be loaded.
             Check your internet connection and reload.
           </div>
+
           <button class="btn primary"
             onclick="location.reload()">
             Reload
@@ -743,9 +746,11 @@ setTimeout(function(){
       <div class="error-screen">
         <div class="boot-box">
           <h1>Firebase failed to load</h1>
+
           <div class="boot-error">
             The Firebase SDK could not be loaded.
           </div>
+
           <button class="btn primary"
             onclick="location.reload()">
             Reload
@@ -772,6 +777,7 @@ const {
   useEffect
 }=React;
 
+
 /* =========================================================
    FIREBASE
 ========================================================= */
@@ -794,6 +800,7 @@ let auth=null;
 let firebaseError=null;
 
 try{
+
   if(!firebase.apps.length){
     firebase.initializeApp(firebaseConfig);
   }
@@ -802,9 +809,11 @@ try{
   auth=firebase.auth();
 
 }catch(e){
+
   firebaseError=e;
   console.error(e);
 }
+
 
 /* =========================================================
    HELPERS
@@ -827,6 +836,7 @@ function text(v){
 }
 
 function initials(name){
+
   return text(name||"User")
     .split(/\s+/)
     .slice(0,2)
@@ -853,7 +863,9 @@ function timeAgo(value){
 
   const seconds=Math.max(
     1,
-    Math.floor((Date.now()-d.getTime())/1000)
+    Math.floor(
+      (Date.now()-d.getTime())/1000
+    )
   );
 
   if(seconds<60)return seconds+"s";
@@ -865,6 +877,7 @@ function timeAgo(value){
 }
 
 function username(v){
+
   return text(v)
     .toLowerCase()
     .replace(/^@/,"")
@@ -873,6 +886,7 @@ function username(v){
 }
 
 function hashtags(v){
+
   const result=[];
   const re=/(^|\s)#([a-zA-Z0-9_]+)/g;
   let m;
@@ -885,6 +899,7 @@ function hashtags(v){
 }
 
 function mentions(v){
+
   const result=[];
   const re=/(^|\s)@([a-zA-Z0-9_]+)/g;
   let m;
@@ -897,21 +912,43 @@ function mentions(v){
 }
 
 function renderText(v){
-  return text(v).split(
-    /(\#[a-zA-Z0-9_]+|\@[a-zA-Z0-9_]+)/
-  ).map((p,i)=>{
 
-    if(p.startsWith("#")){
-      return <span className="hashtag" key={i}>{p}</span>;
-    }
+  return text(v)
+    .split(
+      /(\#[a-zA-Z0-9_]+|\@[a-zA-Z0-9_]+)/
+    )
+    .map((p,i)=>{
 
-    if(p.startsWith("@")){
-      return <span className="mention" key={i}>{p}</span>;
-    }
+      if(p.startsWith("#")){
+        return (
+          <span
+            className="hashtag"
+            key={i}
+          >
+            {p}
+          </span>
+        );
+      }
 
-    return <React.Fragment key={i}>{p}</React.Fragment>;
-  });
+      if(p.startsWith("@")){
+        return (
+          <span
+            className="mention"
+            key={i}
+          >
+            {p}
+          </span>
+        );
+      }
+
+      return (
+        <React.Fragment key={i}>
+          {p}
+        </React.Fragment>
+      );
+    });
 }
+
 
 /* =========================================================
    AUTH
@@ -984,7 +1021,6 @@ function useAuth(){
               uid:u.uid,
               ...snap.data()
             });
-
           }
 
           setReady(true);
@@ -1021,11 +1057,16 @@ function useAuth(){
   };
 }
 
+
 /* =========================================================
    COLLECTION LISTENER
 ========================================================= */
 
-function useCollection(name,makeQuery,deps=[]){
+function useCollection(
+  name,
+  makeQuery,
+  deps=[]
+){
 
   const [items,setItems]=useState([]);
   const [error,setError]=useState(null);
@@ -1050,13 +1091,6 @@ function useCollection(name,makeQuery,deps=[]){
           id:d.id,
           ...d.data()
         }));
-
-        /*
-          IMPORTANT:
-          Sort locally.
-          This means posts don't depend on Firestore
-          orderBy() indexes.
-        */
 
         result.sort((a,b)=>{
 
@@ -1087,6 +1121,7 @@ function useCollection(name,makeQuery,deps=[]){
         setError(null);
       },
       e=>{
+
         console.error(
           "Nexus "+name+" error:",
           e
@@ -1100,8 +1135,12 @@ function useCollection(name,makeQuery,deps=[]){
 
   },deps);
 
-  return {items,error};
+  return {
+    items,
+    error
+  };
 }
+
 
 /* =========================================================
    DATA
@@ -1213,13 +1252,22 @@ function useData(profile){
   };
 }
 
+
 /* =========================================================
-   NOTIFICATION
+   NOTIFICATIONS
 ========================================================= */
 
-async function notify(recipient,message,type,data={}){
+async function notify(
+  recipient,
+  message,
+  type,
+  data={}
+){
 
-  if(!recipient || recipient===currentUid()){
+  if(
+    !recipient ||
+    recipient===currentUid()
+  ){
     return;
   }
 
@@ -1236,15 +1284,22 @@ async function notify(recipient,message,type,data={}){
     });
 
   }catch(e){
-    console.error("Notification:",e);
+    console.error(
+      "Notification:",
+      e
+    );
   }
 }
+
 
 /* =========================================================
    AVATAR
 ========================================================= */
 
-function Avatar({profile,size=""}){
+function Avatar({
+  profile,
+  size=""
+}){
 
   return (
     <div className={"avatar "+size}>
@@ -1257,25 +1312,43 @@ function Avatar({profile,size=""}){
   );
 }
 
+
 /* =========================================================
    FOLLOW
 ========================================================= */
 
-function FollowButton({targetId,following}){
+function FollowButton({
+  targetId,
+  following
+}){
 
   const [busy,setBusy]=useState(false);
 
   async function toggle(){
 
-    if(busy || !targetId)return;
+    if(
+      busy ||
+      !targetId ||
+      targetId===currentUid()
+    ){
+      return;
+    }
 
     setBusy(true);
 
     try{
 
       const snap=await C("follows")
-        .where("followerId","==",currentUid())
-        .where("followingId","==",targetId)
+        .where(
+          "followerId",
+          "==",
+          currentUid()
+        )
+        .where(
+          "followingId",
+          "==",
+          targetId
+        )
         .limit(1)
         .get();
 
@@ -1287,15 +1360,21 @@ function FollowButton({targetId,following}){
           createdAt:serverTime()
         });
 
-        await C("users").doc(targetId).set({
-          followersCount:
-            firebase.firestore.FieldValue.increment(1)
-        },{merge:true});
+        await C("users")
+          .doc(targetId)
+          .set({
+            followersCount:
+              firebase.firestore.FieldValue
+                .increment(1)
+          },{merge:true});
 
-        await C("users").doc(currentUid()).set({
-          followingCount:
-            firebase.firestore.FieldValue.increment(1)
-        },{merge:true});
+        await C("users")
+          .doc(currentUid())
+          .set({
+            followingCount:
+              firebase.firestore.FieldValue
+                .increment(1)
+          },{merge:true});
 
         await notify(
           targetId,
@@ -1313,15 +1392,21 @@ function FollowButton({targetId,following}){
 
         await batch.commit();
 
-        await C("users").doc(targetId).set({
-          followersCount:
-            firebase.firestore.FieldValue.increment(-1)
-        },{merge:true});
+        await C("users")
+          .doc(targetId)
+          .set({
+            followersCount:
+              firebase.firestore.FieldValue
+                .increment(-1)
+          },{merge:true});
 
-        await C("users").doc(currentUid()).set({
-          followingCount:
-            firebase.firestore.FieldValue.increment(-1)
-        },{merge:true});
+        await C("users")
+          .doc(currentUid())
+          .set({
+            followingCount:
+              firebase.firestore.FieldValue
+                .increment(-1)
+          },{merge:true});
       }
 
     }catch(e){
@@ -1333,7 +1418,9 @@ function FollowButton({targetId,following}){
 
   return (
     <button
-      className={"btn "+(!following?"primary":"")}
+      className={
+        "btn "+(!following?"primary":"")
+      }
       onClick={toggle}
       disabled={busy}
     >
@@ -1341,6 +1428,7 @@ function FollowButton({targetId,following}){
     </button>
   );
 }
+
 
 /* =========================================================
    COMPOSER
@@ -1351,7 +1439,10 @@ function Composer({profile}){
   const [value,setValue]=useState("");
   const [poll,setPoll]=useState(false);
   const [question,setQuestion]=useState("");
-  const [options,setOptions]=useState(["",""]);
+  const [options,setOptions]=useState([
+    "",
+    ""
+  ]);
   const [busy,setBusy]=useState(false);
 
   async function publish(){
@@ -1366,6 +1457,19 @@ function Composer({profile}){
 
       const data={
         authorId:currentUid(),
+
+        /*
+          Store author information directly in the
+          post too. This makes old/missing user records
+          much safer and lets posts always display
+          their author correctly.
+        */
+        authorName:
+          profile.displayName||"Nexus User",
+
+        authorUsername:
+          profile.username||"user",
+
         text:body,
         createdAt:serverTime(),
         likesCount:0,
@@ -1381,10 +1485,15 @@ function Composer({profile}){
           .map(text)
           .filter(Boolean);
 
-        if(!text(question)||clean.length<2){
+        if(
+          !text(question) ||
+          clean.length<2
+        ){
+
           alert(
             "A poll needs a question and at least 2 options."
           );
+
           setBusy(false);
           return;
         }
@@ -1400,14 +1509,16 @@ function Composer({profile}){
 
       const ref=await C("posts").add(data);
 
-      /*
-        Mention notifications
-      */
-
-      for(const mention of mentions(body)){
+      for(
+        const mention of mentions(body)
+      ){
 
         const users=await C("users")
-          .where("username","==",mention)
+          .where(
+            "username",
+            "==",
+            mention
+          )
           .limit(1)
           .get();
 
@@ -1417,22 +1528,31 @@ function Composer({profile}){
             users.docs[0].id,
             "mentioned you in a post",
             "mention",
-            {postId:ref.id}
+            {
+              postId:ref.id
+            }
           );
         }
       }
 
-      await C("users").doc(currentUid()).set({
-        postsCount:
-          firebase.firestore.FieldValue.increment(1)
-      },{merge:true});
+      await C("users")
+        .doc(currentUid())
+        .set({
+          postsCount:
+            firebase.firestore.FieldValue
+              .increment(1)
+        },{merge:true});
 
       setValue("");
       setPoll(false);
       setQuestion("");
-      setOptions(["",""]);
+      setOptions([
+        "",
+        ""
+      ]);
 
     }catch(e){
+
       alert(e.message);
     }
 
@@ -1450,7 +1570,9 @@ function Composer({profile}){
 
           <textarea
             value={value}
-            onChange={e=>setValue(e.target.value)}
+            onChange={e=>
+              setValue(e.target.value)
+            }
             placeholder="What's happening on Nexus?"
           />
 
@@ -1464,7 +1586,9 @@ function Composer({profile}){
 
               <input
                 value={question}
-                onChange={e=>setQuestion(e.target.value)}
+                onChange={e=>
+                  setQuestion(e.target.value)
+                }
                 placeholder="Poll question"
               />
 
@@ -1481,11 +1605,18 @@ function Composer({profile}){
                   <input
                     value={x}
                     onChange={e=>{
-                      const copy=[...options];
+
+                      const copy=[
+                        ...options
+                      ];
+
                       copy[i]=e.target.value;
+
                       setOptions(copy);
                     }}
-                    placeholder={"Option "+(i+1)}
+                    placeholder={
+                      "Option "+(i+1)
+                    }
                   />
 
                   {options.length>2 && (
@@ -1508,9 +1639,13 @@ function Composer({profile}){
 
               <button
                 className="btn"
-                style={{marginTop:8}}
+                style={{
+                  marginTop:8
+                }}
                 onClick={()=>{
+
                   if(options.length<6){
+
                     setOptions([
                       ...options,
                       ""
@@ -1527,8 +1662,12 @@ function Composer({profile}){
           <div className="composer-tools">
 
             <button
-              className={"btn "+(poll?"primary":"")}
-              onClick={()=>setPoll(!poll)}
+              className={
+                "btn "+(poll?"primary":"")
+              }
+              onClick={()=>
+                setPoll(!poll)
+              }
             >
               📊 Poll
             </button>
@@ -1543,14 +1682,20 @@ function Composer({profile}){
               #hashtags · @mentions
             </span>
 
-            <div style={{marginLeft:"auto"}}>
+            <div style={{
+              marginLeft:"auto"
+            }}>
+
               <button
                 className="btn primary"
                 disabled={busy}
                 onClick={publish}
               >
-                {busy?"Posting...":"Post"}
+                {busy
+                  ?"Posting..."
+                  :"Post"}
               </button>
+
             </div>
 
           </div>
@@ -1560,6 +1705,7 @@ function Composer({profile}){
     </div>
   );
 }
+
 
 /* =========================================================
    POLL
@@ -1576,8 +1722,16 @@ function Poll({post}){
   useEffect(()=>{
 
     C("pollVotes")
-      .where("pollId","==",post.id)
-      .where("userId","==",currentUid())
+      .where(
+        "pollId",
+        "==",
+        post.id
+      )
+      .where(
+        "userId",
+        "==",
+        currentUid()
+      )
       .limit(1)
       .get()
       .then(snap=>{
@@ -1601,24 +1755,30 @@ function Poll({post}){
         createdAt:serverTime()
       });
 
-      const next=options.map((x,i)=>{
+      const next=options.map(
+        (x,i)=>{
 
-        if(i===index){
-          return {
-            ...x,
-            votes:Number(x.votes||0)+1
-          };
+          if(i===index){
+
+            return {
+              ...x,
+              votes:
+                Number(x.votes||0)+1
+            };
+          }
+
+          return x;
         }
+      );
 
-        return x;
-      });
-
-      await C("posts").doc(post.id).set({
-        poll:{
-          ...post.poll,
-          options:next
-        }
-      },{merge:true});
+      await C("posts")
+        .doc(post.id)
+        .set({
+          poll:{
+            ...post.poll,
+            options:next
+          }
+        },{merge:true});
 
       setOptions(next);
       setVoted(true);
@@ -1629,7 +1789,8 @@ function Poll({post}){
   }
 
   const total=options.reduce(
-    (a,x)=>a+Number(x.votes||0),
+    (a,x)=>
+      a+Number(x.votes||0),
     0
   );
 
@@ -1644,7 +1805,9 @@ function Poll({post}){
 
         const percent=total
           ?Math.round(
-            Number(x.votes||0)*100/total
+            Number(x.votes||0)*
+            100/
+            total
           )
           :0;
 
@@ -1653,17 +1816,29 @@ function Poll({post}){
             className="poll-option"
             key={i}
             disabled={voted}
-            onClick={()=>vote(i)}
+            onClick={()=>
+              vote(i)
+            }
           >
 
             <span
               className="poll-bar"
-              style={{width:percent+"%"}}
+              style={{
+                width:
+                  percent+"%"
+              }}
             />
 
             <span className="poll-content">
-              <span>{x.text}</span>
-              <span>{percent}%</span>
+
+              <span>
+                {x.text}
+              </span>
+
+              <span>
+                {percent}%
+              </span>
+
             </span>
 
           </button>
@@ -1672,18 +1847,25 @@ function Poll({post}){
 
       <div className="muted">
         {total} votes
-        {voted?" · You voted":""}
+        {voted
+          ?" · You voted"
+          :""
+        }
       </div>
 
     </div>
   );
 }
 
+
 /* =========================================================
    COMMENTS
 ========================================================= */
 
-function Comments({postId,users}){
+function Comments({
+  postId,
+  users
+}){
 
   const [comments,setComments]=useState([]);
   const [value,setValue]=useState("");
@@ -1692,25 +1874,43 @@ function Comments({postId,users}){
   useEffect(()=>{
 
     const unsubscribe=C("comments")
-      .where("postId","==",postId)
+      .where(
+        "postId",
+        "==",
+        postId
+      )
       .limit(500)
       .onSnapshot(
         snap=>{
-          const arr=snap.docs.map(d=>({
-            id:d.id,
-            ...d.data()
-          }));
+
+          const arr=snap.docs.map(
+            d=>({
+              id:d.id,
+              ...d.data()
+            })
+          );
 
           arr.sort((a,b)=>{
 
             function t(x){
+
               if(!x)return 0;
-              if(x.toDate)return x.toDate().getTime();
-              if(x.seconds)return x.seconds*1000;
-              return new Date(x).getTime()||0;
+
+              if(x.toDate){
+                return x.toDate().getTime();
+              }
+
+              if(x.seconds){
+                return x.seconds*1000;
+              }
+
+              return (
+                new Date(x).getTime()||0
+              );
             }
 
-            return t(a.createdAt)-t(b.createdAt);
+            return t(a.createdAt)-
+                   t(b.createdAt);
           });
 
           setComments(arr);
@@ -1736,12 +1936,18 @@ function Comments({postId,users}){
         createdAt:serverTime()
       });
 
-      await C("posts").doc(postId).set({
-        commentsCount:
-          firebase.firestore.FieldValue.increment(1)
-      },{merge:true});
+      await C("posts")
+        .doc(postId)
+        .set({
+          commentsCount:
+            firebase.firestore.FieldValue
+              .increment(1)
+        },{merge:true});
 
-      const post=await C("posts").doc(postId).get();
+      const post=
+        await C("posts")
+          .doc(postId)
+          .get();
 
       if(post.exists){
 
@@ -1749,7 +1955,9 @@ function Comments({postId,users}){
           post.data().authorId,
           "commented on your post",
           "comment",
-          {postId}
+          {
+            postId
+          }
         );
       }
 
@@ -1772,12 +1980,19 @@ function Comments({postId,users}){
     );
 
     return (
-      <div className="comment" key={c.id}>
+      <div
+        className="comment"
+        key={c.id}
+      >
 
         <div className="comment-row">
 
           <Avatar
-            profile={author||{displayName:"User"}}
+            profile={
+              author||{
+                displayName:"User"
+              }
+            }
             size="small"
           />
 
@@ -1788,7 +2003,8 @@ function Comments({postId,users}){
             </strong>
 
             <span className="muted">
-              {" "}@{author?.username||"user"}
+              {" "}
+              @{author?.username||"user"}
             </span>
 
             <div style={{
@@ -1807,10 +2023,15 @@ function Comments({postId,users}){
               <button
                 className="btn"
                 onClick={()=>{
+
                   setReply(c.id);
+
                   setValue(
                     "@"+
-                    (author?.username||"user")+
+                    (
+                      author?.username||
+                      "user"
+                    )+
                     " "
                   );
                 }}
@@ -1848,15 +2069,20 @@ function Comments({postId,users}){
 
         <input
           value={value}
-          onChange={e=>setValue(e.target.value)}
+          onChange={e=>
+            setValue(e.target.value)
+          }
           placeholder={
             reply
               ?"Write a reply..."
               :"Write a comment..."
           }
           onKeyDown={e=>{
+
             if(e.key==="Enter"){
+
               e.preventDefault();
+
               send();
             }
           }}
@@ -1875,8 +2101,10 @@ function Comments({postId,users}){
   );
 }
 
+
 /* =========================================================
    POST
+   AUTHOR DISPLAY FIX
 ========================================================= */
 
 function Post({
@@ -1888,20 +2116,97 @@ function Post({
   following
 }){
 
-  const [commentsOpen,setCommentsOpen]=useState(false);
-  const [menu,setMenu]=useState(false);
+  const [
+    commentsOpen,
+    setCommentsOpen
+  ]=useState(false);
+
+  const [
+    menu,
+    setMenu
+  ]=useState(false);
+
+
+  /*
+    IMPORTANT FIX
+
+    Different versions of Nexus may have stored the
+    author ID under different field names.
+
+    We support all of these:
+      authorId
+      authorUid
+      uid
+  */
+
+  const authorId=
+    post.authorId||
+    post.authorUid||
+    post.uid||
+    null;
+
+
+  /*
+    First try to find the complete user profile.
+  */
 
   const author=users.find(
-    u=>u.uid===post.authorId
+    u=>u.uid===authorId
   );
+
+
+  /*
+    If the user document is unavailable, use
+    information stored directly on the post.
+  */
+
+  const authorName=
+    author?.displayName||
+    post.authorName||
+    post.authorDisplayName||
+    post.displayName||
+    post.name||
+    "Nexus User";
+
+
+  const authorUsername=
+    author?.username||
+    post.authorUsername||
+    post.authorUserName||
+    post.username||
+    "user";
+
+
+  /*
+    This profile is used by Avatar.
+    Therefore even an old post with a missing
+    user document gets a proper avatar/name.
+  */
+
+  const authorProfile=
+    author||
+    {
+      uid:authorId,
+      displayName:authorName,
+      username:authorUsername
+    };
+
 
   async function like(){
 
     try{
 
       const snap=await C("likes")
-        .where("postId","==",post.id)
-        .where("userId","==",currentUid())
+        .where(
+          "postId",
+          "==",
+          post.id
+        )
+        .where(
+          "userId",
+          "==",
+          currentUid()
+        )
         .limit(1)
         .get();
 
@@ -1913,16 +2218,21 @@ function Post({
           createdAt:serverTime()
         });
 
-        await C("posts").doc(post.id).set({
-          likesCount:
-            firebase.firestore.FieldValue.increment(1)
-        },{merge:true});
+        await C("posts")
+          .doc(post.id)
+          .set({
+            likesCount:
+              firebase.firestore.FieldValue
+                .increment(1)
+          },{merge:true});
 
         await notify(
-          post.authorId,
+          authorId,
           "liked your post",
           "like",
-          {postId:post.id}
+          {
+            postId:post.id
+          }
         );
 
       }else{
@@ -1935,10 +2245,13 @@ function Post({
 
         await batch.commit();
 
-        await C("posts").doc(post.id).set({
-          likesCount:
-            firebase.firestore.FieldValue.increment(-1)
-        },{merge:true});
+        await C("posts")
+          .doc(post.id)
+          .set({
+            likesCount:
+              firebase.firestore.FieldValue
+                .increment(-1)
+          },{merge:true});
       }
 
     }catch(e){
@@ -1946,13 +2259,22 @@ function Post({
     }
   }
 
+
   async function save(){
 
     try{
 
       const snap=await C("bookmarks")
-        .where("postId","==",post.id)
-        .where("userId","==",currentUid())
+        .where(
+          "postId",
+          "==",
+          post.id
+        )
+        .where(
+          "userId",
+          "==",
+          currentUid()
+        )
         .limit(1)
         .get();
 
@@ -1980,13 +2302,22 @@ function Post({
     }
   }
 
+
   async function repost(){
 
     try{
 
       const snap=await C("reposts")
-        .where("postId","==",post.id)
-        .where("userId","==",currentUid())
+        .where(
+          "postId",
+          "==",
+          post.id
+        )
+        .where(
+          "userId",
+          "==",
+          currentUid()
+        )
         .limit(1)
         .get();
 
@@ -1998,10 +2329,13 @@ function Post({
           createdAt:serverTime()
         });
 
-        await C("posts").doc(post.id).set({
-          repostsCount:
-            firebase.firestore.FieldValue.increment(1)
-        },{merge:true});
+        await C("posts")
+          .doc(post.id)
+          .set({
+            repostsCount:
+              firebase.firestore.FieldValue
+                .increment(1)
+          },{merge:true});
 
       }else{
 
@@ -2013,10 +2347,13 @@ function Post({
 
         await batch.commit();
 
-        await C("posts").doc(post.id).set({
-          repostsCount:
-            firebase.firestore.FieldValue.increment(-1)
-        },{merge:true});
+        await C("posts")
+          .doc(post.id)
+          .set({
+            repostsCount:
+              firebase.firestore.FieldValue
+                .increment(-1)
+          },{merge:true});
       }
 
     }catch(e){
@@ -2024,33 +2361,42 @@ function Post({
     }
   }
 
+
   async function deletePost(){
 
-    if(post.authorId!==currentUid())return;
+    if(authorId!==currentUid())return;
 
     if(!confirm("Delete this post?"))return;
 
     try{
-      await C("posts").doc(post.id).delete();
+
+      await C("posts")
+        .doc(post.id)
+        .delete();
+
     }catch(e){
       alert(e.message);
     }
   }
+
 
   async function pin(){
 
-    if(post.authorId!==currentUid())return;
+    if(authorId!==currentUid())return;
 
     try{
 
-      await C("posts").doc(post.id).set({
-        pinned:!post.pinned
-      },{merge:true});
+      await C("posts")
+        .doc(post.id)
+        .set({
+          pinned:!post.pinned
+        },{merge:true});
 
     }catch(e){
       alert(e.message);
     }
   }
+
 
   async function report(){
 
@@ -2066,7 +2412,7 @@ function Post({
         reporterId:currentUid(),
         targetType:"post",
         targetId:post.id,
-        targetAuthorId:post.authorId,
+        targetAuthorId:authorId,
         reason:text(reason),
         status:"open",
         createdAt:serverTime()
@@ -2079,23 +2425,21 @@ function Post({
     }
   }
 
+
   return (
     <article className="card post">
 
       <div className="post-head">
 
         <Avatar
-          profile={
-            author||{
-              displayName:"Nexus User"
-            }
-          }
+          profile={authorProfile}
         />
 
         <div className="post-user">
 
           <div className="name">
-            {author?.displayName||"Nexus User"}
+
+            {authorName}
 
             {post.pinned && (
               <span style={{
@@ -2106,10 +2450,11 @@ function Post({
                 PINNED
               </span>
             )}
+
           </div>
 
           <div className="username">
-            @{author?.username||"user"}
+            @{authorUsername}
           </div>
 
         </div>
@@ -2120,62 +2465,83 @@ function Post({
 
         <button
           className="btn"
-          onClick={()=>setMenu(!menu)}
+          onClick={()=>
+            setMenu(!menu)
+          }
         >
           •••
         </button>
 
       </div>
 
+
       <div className="post-body">
         {renderText(post.text)}
       </div>
+
 
       {post.poll && (
         <Poll post={post}/>
       )}
 
+
       <div className="post-actions">
 
         <button
-          className={"action "+(liked?"liked":"")}
+          className={
+            "action "+
+            (liked?"liked":"")
+          }
           onClick={like}
         >
           ♥ {post.likesCount||0}
         </button>
 
+
         <button
           className="action"
           onClick={()=>
-            setCommentsOpen(!commentsOpen)
+            setCommentsOpen(
+              !commentsOpen
+            )
           }
         >
           💬 {post.commentsCount||0}
         </button>
 
+
         <button
-          className={"action "+(reposted?"reposted":"")}
+          className={
+            "action "+
+            (reposted?"reposted":"")
+          }
           onClick={repost}
         >
           ↻ {post.repostsCount||0}
         </button>
 
+
         <button
-          className={"action "+(saved?"saved":"")}
+          className={
+            "action "+
+            (saved?"saved":"")
+          }
           onClick={save}
         >
           🔖
         </button>
 
-        {author &&
-         author.uid!==currentUid() && (
+
+        {authorId &&
+         authorId!==currentUid() && (
           <FollowButton
-            targetId={author.uid}
+            targetId={authorId}
             following={following}
           />
         )}
 
       </div>
+
 
       {menu && (
         <div style={{
@@ -2184,16 +2550,20 @@ function Post({
           flexWrap:"wrap",
           marginTop:10,
           paddingTop:10,
-          borderTop:"1px solid var(--line)"
+          borderTop:
+            "1px solid var(--line)"
         }}>
 
-          {post.authorId===currentUid() && (
+          {authorId===currentUid() && (
             <>
+
               <button
                 className="btn"
                 onClick={pin}
               >
-                {post.pinned?"Unpin":"Pin"}
+                {post.pinned
+                  ?"Unpin"
+                  :"Pin"}
               </button>
 
               <button
@@ -2202,10 +2572,12 @@ function Post({
               >
                 Delete
               </button>
+
             </>
           )}
 
-          {post.authorId!==currentUid() && (
+
+          {authorId!==currentUid() && (
             <button
               className="btn danger"
               onClick={report}
@@ -2216,6 +2588,7 @@ function Post({
 
         </div>
       )}
+
 
       {commentsOpen && (
         <Comments
@@ -2228,6 +2601,7 @@ function Post({
   );
 }
 
+
 /* =========================================================
    FEED
 ========================================================= */
@@ -2239,35 +2613,51 @@ function Feed({
 }){
 
   const following=new Set(
-    data.follows.map(x=>x.followingId)
+    data.follows.map(
+      x=>x.followingId
+    )
   );
 
   const liked=new Set(
-    data.likes.map(x=>x.postId)
+    data.likes.map(
+      x=>x.postId
+    )
   );
 
   const saved=new Set(
-    data.bookmarks.map(x=>x.postId)
+    data.bookmarks.map(
+      x=>x.postId
+    )
   );
 
   const reposted=new Set(
-    data.reposts.map(x=>x.postId)
+    data.reposts.map(
+      x=>x.postId
+    )
   );
 
   let posts=[...data.posts];
 
   if(mode==="following"){
 
-    posts=posts.filter(p=>
-      following.has(p.authorId)||
-      p.authorId===currentUid()
-    );
+    posts=posts.filter(p=>{
+
+      const authorId=
+        p.authorId||
+        p.authorUid||
+        p.uid;
+
+      return (
+        following.has(authorId)||
+        authorId===currentUid()
+      );
+    });
   }
 
   if(mode==="saved"){
 
-    posts=posts.filter(p=>
-      saved.has(p.id)
+    posts=posts.filter(
+      p=>saved.has(p.id)
     );
   }
 
@@ -2275,37 +2665,54 @@ function Feed({
 
     return (
       <div className="card empty">
+
         {mode==="saved"
           ?"No saved posts yet."
           :mode==="following"
             ?"Follow people to see their posts here."
-            :"No posts yet. Create the first post!"}
+            :"No posts yet. Create the first post!"
+        }
+
       </div>
     );
   }
 
   return (
     <>
-      {posts.map(post=>(
-        <Post
-          key={post.id}
-          post={post}
-          users={data.users}
-          liked={liked.has(post.id)}
-          saved={saved.has(post.id)}
-          reposted={reposted.has(post.id)}
-          following={following.has(post.authorId)}
-        />
-      ))}
+      {posts.map(post=>{
+
+        const authorId=
+          post.authorId||
+          post.authorUid||
+          post.uid;
+
+        return (
+          <Post
+            key={post.id}
+            post={post}
+            users={data.users}
+            liked={liked.has(post.id)}
+            saved={saved.has(post.id)}
+            reposted={reposted.has(post.id)}
+            following={
+              following.has(authorId)
+            }
+          />
+        );
+      })}
     </>
   );
 }
+
 
 /* =========================================================
    STORIES
 ========================================================= */
 
-function Stories({stories,users}){
+function Stories({
+  stories,
+  users
+}){
 
   const active=stories.filter(s=>{
 
@@ -2321,7 +2728,9 @@ function Stories({stories,users}){
   const unique=[
     ...new Map(
       active.map(s=>[
-        s.authorId,
+        s.authorId||
+        s.authorUid||
+        s.uid,
         s
       ])
     ).values()
@@ -2335,10 +2744,15 @@ function Stories({stories,users}){
         justifyContent:"space-between",
         marginBottom:10
       }}>
-        <strong>Stories</strong>
+
+        <strong>
+          Stories
+        </strong>
+
         <span className="muted">
           24 hours
         </span>
+
       </div>
 
       <div className="story-strip">
@@ -2352,17 +2766,28 @@ function Stories({stories,users}){
         {unique.map(s=>{
 
           const author=users.find(
-            u=>u.uid===s.authorId
+            u=>u.uid===(
+              s.authorId||
+              s.authorUid||
+              s.uid
+            )
           );
+
+          const storyName=
+            author?.username||
+            s.authorUsername||
+            s.username||
+            "user";
 
           return (
             <button
               key={s.id}
               className="story"
               onClick={()=>{
+
                 alert(
                   "@"+
-                  (author?.username||"user")+
+                  storyName+
                   "\n\n"+
                   s.text
                 );
@@ -2372,7 +2797,9 @@ function Stories({stories,users}){
               <Avatar
                 profile={
                   author||{
-                    displayName:"User"
+                    displayName:
+                      s.authorName||
+                      "User"
                   }
                 }
                 size="small"
@@ -2382,7 +2809,7 @@ function Stories({stories,users}){
                 fontSize:12,
                 marginTop:5
               }}>
-                @{author?.username||"user"}
+                @{storyName}
               </div>
 
               <div className="story-text">
@@ -2398,8 +2825,9 @@ function Stories({stories,users}){
   );
 }
 
+
 /* =========================================================
-   STORY BUTTON
+   STORY CREATOR
 ========================================================= */
 
 function StoryCreator(){
@@ -2418,7 +2846,8 @@ function StoryCreator(){
         text:text(value),
         createdAt:serverTime(),
         expiresAt:new Date(
-          Date.now()+24*60*60*1000
+          Date.now()+
+          24*60*60*1000
         )
       });
 
@@ -2435,7 +2864,9 @@ function StoryCreator(){
     return (
       <button
         className="btn"
-        onClick={()=>setOpen(true)}
+        onClick={()=>
+          setOpen(true)
+        }
       >
         + Story
       </button>
@@ -2447,11 +2878,15 @@ function StoryCreator(){
 
       <div className="modal">
 
-        <h3>Create Story</h3>
+        <h3>
+          Create Story
+        </h3>
 
         <textarea
           value={value}
-          onChange={e=>setValue(e.target.value)}
+          onChange={e=>
+            setValue(e.target.value)
+          }
           placeholder="Share something..."
         />
 
@@ -2464,7 +2899,9 @@ function StoryCreator(){
 
           <button
             className="btn"
-            onClick={()=>setOpen(false)}
+            onClick={()=>
+              setOpen(false)
+            }
           >
             Cancel
           </button>
@@ -2483,11 +2920,15 @@ function StoryCreator(){
   );
 }
 
+
 /* =========================================================
    HOME
 ========================================================= */
 
-function Home({profile,data}){
+function Home({
+  profile,
+  data
+}){
 
   const [mode,setMode]=useState("home");
 
@@ -2507,27 +2948,47 @@ function Home({profile,data}){
         <StoryCreator/>
       </div>
 
-      <Composer profile={profile}/>
+      <Composer
+        profile={profile}
+      />
 
       <div className="feed-tabs">
 
         <button
-          className={mode==="home"?"active":""}
-          onClick={()=>setMode("home")}
+          className={
+            mode==="home"
+              ?"active"
+              :""
+          }
+          onClick={()=>
+            setMode("home")
+          }
         >
           For You
         </button>
 
         <button
-          className={mode==="following"?"active":""}
-          onClick={()=>setMode("following")}
+          className={
+            mode==="following"
+              ?"active"
+              :""
+          }
+          onClick={()=>
+            setMode("following")
+          }
         >
           Following
         </button>
 
         <button
-          className={mode==="saved"?"active":""}
-          onClick={()=>setMode("saved")}
+          className={
+            mode==="saved"
+              ?"active"
+              :""
+          }
+          onClick={()=>
+            setMode("saved")
+          }
         >
           Saved
         </button>
@@ -2544,43 +3005,68 @@ function Home({profile,data}){
   );
 }
 
+
 /* =========================================================
    EXPLORE
 ========================================================= */
 
-function Explore({data,onProfile}){
+function Explore({
+  data,
+  onProfile
+}){
 
-  const [query,setQuery]=useState("");
-  const [tab,setTab]=useState("users");
+  const [
+    query,
+    setQuery
+  ]=useState("");
 
-  const q=query.toLowerCase().trim();
+  const [
+    tab,
+    setTab
+  ]=useState("users");
+
+  const q=query
+    .toLowerCase()
+    .trim();
 
   const users=data.users.filter(u=>
-    !q ||
+    !q||
     String(u.displayName||"")
       .toLowerCase()
-      .includes(q) ||
+      .includes(q)||
     String(u.username||"")
       .toLowerCase()
       .includes(q)
   );
 
-  const posts=data.posts.filter(p=>
-    !q ||
-    String(p.text||"")
-      .toLowerCase()
-      .includes(q) ||
-    (p.hashtags||[]).some(h=>
-      h.includes(q.replace(/^#/,""))
-    )
-  );
+  const posts=data.posts.filter(p=>{
+
+    const postText=
+      String(p.text||"")
+        .toLowerCase();
+
+    const postHashtags=
+      p.hashtags||[];
+
+    return (
+      !q||
+      postText.includes(q)||
+      postHashtags.some(
+        h=>h.includes(
+          q.replace(/^#/,"")
+        )
+      )
+    );
+  });
 
   const trend={};
 
   data.posts.forEach(p=>{
-    (p.hashtags||[]).forEach(h=>{
-      trend[h]=(trend[h]||0)+1;
-    });
+
+    (p.hashtags||[])
+      .forEach(h=>{
+        trend[h]=(trend[h]||0)+1;
+      });
   });
 
   const trends=Object.entries(trend)
@@ -2600,7 +3086,9 @@ function Explore({data,onProfile}){
 
           <input
             value={query}
-            onChange={e=>setQuery(e.target.value)}
+            onChange={e=>
+              setQuery(e.target.value)
+            }
             placeholder="Search users, posts, hashtags..."
           />
 
@@ -2626,9 +3114,13 @@ function Explore({data,onProfile}){
             <button
               key={x[0]}
               className={
-                tab===x[0]?"active":""
+                tab===x[0]
+                  ?"active"
+                  :""
               }
-              onClick={()=>setTab(x[0])}
+              onClick={()=>
+                setTab(x[0])
+              }
             >
               {x[1]}
             </button>
@@ -2637,6 +3129,7 @@ function Explore({data,onProfile}){
         </div>
 
       </div>
+
 
       {tab==="users" && (
         <div
@@ -2656,9 +3149,12 @@ function Explore({data,onProfile}){
               key={u.uid}
             >
 
-              <Avatar profile={u}/>
+              <Avatar
+                profile={u}
+              />
 
               <div className="user-row-main">
+
                 <strong>
                   {u.displayName}
                 </strong>
@@ -2672,14 +3168,18 @@ function Explore({data,onProfile}){
                     {u.bio}
                   </div>
                 )}
+
               </div>
 
-              <FollowButton
-                targetId={u.uid}
-                following={data.follows.some(
-                  x=>x.followingId===u.uid
-                )}
-              />
+              {u.uid!==currentUid() && (
+                <FollowButton
+                  targetId={u.uid}
+                  following={data.follows.some(
+                    x=>
+                      x.followingId===u.uid
+                  )}
+                />
+              )}
 
               <button
                 className="btn"
@@ -2696,8 +3196,11 @@ function Explore({data,onProfile}){
         </div>
       )}
 
+
       {tab==="posts" && (
-        <div style={{marginTop:12}}>
+        <div style={{
+          marginTop:12
+        }}>
 
           {posts.length===0 && (
             <div className="card empty">
@@ -2705,28 +3208,41 @@ function Explore({data,onProfile}){
             </div>
           )}
 
-          {posts.map(p=>(
-            <Post
-              key={p.id}
-              post={p}
-              users={data.users}
-              liked={data.likes.some(
-                x=>x.postId===p.id
-              )}
-              saved={data.bookmarks.some(
-                x=>x.postId===p.id
-              )}
-              reposted={data.reposts.some(
-                x=>x.postId===p.id
-              )}
-              following={data.follows.some(
-                x=>x.followingId===p.authorId
-              )}
-            />
-          ))}
+          {posts.map(p=>{
+
+            const authorId=
+              p.authorId||
+              p.authorUid||
+              p.uid;
+
+            return (
+              <Post
+                key={p.id}
+                post={p}
+                users={data.users}
+                liked={data.likes.some(
+                  x=>x.postId===p.id
+                )}
+                saved={data.bookmarks.some(
+                  x=>x.postId===p.id
+                )}
+                reposted={data.reposts.some(
+                  x=>x.postId===p.id
+                )}
+                following={
+                  data.follows.some(
+                    x=>
+                      x.followingId===
+                      authorId
+                  )
+                }
+              />
+            );
+          })}
 
         </div>
       )}
+
 
       {tab==="hashtags" && (
         <div
@@ -2734,7 +3250,9 @@ function Explore({data,onProfile}){
           style={{marginTop:12}}
         >
 
-          <h3>Trending hashtags</h3>
+          <h3>
+            Trending hashtags
+          </h3>
 
           {trends.length===0 && (
             <div className="empty">
@@ -2742,17 +3260,24 @@ function Explore({data,onProfile}){
             </div>
           )}
 
-          {trends.map(([h,count])=>(
-            <div
-              className="trend"
-              key={h}
-            >
-              <strong>#{h}</strong>
-              <div className="muted">
-                {count} posts
+          {trends.map(
+            ([h,count])=>(
+              <div
+                className="trend"
+                key={h}
+              >
+
+                <strong>
+                  #{h}
+                </strong>
+
+                <div className="muted">
+                  {count} posts
+                </div>
+
               </div>
-            </div>
-          ))}
+            )
+          )}
 
         </div>
       )}
@@ -2760,6 +3285,7 @@ function Explore({data,onProfile}){
     </div>
   );
 }
+
 
 /* =========================================================
    PROFILE
@@ -2775,15 +3301,23 @@ function Profile({
 }){
 
   const target=
-    users.find(x=>x.uid===viewedId)||
+    users.find(
+      x=>x.uid===viewedId
+    )||
     profile;
 
   const mine=
     target.uid===currentUid();
 
-  const userPosts=posts.filter(
-    p=>p.authorId===target.uid
-  );
+  const userPosts=posts.filter(p=>{
+
+    const authorId=
+      p.authorId||
+      p.authorUid||
+      p.uid;
+
+    return authorId===target.uid;
+  });
 
   return (
     <div>
@@ -2816,24 +3350,39 @@ function Profile({
             <div className="stats">
 
               <div className="stat">
+
                 <strong>
                   {target.postsCount||0}
                 </strong>
-                <span>Posts</span>
+
+                <span>
+                  Posts
+                </span>
+
               </div>
 
               <div className="stat">
+
                 <strong>
                   {target.followersCount||0}
                 </strong>
-                <span>Followers</span>
+
+                <span>
+                  Followers
+                </span>
+
               </div>
 
               <div className="stat">
+
                 <strong>
                   {target.followingCount||0}
                 </strong>
-                <span>Following</span>
+
+                <span>
+                  Following
+                </span>
+
               </div>
 
             </div>
@@ -2841,17 +3390,21 @@ function Profile({
           </div>
 
           {mine ? (
+
             <button
               className="btn"
               onClick={onEdit}
             >
               Edit
             </button>
+
           ):(
             <FollowButton
               targetId={target.uid}
               following={follows.some(
-                x=>x.followingId===target.uid
+                x=>
+                  x.followingId===
+                  target.uid
               )}
             />
           )}
@@ -2860,7 +3413,10 @@ function Profile({
 
       </div>
 
-      <div style={{marginTop:15}}>
+
+      <div style={{
+        marginTop:15
+      }}>
 
         <div className="section-title">
           Posts
@@ -2881,7 +3437,13 @@ function Profile({
             saved={false}
             reposted={false}
             following={follows.some(
-              x=>x.followingId===p.authorId
+              x=>
+                x.followingId===
+                (
+                  p.authorId||
+                  p.authorUid||
+                  p.uid
+                )
             )}
           />
         ))}
@@ -2892,11 +3454,15 @@ function Profile({
   );
 }
 
+
 /* =========================================================
    NOTIFICATIONS
 ========================================================= */
 
-function Notifications({notifications,users}){
+function Notifications({
+  notifications,
+  users
+}){
 
   async function mark(id){
 
@@ -2914,8 +3480,10 @@ function Notifications({notifications,users}){
     notifications
       .filter(x=>!x.read)
       .forEach(x=>{
+
         batch.set(
-          C("notifications").doc(x.id),
+          C("notifications")
+            .doc(x.id),
           {read:true},
           {merge:true}
         );
@@ -2946,6 +3514,7 @@ function Notifications({notifications,users}){
 
       </div>
 
+
       <div className="card pad">
 
         {notifications.length===0 && (
@@ -2963,7 +3532,9 @@ function Notifications({notifications,users}){
           return (
             <button
               key={n.id}
-              onClick={()=>mark(n.id)}
+              onClick={()=>
+                mark(n.id)
+              }
               style={{
                 width:"100%",
                 background:"transparent",
@@ -2977,21 +3548,27 @@ function Notifications({notifications,users}){
 
                 {!n.read
                   ?<div className="dot"/>
-                  :<div style={{width:8}}/>
+                  :<div style={{
+                    width:8
+                  }}/>
                 }
 
                 <Avatar
                   profile={
                     actor||{
-                      displayName:"User"
+                      displayName:
+                        "User"
                     }
                   }
                   size="small"
                 />
 
                 <div>
+
                   <strong>
-                    {actor?.displayName||"Someone"}
+                    {actor?.displayName||
+                     n.actorName||
+                     "Someone"}
                   </strong>{" "}
 
                   <span>
@@ -2999,8 +3576,11 @@ function Notifications({notifications,users}){
                   </span>
 
                   <div className="muted">
-                    {timeAgo(n.createdAt)}
+                    {timeAgo(
+                      n.createdAt
+                    )}
                   </div>
+
                 </div>
 
               </div>
@@ -3013,6 +3593,7 @@ function Notifications({notifications,users}){
     </div>
   );
 }
+
 
 /* =========================================================
    MESSAGES
@@ -3037,14 +3618,21 @@ function Messages({users}){
       .onSnapshot(
         snap=>{
 
-          const arr=snap.docs.map(d=>({
-            id:d.id,
-            ...d.data()
-          }));
+          const arr=snap.docs.map(
+            d=>({
+              id:d.id,
+              ...d.data()
+            })
+          );
 
           arr.sort((a,b)=>{
-            const at=a.updatedAt?.seconds||0;
-            const bt=b.updatedAt?.seconds||0;
+
+            const at=
+              a.updatedAt?.seconds||0;
+
+            const bt=
+              b.updatedAt?.seconds||0;
+
             return bt-at;
           });
 
@@ -3057,27 +3645,41 @@ function Messages({users}){
 
   },[]);
 
+
   useEffect(()=>{
 
     if(!selected){
+
       setMessages([]);
+
       return;
     }
 
     const unsub=C("messages")
-      .where("chatId","==",selected.id)
+      .where(
+        "chatId",
+        "==",
+        selected.id
+      )
       .limit(500)
       .onSnapshot(
         snap=>{
 
-          const arr=snap.docs.map(d=>({
-            id:d.id,
-            ...d.data()
-          }));
+          const arr=snap.docs.map(
+            d=>({
+              id:d.id,
+              ...d.data()
+            })
+          );
 
           arr.sort((a,b)=>{
-            const at=a.createdAt?.seconds||0;
-            const bt=b.createdAt?.seconds||0;
+
+            const at=
+              a.createdAt?.seconds||0;
+
+            const bt=
+              b.createdAt?.seconds||0;
+
             return at-bt;
           });
 
@@ -3090,6 +3692,7 @@ function Messages({users}){
 
   },[selected?.id]);
 
+
   async function newChat(){
 
     const value=prompt(
@@ -3101,19 +3704,31 @@ function Messages({users}){
     const name=username(value);
 
     const snap=await C("users")
-      .where("username","==",name)
+      .where(
+        "username",
+        "==",
+        name
+      )
       .limit(1)
       .get();
 
     if(snap.empty){
-      alert("User not found.");
+
+      alert(
+        "User not found."
+      );
+
       return;
     }
 
     const target=snap.docs[0];
 
     if(target.id===currentUid()){
-      alert("You cannot message yourself.");
+
+      alert(
+        "You cannot message yourself."
+      );
+
       return;
     }
 
@@ -3126,14 +3741,19 @@ function Messages({users}){
       .limit(100)
       .get();
 
-    for(const d of existing.docs){
+    for(
+      const d of existing.docs
+    ){
 
       const x=d.data();
 
       if(
         !x.group &&
-        x.members?.includes(target.id)
+        x.members?.includes(
+          target.id
+        )
       ){
+
         setSelected({
           id:d.id,
           ...x
@@ -3149,7 +3769,8 @@ function Messages({users}){
         target.id
       ],
       group:false,
-      name:target.data().displayName,
+      name:
+        target.data().displayName,
       lastMessage:"",
       createdAt:serverTime(),
       updatedAt:serverTime()
@@ -3162,13 +3783,20 @@ function Messages({users}){
         target.id
       ],
       group:false,
-      name:target.data().displayName
+      name:
+        target.data().displayName
     });
   }
 
+
   async function send(){
 
-    if(!selected||!text(value))return;
+    if(
+      !selected||
+      !text(value)
+    ){
+      return;
+    }
 
     try{
 
@@ -3177,24 +3805,36 @@ function Messages({users}){
         senderId:currentUid(),
         text:text(value),
         createdAt:serverTime(),
-        readBy:[currentUid()],
+        readBy:[
+          currentUid()
+        ],
         reactions:{}
       });
 
-      await C("chats").doc(selected.id).set({
-        lastMessage:text(value),
-        updatedAt:serverTime()
-      },{merge:true});
+      await C("chats")
+        .doc(selected.id)
+        .set({
+          lastMessage:text(value),
+          updatedAt:serverTime()
+        },{merge:true});
 
-      for(const member of selected.members||[]){
+      for(
+        const member of
+        selected.members||[]
+      ){
 
-        if(member!==currentUid()){
+        if(
+          member!==currentUid()
+        ){
 
           await notify(
             member,
             "sent you a message",
             "message",
-            {chatId:selected.id}
+            {
+              chatId:
+                selected.id
+            }
           );
         }
       }
@@ -3206,33 +3846,57 @@ function Messages({users}){
     }
   }
 
+
   async function deleteMessage(m){
 
-    if(m.senderId!==currentUid())return;
+    if(
+      m.senderId!==currentUid()
+    ){
+      return;
+    }
 
     await C("messages")
       .doc(m.id)
       .delete();
   }
 
-  async function react(m,emoji){
+
+  async function react(
+    m,
+    emoji
+  ){
 
     const reactions={
       ...(m.reactions||{})
     };
 
-    const list=Array.isArray(
-      reactions[emoji]
-    )?reactions[emoji]:[];
+    const list=
+      Array.isArray(
+        reactions[emoji]
+      )
+        ?reactions[emoji]
+        :[];
 
-    reactions[emoji]=list.includes(currentUid())
-      ?list.filter(x=>x!==currentUid())
-      :[...list,currentUid()];
+    reactions[emoji]=
+      list.includes(
+        currentUid()
+      )
+        ?list.filter(
+          x=>x!==currentUid()
+        )
+        :[
+          ...list,
+          currentUid()
+        ];
 
     await C("messages")
       .doc(m.id)
-      .set({reactions},{merge:true});
+      .set(
+        {reactions},
+        {merge:true}
+      );
   }
+
 
   return (
     <div>
@@ -3273,7 +3937,8 @@ function Messages({users}){
                 className={
                   "chat-item "+
                   (
-                    selected?.id===chat.id
+                    selected?.id===
+                    chat.id
                       ?"active"
                       :""
                   )
@@ -3287,7 +3952,8 @@ function Messages({users}){
                   profile={
                     other||{
                       displayName:
-                        chat.name||"Chat"
+                        chat.name||
+                        "Chat"
                     }
                   }
                   size="small"
@@ -3304,9 +3970,12 @@ function Messages({users}){
                   <div
                     className="muted"
                     style={{
-                      whiteSpace:"nowrap",
-                      overflow:"hidden",
-                      textOverflow:"ellipsis"
+                      whiteSpace:
+                        "nowrap",
+                      overflow:
+                        "hidden",
+                      textOverflow:
+                        "ellipsis"
                     }}
                   >
                     {chat.lastMessage||
@@ -3327,20 +3996,27 @@ function Messages({users}){
 
         </div>
 
+
         <div className="chat-window">
 
           {!selected ? (
+
             <div className="empty">
               Select a conversation.
             </div>
+
           ):(
             <>
 
               <div className="chat-head">
+
                 <strong>
-                  {selected.name||"Chat"}
+                  {selected.name||
+                   "Chat"}
                 </strong>
+
               </div>
+
 
               <div className="messages">
 
@@ -3353,13 +4029,18 @@ function Messages({users}){
                 {messages.map(m=>{
 
                   const mine=
-                    m.senderId===currentUid();
+                    m.senderId===
+                    currentUid();
 
                   return (
                     <div
                       className={
                         "msg "+
-                        (mine?"mine":"")
+                        (
+                          mine
+                            ?"mine"
+                            :""
+                        )
                       }
                       key={m.id}
                     >
@@ -3369,19 +4050,31 @@ function Messages({users}){
                         <div className="bubble">
 
                           <div style={{
-                            whiteSpace:"pre-wrap",
-                            wordBreak:"break-word"
+                            whiteSpace:
+                              "pre-wrap",
+                            wordBreak:
+                              "break-word"
                           }}>
                             {m.text}
                           </div>
 
                           <div className="msg-meta">
-                            {timeAgo(m.createdAt)}
+
+                            {timeAgo(
+                              m.createdAt
+                            )}
+
                             {" "}
-                            {mine?"✓":" "}
+
+                            {mine
+                              ?"✓"
+                              :" "
+                            }
+
                           </div>
 
                         </div>
+
 
                         <div style={{
                           display:"flex",
@@ -3389,16 +4082,24 @@ function Messages({users}){
                           marginTop:3
                         }}>
 
-                          {["❤️","👍","😂"].map(
+                          {[
+                            "❤️",
+                            "👍",
+                            "😂"
+                          ].map(
                             emoji=>(
                               <button
                                 key={emoji}
                                 className="btn"
                                 style={{
-                                  padding:"3px 6px"
+                                  padding:
+                                    "3px 6px"
                                 }}
                                 onClick={()=>
-                                  react(m,emoji)
+                                  react(
+                                    m,
+                                    emoji
+                                  )
                                 }
                               >
                                 {emoji}
@@ -3406,11 +4107,13 @@ function Messages({users}){
                             )
                           )}
 
+
                           {mine && (
                             <button
                               className="btn danger"
                               style={{
-                                padding:"3px 6px"
+                                padding:
+                                  "3px 6px"
                               }}
                               onClick={()=>
                                 deleteMessage(m)
@@ -3430,17 +4133,25 @@ function Messages({users}){
 
               </div>
 
+
               <div className="chat-compose">
 
                 <input
                   value={value}
                   onChange={e=>
-                    setValue(e.target.value)
+                    setValue(
+                      e.target.value
+                    )
                   }
                   placeholder="Write a message..."
                   onKeyDown={e=>{
-                    if(e.key==="Enter"){
+
+                    if(
+                      e.key==="Enter"
+                    ){
+
                       e.preventDefault();
+
                       send();
                     }
                   }}
@@ -3465,17 +4176,24 @@ function Messages({users}){
   );
 }
 
+
 /* =========================================================
    SETTINGS
 ========================================================= */
 
-function Settings({profile,setProfile}){
+function Settings({
+  profile,
+  setProfile
+}){
 
   const [name,setName]=useState(
     profile.displayName||""
   );
 
-  const [userName,setUserName]=useState(
+  const [
+    userName,
+    setUserName
+  ]=useState(
     profile.username||""
   );
 
@@ -3483,68 +4201,102 @@ function Settings({profile,setProfile}){
     profile.bio||""
   );
 
-  const [online,setOnline]=useState(
+  const [
+    online,
+    setOnline
+  ]=useState(
     profile.showOnline!==false
   );
 
+
   async function save(){
 
-    const clean=username(userName);
+    const clean=username(
+      userName
+    );
 
     if(!clean){
-      alert("Username cannot be empty.");
+
+      alert(
+        "Username cannot be empty."
+      );
+
       return;
     }
 
     try{
 
       const existing=await C("users")
-        .where("username","==",clean)
+        .where(
+          "username",
+          "==",
+          clean
+        )
         .limit(5)
         .get();
 
-      const taken=existing.docs.some(
-        d=>d.id!==currentUid()
-      );
+      const taken=
+        existing.docs.some(
+          d=>d.id!==currentUid()
+        );
 
       if(taken){
-        alert("Username already taken.");
+
+        alert(
+          "Username already taken."
+        );
+
         return;
       }
 
       const update={
         displayName:
-          text(name)||"Nexus User",
+          text(name)||
+          "Nexus User",
+
         username:clean,
+
         bio:text(bio),
+
         showOnline:online,
+
         updatedAt:serverTime()
       };
 
       await C("users")
         .doc(currentUid())
-        .set(update,{merge:true});
+        .set(
+          update,
+          {merge:true}
+        );
 
       setProfile({
         ...profile,
         ...update
       });
 
-      alert("Profile updated.");
+      alert(
+        "Profile updated."
+      );
 
     }catch(e){
       alert(e.message);
     }
   }
+
 
   async function logout(){
 
     try{
+
       await auth.signOut();
+
     }catch(e){
+
       alert(e.message);
     }
   }
+
 
   return (
     <div>
@@ -3555,7 +4307,10 @@ function Settings({profile,setProfile}){
 
       <div className="card pad">
 
-        <h3>Profile</h3>
+        <h3>
+          Profile
+        </h3>
+
 
         <label className="muted">
           Display name
@@ -3563,9 +4318,14 @@ function Settings({profile,setProfile}){
 
         <input
           value={name}
-          onChange={e=>setName(e.target.value)}
-          style={{margin:"5px 0 12px"}}
+          onChange={e=>
+            setName(e.target.value)
+          }
+          style={{
+            margin:"5px 0 12px"
+          }}
         />
+
 
         <label className="muted">
           Username
@@ -3574,10 +4334,15 @@ function Settings({profile,setProfile}){
         <input
           value={userName}
           onChange={e=>
-            setUserName(e.target.value)
+            setUserName(
+              e.target.value
+            )
           }
-          style={{margin:"5px 0 12px"}}
+          style={{
+            margin:"5px 0 12px"
+          }}
         />
+
 
         <label className="muted">
           Bio
@@ -3585,18 +4350,26 @@ function Settings({profile,setProfile}){
 
         <textarea
           value={bio}
-          onChange={e=>setBio(e.target.value)}
-          style={{marginTop:5}}
+          onChange={e=>
+            setBio(e.target.value)
+          }
+          style={{
+            marginTop:5
+          }}
         />
+
 
         <div style={{
           display:"flex",
-          justifyContent:"space-between",
+          justifyContent:
+            "space-between",
           padding:"15px 0",
-          borderBottom:"1px solid var(--line)"
+          borderBottom:
+            "1px solid var(--line)"
         }}>
 
           <div>
+
             <strong>
               Show online status
             </strong>
@@ -3604,13 +4377,16 @@ function Settings({profile,setProfile}){
             <div className="muted">
               Let others see your status.
             </div>
+
           </div>
 
           <input
             type="checkbox"
             checked={online}
             onChange={e=>
-              setOnline(e.target.checked)
+              setOnline(
+                e.target.checked
+              )
             }
             style={{
               width:20
@@ -3618,6 +4394,7 @@ function Settings({profile,setProfile}){
           />
 
         </div>
+
 
         <div style={{
           display:"flex",
@@ -3643,79 +4420,109 @@ function Settings({profile,setProfile}){
 
       </div>
 
+
       <div
         className="card pad"
-        style={{marginTop:12}}
+        style={{
+          marginTop:12
+        }}
       >
+
         <strong>
           Made by YASH KISHORE Michalite
         </strong>
 
-        <div className="muted" style={{
-          marginTop:6,
-          wordBreak:"break-all"
-        }}>
+        <div
+          className="muted"
+          style={{
+            marginTop:6,
+            wordBreak:"break-all"
+          }}
+        >
           Nexus Social Platform
         </div>
+
       </div>
 
     </div>
   );
 }
 
+
 /* =========================================================
    RIGHT SIDEBAR
 ========================================================= */
 
-function RightSidebar({data,onProfile}){
+function RightSidebar({
+  data,
+  onProfile
+}){
 
   const trends={};
 
   data.posts.forEach(p=>{
-    (p.hashtags||[]).forEach(h=>{
-      trends[h]=(trends[h]||0)+1;
-    });
+
+    (p.hashtags||[])
+      .forEach(h=>{
+
+        trends[h]=
+          (trends[h]||0)+1;
+      });
   });
 
-  const top=Object.entries(trends)
-    .sort((a,b)=>b[1]-a[1])
-    .slice(0,6);
+  const top=
+    Object.entries(trends)
+      .sort((a,b)=>b[1]-a[1])
+      .slice(0,6);
 
-  const people=data.users
-    .filter(u=>u.uid!==currentUid())
-    .slice(0,5);
+  const people=
+    data.users
+      .filter(
+        u=>u.uid!==currentUid()
+      )
+      .slice(0,5);
 
   return (
     <aside className="right">
 
       <div className="card right-card">
 
-        <strong>Trending</strong>
+        <strong>
+          Trending
+        </strong>
 
         {top.length===0 && (
-          <div className="muted" style={{
-            marginTop:10
-          }}>
+          <div
+            className="muted"
+            style={{
+              marginTop:10
+            }}
+          >
             No trends yet.
           </div>
         )}
 
-        {top.map(([h,count])=>(
-          <div
-            className="trend"
-            key={h}
-          >
-            <strong>
-              #{h}
-            </strong>
+        {top.map(
+          ([h,count])=>(
+            <div
+              className="trend"
+              key={h}
+            >
 
-            <div className="muted">
-              {count} posts
+              <strong>
+                #{h}
+              </strong>
+
+              <div className="muted">
+                {count} posts
+              </div>
+
             </div>
-          </div>
-        ))}
+          )
+        )}
 
       </div>
+
 
       <div className="card right-card">
 
@@ -3748,6 +4555,7 @@ function RightSidebar({data,onProfile}){
             />
 
             <div>
+
               <strong>
                 {u.displayName}
               </strong>
@@ -3755,6 +4563,7 @@ function RightSidebar({data,onProfile}){
               <div className="muted">
                 @{u.username}
               </div>
+
             </div>
 
           </button>
@@ -3765,6 +4574,7 @@ function RightSidebar({data,onProfile}){
     </aside>
   );
 }
+
 
 /* =========================================================
    PRESENCE
@@ -3789,6 +4599,7 @@ function usePresence(profile){
           },{merge:true});
 
       }catch(e){
+
         console.error(e);
       }
     }
@@ -3807,6 +4618,7 @@ function usePresence(profile){
   },[profile?.uid]);
 }
 
+
 /* =========================================================
    APP
 ========================================================= */
@@ -3822,10 +4634,18 @@ function App(){
 
   const data=useData(profile);
 
-  const [page,setPage]=useState("home");
-  const [profileId,setProfileId]=useState(null);
+  const [
+    page,
+    setPage
+  ]=useState("home");
+
+  const [
+    profileId,
+    setProfileId
+  ]=useState(null);
 
   usePresence(profile);
+
 
   if(!ready){
 
@@ -3853,16 +4673,20 @@ function App(){
           <div style={{
             marginTop:28,
             paddingTop:18,
-            borderTop:"1px solid #292f38",
+            borderTop:
+              "1px solid #292f38",
             fontSize:13,
             color:"#9099a7"
           }}>
+
             Made by{" "}
+
             <strong style={{
               color:"#fff"
             }}>
               YASH KISHORE Michalite
             </strong>
+
           </div>
 
         </div>
@@ -3870,6 +4694,7 @@ function App(){
       </div>
     );
   }
+
 
   if(error){
 
@@ -3883,12 +4708,15 @@ function App(){
           </h1>
 
           <div className="boot-error">
+
             {error.code
               ?error.code+": "
               :""
             }
+
             {error.message||
              String(error)}
+
           </div>
 
           <div
@@ -3900,8 +4728,8 @@ function App(){
           >
 
             <p>
-              Make sure Anonymous Authentication is
-              enabled in Firebase.
+              Make sure Anonymous Authentication
+              is enabled in Firebase.
             </p>
 
             <p>
@@ -3919,7 +4747,9 @@ function App(){
 
           <button
             className="btn primary"
-            onClick={()=>location.reload()}
+            onClick={()=>
+              location.reload()
+            }
           >
             Try again
           </button>
@@ -3929,6 +4759,7 @@ function App(){
       </div>
     );
   }
+
 
   if(!profile){
 
@@ -3950,10 +4781,15 @@ function App(){
           </p>
 
           <div className="muted">
+
             Made by{" "}
-            <strong style={{color:"#fff"}}>
+
+            <strong style={{
+              color:"#fff"
+            }}>
               YASH KISHORE Michalite
             </strong>
+
           </div>
 
         </div>
@@ -3961,6 +4797,7 @@ function App(){
       </div>
     );
   }
+
 
   function navigate(p){
 
@@ -3976,6 +4813,7 @@ function App(){
     });
   }
 
+
   function openProfile(id){
 
     setProfileId(id);
@@ -3987,31 +4825,40 @@ function App(){
     });
   }
 
-  const unread=data.notifications.filter(
-    x=>!x.read
-  ).length;
+
+  const unread=
+    data.notifications.filter(
+      x=>!x.read
+    ).length;
+
 
   return (
     <div className="app">
 
       <div className="topbar">
 
-        <div className="logo" style={{
-          padding:0
-        }}>
+        <div
+          className="logo"
+          style={{
+            padding:0
+          }}
+        >
           Nex<span>us</span>
         </div>
 
         <button
           className="btn"
           onClick={()=>
-            navigate("notifications")
+            navigate(
+              "notifications"
+            )
           }
         >
           🔔 {unread||""}
         </button>
 
       </div>
+
 
       <div className="layout">
 
@@ -4021,11 +4868,14 @@ function App(){
             Nex<span>us</span>
           </div>
 
+
           <nav className="nav">
 
             <button
               className={
-                page==="home"?"active":""
+                page==="home"
+                  ?"active"
+                  :""
               }
               onClick={()=>
                 navigate("home")
@@ -4034,9 +4884,12 @@ function App(){
               🏠 Home
             </button>
 
+
             <button
               className={
-                page==="explore"?"active":""
+                page==="explore"
+                  ?"active"
+                  :""
               }
               onClick={()=>
                 navigate("explore")
@@ -4045,6 +4898,7 @@ function App(){
               🔎 Explore
             </button>
 
+
             <button
               className={
                 page==="notifications"
@@ -4052,49 +4906,73 @@ function App(){
                   :""
               }
               onClick={()=>
-                navigate("notifications")
+                navigate(
+                  "notifications"
+                )
               }
             >
               🔔 Notifications
+
               {unread>0 && (
                 <span style={{
                   marginLeft:7,
-                  color:"var(--accent)"
+                  color:
+                    "var(--accent)"
                 }}>
                   {unread}
                 </span>
               )}
+
             </button>
+
 
             <button
               className={
-                page==="messages"?"active":""
+                page==="messages"
+                  ?"active"
+                  :""
               }
               onClick={()=>
-                navigate("messages")
+                navigate(
+                  "messages"
+                )
               }
             >
               💬 Messages
             </button>
 
+
             <button
               className={
-                page==="profile"?"active":""
+                page==="profile"
+                  ?"active"
+                  :""
               }
               onClick={()=>{
-                setProfileId(profile.uid);
-                navigate("profile");
+
+                setProfileId(
+                  profile.uid
+                );
+
+                navigate(
+                  "profile"
+                );
               }}
             >
               👤 Profile
             </button>
 
+
             <button
               className={
-                page==="settings"?"active":""
+                page==="settings"
+                  ?"active"
+                  :""
               }
               onClick={()=>
-                navigate("settings")
+                navigate(
+                  "settings"
+                )
               }
             >
               ⚙ Settings
@@ -4102,9 +4980,12 @@ function App(){
 
           </nav>
 
+
           <div
             className="card pad"
-            style={{marginTop:20}}
+            style={{
+              marginTop:20
+            }}
           >
 
             <div style={{
@@ -4119,6 +5000,7 @@ function App(){
               />
 
               <div>
+
                 <strong>
                   {profile.displayName}
                 </strong>
@@ -4126,6 +5008,7 @@ function App(){
                 <div className="muted">
                   @{profile.username}
                 </div>
+
               </div>
 
             </div>
@@ -4133,6 +5016,7 @@ function App(){
           </div>
 
         </aside>
+
 
         <main className="main">
 
@@ -4143,12 +5027,14 @@ function App(){
             />
           )}
 
+
           {page==="explore" && (
             <Explore
               data={data}
               onProfile={openProfile}
             />
           )}
+
 
           {page==="notifications" && (
             <Notifications
@@ -4159,11 +5045,13 @@ function App(){
             />
           )}
 
+
           {page==="messages" && (
             <Messages
               users={data.users}
             />
           )}
+
 
           {page==="profile" && (
             <Profile
@@ -4172,13 +5060,15 @@ function App(){
               posts={data.posts}
               follows={data.follows}
               viewedId={
-                profileId||profile.uid
+                profileId||
+                profile.uid
               }
               onEdit={()=>
                 navigate("settings")
               }
             />
           )}
+
 
           {page==="settings" && (
             <Settings
@@ -4189,6 +5079,7 @@ function App(){
 
         </main>
 
+
         <RightSidebar
           data={data}
           onProfile={openProfile}
@@ -4196,11 +5087,14 @@ function App(){
 
       </div>
 
+
       <div className="mobile-nav">
 
         <button
           className={
-            page==="home"?"active":""
+            page==="home"
+              ?"active"
+              :""
           }
           onClick={()=>
             navigate("home")
@@ -4210,9 +5104,12 @@ function App(){
           Home
         </button>
 
+
         <button
           className={
-            page==="explore"?"active":""
+            page==="explore"
+              ?"active"
+              :""
           }
           onClick={()=>
             navigate("explore")
@@ -4222,6 +5119,7 @@ function App(){
           Explore
         </button>
 
+
         <button
           className={
             page==="notifications"
@@ -4229,32 +5127,48 @@ function App(){
               :""
           }
           onClick={()=>
-            navigate("notifications")
+            navigate(
+              "notifications"
+            )
           }
         >
           🔔<br/>
           Alerts
         </button>
 
+
         <button
           className={
-            page==="messages"?"active":""
+            page==="messages"
+              ?"active"
+              :""
           }
           onClick={()=>
-            navigate("messages")
+            navigate(
+              "messages"
+            )
           }
         >
           💬<br/>
           Chat
         </button>
 
+
         <button
           className={
-            page==="profile"?"active":""
+            page==="profile"
+              ?"active"
+              :""
           }
           onClick={()=>{
-            setProfileId(profile.uid);
-            navigate("profile");
+
+            setProfileId(
+              profile.uid
+            );
+
+            navigate(
+              "profile"
+            );
           }}
         >
           👤<br/>
@@ -4267,6 +5181,7 @@ function App(){
   );
 }
 
+
 /* =========================================================
    START
 ========================================================= */
@@ -4277,7 +5192,9 @@ try{
     document.getElementById("root")
   );
 
-  root.render(<App/>);
+  root.render(
+    <App/>
+  );
 
 }catch(e){
 
@@ -4286,10 +5203,17 @@ try{
     e
   );
 
-  document.getElementById("root").innerHTML=`
+  document.getElementById(
+    "root"
+  ).innerHTML=`
+
     <div class="error-screen">
+
       <div class="boot-box">
-        <h1>Nexus Error</h1>
+
+        <h1>
+          Nexus Error
+        </h1>
 
         <div class="boot-error">
           ${String(
@@ -4310,12 +5234,15 @@ try{
           font-size:13px;
         ">
           Made by
+
           <strong style="color:#fff">
             YASH KISHORE Michalite
           </strong>
+
         </div>
 
       </div>
+
     </div>
   `;
 }
