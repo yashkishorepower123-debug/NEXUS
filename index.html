@@ -276,6 +276,7 @@ textarea:focus,input:focus{border-color:#6c55d7;}
 }
 </style>
 </head>
+
 <body>
 <div id="root">
   <div class="loading-screen">
@@ -469,7 +470,6 @@ function isUserOnline(person) {
 
   if (isNaN(lastSeen.getTime())) return false;
 
-  /* 30-second presence window */
   return Date.now() - lastSeen.getTime() < 30000;
 }
 
@@ -674,10 +674,6 @@ function useData(profile) {
     []
   );
 
-  /*
-   * Users listener is important for real-time presence.
-   * Whenever a user's lastSeen changes, this listener updates.
-   */
   const users = useCollection(
     "users",
     ref => ref.limit(500),
@@ -976,9 +972,7 @@ function Composer({ profile }) {
 
   return (
     <div className="card composer">
-
       <div className="composer-row">
-
         <Avatar profile={profile} />
 
         <div style={{ flex: 1 }}>
@@ -998,7 +992,6 @@ function Composer({ profile }) {
                 padding: 10
               }}
             >
-
               <input
                 value={question}
                 onChange={e => setQuestion(e.target.value)}
@@ -1006,7 +999,6 @@ function Composer({ profile }) {
               />
 
               {options.map((x, i) => (
-
                 <div
                   key={i}
                   style={{
@@ -1015,7 +1007,6 @@ function Composer({ profile }) {
                     marginTop: 7
                   }}
                 >
-
                   <input
                     value={x}
                     onChange={e => {
@@ -1038,9 +1029,7 @@ function Composer({ profile }) {
                       ×
                     </button>
                   )}
-
                 </div>
-
               ))}
 
               <button
@@ -1054,7 +1043,6 @@ function Composer({ profile }) {
               >
                 + Option
               </button>
-
             </div>
           )}
 
@@ -1078,7 +1066,6 @@ function Composer({ profile }) {
             </span>
 
             <div style={{ marginLeft: "auto" }}>
-
               <button
                 className="btn primary"
                 disabled={busy}
@@ -1086,15 +1073,11 @@ function Composer({ profile }) {
               >
                 {busy ? "Posting..." : "Post"}
               </button>
-
             </div>
 
           </div>
-
         </div>
-
       </div>
-
     </div>
   );
 }
@@ -1188,7 +1171,6 @@ function Poll({ post }) {
             disabled={voted}
             onClick={() => vote(i)}
           >
-
             <span
               className="poll-bar"
               style={{ width: percent + "%" }}
@@ -1198,7 +1180,6 @@ function Poll({ post }) {
               <span>{x.text}</span>
               <span>{percent}%</span>
             </span>
-
           </button>
         );
       })}
@@ -1237,11 +1218,9 @@ function Comments({ postId, users }) {
         arr.sort((a, b) => {
 
           function t(x) {
-
             if (!x) return 0;
             if (x.toDate) return x.toDate().getTime();
             if (x.seconds) return x.seconds * 1000;
-
             return new Date(x).getTime() || 0;
           }
 
@@ -1344,7 +1323,6 @@ function Comments({ postId, users }) {
                 marginTop: 5
               }}
             >
-
               <button
                 className="btn"
                 onClick={() => {
@@ -1358,7 +1336,6 @@ function Comments({ postId, users }) {
               >
                 Reply
               </button>
-
             </div>
 
           </div>
@@ -2643,7 +2620,7 @@ function Notifications({
 
 /* =======================================================
    MESSAGES
-   UPDATED CHAT AREA
+   FINAL FIXED CHAT SYSTEM
 ======================================================= */
 
 function Messages({ users }) {
@@ -2652,11 +2629,7 @@ function Messages({ users }) {
   const [activeChat, setActiveChat] = useState(null);
   const [messages, setMessages] = useState([]);
   const [textVal, setTextVal] = useState("");
-
-  /* Search */
   const [chatSearch, setChatSearch] = useState("");
-
-  /* Typing */
   const [typingUsers, setTypingUsers] = useState([]);
   const typingTimer = useRef(null);
 
@@ -2756,10 +2729,10 @@ function Messages({ users }) {
 
     return unsub;
 
-  }, [activeChat]);
+  }, [activeChat?.id]);
 
   /* -----------------------------------------------------
-     REAL-TIME TYPING LISTENER
+     REAL-TIME TYPING
   ----------------------------------------------------- */
 
   useEffect(() => {
@@ -2816,9 +2789,6 @@ function Messages({ users }) {
               return false;
             }
 
-            /*
-             * Typing status expires after 5 seconds.
-             */
             return (
               !isNaN(updated) &&
               now - updated < 5000
@@ -2840,7 +2810,7 @@ function Messages({ users }) {
 
     return unsub;
 
-  }, [activeChat]);
+  }, [activeChat?.id]);
 
   /* -----------------------------------------------------
      STOP TYPING
@@ -2860,10 +2830,6 @@ function Messages({ users }) {
 
     } catch(e) {
 
-      /*
-       * Do not break the chat if typing cleanup
-       * is rejected by Firestore rules.
-       */
       console.error(
         "Stop typing:",
         e
@@ -2906,9 +2872,7 @@ function Messages({ users }) {
       }
 
       typingTimer.current = setTimeout(() => {
-
         stopTyping(activeChat.id);
-
       }, 2000);
 
     } catch(e) {
@@ -2921,7 +2885,7 @@ function Messages({ users }) {
   }
 
   /* -----------------------------------------------------
-     CLEANUP TYPING WHEN CHAT CHANGES / LEAVES
+     CLEANUP
   ----------------------------------------------------- */
 
   useEffect(() => {
@@ -3019,12 +2983,16 @@ function Messages({ users }) {
         "Start chat:",
         e
       );
+
+      alert(
+        "Could not open chat.\n\n" +
+        (e?.message || String(e))
+      );
     }
   }
 
   /* -----------------------------------------------------
      OLD NEW CHAT SUPPORT
-     Kept so existing behavior remains available.
   ----------------------------------------------------- */
 
   async function newChat() {
@@ -3038,7 +3006,7 @@ function Messages({ users }) {
     );
 
     if (!user) {
-      console.error("User not found.");
+      alert("User not found.");
       return;
     }
 
@@ -3046,62 +3014,107 @@ function Messages({ users }) {
   }
 
   /* -----------------------------------------------------
-     SEND MESSAGE
+     FINAL MESSAGE SEND
   ----------------------------------------------------- */
 
   async function send() {
 
-    if (!text(textVal) || !activeChat) {
+    if (!activeChat) {
+      alert("Please select a chat first.");
       return;
     }
 
     const messageText = text(textVal);
 
+    if (!messageText) {
+      return;
+    }
+
+    const uid = currentUid();
+
+    if (!uid) {
+      alert(
+        "You are not signed in. Please reload the app."
+      );
+      return;
+    }
+
+    const chatId = activeChat.id;
+
     try {
 
-      await stopTyping(activeChat.id);
-
+      /*
+       * Typing cleanup can never block sending.
+       */
       if (typingTimer.current) {
         clearTimeout(typingTimer.current);
+        typingTimer.current = null;
       }
 
+      stopTyping(chatId).catch(() => {});
+
+      /*
+       * WRITE MESSAGE FIRST
+       */
       await C("chats")
-        .doc(activeChat.id)
+        .doc(chatId)
         .collection("messages")
         .add({
           text: messageText,
-          senderId: currentUid(),
+          senderId: uid,
           createdAt: serverTime()
         });
 
+      /*
+       * UPDATE CHAT
+       */
       await C("chats")
-        .doc(activeChat.id)
+        .doc(chatId)
         .set({
+          participants: activeChat.participants,
           lastMessage: messageText,
           updatedAt: serverTime()
         }, { merge: true });
 
+      /*
+       * Clear only after successful message write.
+       */
+      setTextVal("");
+
+      /*
+       * Notification is completely separate.
+       * It cannot make the message fail.
+       */
       const otherId =
         activeChat.participants.find(
-          p => p !== currentUid()
+          p => p !== uid
         );
 
       if (otherId) {
 
-        await notify(
+        notify(
           otherId,
           "sent you a message",
           "message"
-        );
-      }
+        ).catch(e => {
+          console.error(
+            "Message notification failed:",
+            e
+          );
+        });
 
-      setTextVal("");
+      }
 
     } catch(e) {
 
       console.error(
-        "Send message:",
-        e.message
+        "MESSAGE SEND ERROR:",
+        e
+      );
+
+      alert(
+        "Message could not be sent.\n\n" +
+        (e?.message || String(e))
       );
     }
   }
@@ -3128,10 +3141,6 @@ function Messages({ users }) {
 
     <div className="card message-layout">
 
-      {/* =================================================
-          CHAT LIST
-      ================================================= */}
-
       <div className="chat-list">
 
         <div
@@ -3153,8 +3162,6 @@ function Messages({ users }) {
           </span>
 
         </div>
-
-        {/* SEARCH */}
 
         <div className="chat-search">
 
@@ -3243,8 +3250,6 @@ function Messages({ users }) {
           )}
 
         </div>
-
-        {/* CHAT LIST */}
 
         {chats.length === 0 ? (
 
@@ -3392,17 +3397,11 @@ function Messages({ users }) {
 
       </div>
 
-      {/* =================================================
-          CHAT WINDOW
-      ================================================= */}
-
       <div className="chat-window">
 
         {activeChat ? (
 
           <>
-
-            {/* CHAT HEADER */}
 
             <div className="chat-head">
 
@@ -3479,8 +3478,6 @@ function Messages({ users }) {
 
             </div>
 
-            {/* MESSAGES */}
-
             <div className="messages">
 
               {messages.length === 0 && (
@@ -3541,8 +3538,6 @@ function Messages({ users }) {
 
             </div>
 
-            {/* TYPING INDICATOR */}
-
             <div className="typing-indicator">
 
               {typingUsers.length > 0 ? (
@@ -3550,11 +3545,9 @@ function Messages({ users }) {
                 <>
 
                   <div className="typing-dots">
-
                     <span></span>
                     <span></span>
                     <span></span>
-
                   </div>
 
                   <span>
@@ -3578,8 +3571,6 @@ function Messages({ users }) {
 
             </div>
 
-            {/* COMPOSER */}
-
             <div className="chat-compose">
 
               <input
@@ -3595,6 +3586,7 @@ function Messages({ users }) {
 
                 }}
                 onBlur={() => {
+
                   stopTyping(
                     activeChat.id
                   );
@@ -3604,6 +3596,7 @@ function Messages({ users }) {
                       typingTimer.current
                     );
                   }
+
                 }}
                 placeholder="Type a message..."
                 onKeyDown={e => {
@@ -3613,7 +3606,9 @@ function Messages({ users }) {
                     e.preventDefault();
 
                     send();
+
                   }
+
                 }}
               />
 
@@ -4037,9 +4032,6 @@ function App() {
     error
   } = useAuth();
 
-  /*
-   * Starts the real-time presence heartbeat.
-   */
   usePresence(profile);
 
   const [page, setPage] =
