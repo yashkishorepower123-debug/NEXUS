@@ -1,327 +1,715 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#080a0d">
-<title>Nexus — Social Platform</title>
-<style>
-*{box-sizing:border-box}
-html,body,#root{margin:0;min-height:100%;width:100%}
-body{background:#080a0d;color:#f4f6f8;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.3;}
-button,input,textarea{font:inherit}
-button{cursor:pointer}
-button:disabled{opacity:.5;cursor:not-allowed}
-:root{--bg:#080a0d;--panel:#101318;--panel2:#171b22;--panel3:#1e242d;--line:#292f38;--text:#f4f6f8;--muted:#9099a7;--accent:#7c5cff;--accent2:#a18cff;--green:#38d486;--red:#ff6175;--yellow:#e9bf55;}
-.app{min-height:100vh}
-.layout{width:min(1380px,100%);margin:auto;display:grid;grid-template-columns:240px minmax(0,680px) 290px;gap:20px;padding:20px;}
-.left,.right{position:sticky;top:20px;height:max-content;}
-.main{min-width:0}
-.logo{font-size:27px;font-weight:950;letter-spacing:-1.5px;padding:5px 10px 25px;}
-.logo span{color:var(--accent)}
-.nav{display:flex;flex-direction:column;gap:5px;}
-.nav button{border:0;background:transparent;color:var(--muted);text-align:left;padding:13px 15px;border-radius:13px;font-weight:800;}
-.nav button:hover,.nav button.active{background:var(--panel2);color:#fff;}
-.nav button.active{color:var(--accent2)}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;}
-.pad{padding:18px}
-.topbar{display:none;position:sticky;top:0;z-index:30;padding:12px 15px;background:#080a0df2;backdrop-filter:blur(15px);border-bottom:1px solid var(--line);align-items:center;justify-content:space-between;}
-.btn{border:1px solid var(--line);background:var(--panel2);color:#fff;border-radius:10px;padding:8px 12px;font-weight:750;}
-.btn:hover{background:var(--panel3)}
-.btn.primary{background:var(--accent);border-color:var(--accent);}
-.btn.danger{color:#ff7e8d}
-.muted{color:var(--muted)}
-.avatar{width:44px;height:44px;min-width:44px;border-radius:50%;display:flex;justify-content:center;align-items:center;background:linear-gradient(135deg,#7252ff,#ba9eff);color:white;font-weight:950;border:1px solid #ffffff18;}
-.avatar.small{width:36px;height:36px;min-width:36px;font-size:12px;}
-.avatar.large{width:88px;height:88px;min-width:88px;font-size:27px;}
-.feed-tabs{display:flex;gap:5px;padding:5px;margin-bottom:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;}
-.feed-tabs button{flex:1;border:0;background:transparent;color:var(--muted);padding:9px;border-radius:10px;font-weight:800;}
-.feed-tabs button.active{background:var(--panel3);color:#fff;}
-.composer{padding:18px;margin-bottom:13px;}
-.composer-row{display:flex;gap:12px;}
-textarea,input,select{width:100%;background:#0b0e12;color:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 12px;outline:none;}
-textarea{min-height:100px;resize:vertical;}
-textarea:focus,input:focus{border-color:#6c55d7;}
-.composer-tools{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px;}
-.post{padding:18px;margin-bottom:12px;}
-.post-head{display:flex;gap:10px;align-items:flex-start;}
-.post-user{flex:1;min-width:0;}
-.name{font-weight:900}
-.username,.post-time{color:var(--muted);font-size:14px;}
-.post-time{font-size:12px;}
-.post-body{margin:13px 0 8px 54px;line-height:1.3;white-space:pre-wrap;word-break:break-word;}
-.hashtag,.mention{color:#a693ff;}
-.post-actions{margin-left:54px;display:flex;gap:5px;flex-wrap:wrap;}
-.action{border:0;background:transparent;color:var(--muted);border-radius:9px;padding:7px 9px;}
-.action:hover{background:var(--panel2);color:#fff;}
-.action.liked{color:#ff6680}
-.action.saved{color:#e4bd54}
-.action.reposted{color:#49dc9a}
-.poll{margin:13px 0 8px 54px;padding:12px;border:1px solid var(--line);border-radius:14px;}
-.poll-option{width:100%;position:relative;overflow:hidden;margin:7px 0;padding:10px;text-align:left;border:1px solid var(--line);background:#0b0e12;color:#fff;border-radius:10px;}
-.poll-bar{position:absolute;left:0;top:0;bottom:0;background:#7657ff24;}
-.poll-content{position:relative;display:flex;justify-content:space-between;}
-.comments{margin:12px 0 0 54px;padding-top:10px;border-top:1px solid var(--line);}
-.comment{padding:9px 0;}
-.comment-row{display:flex;gap:8px;}
-.comment-body{flex:1;min-width:0;}
-.reply-list{margin-left:42px;padding-left:10px;border-left:1px solid var(--line);}
-.story-box{padding:15px;margin-bottom:12px;}
-.story-strip{display:flex;gap:9px;overflow:auto;}
-.story{min-width:105px;border:1px solid var(--line);background:var(--panel2);color:#fff;border-radius:14px;padding:10px;text-align:left;}
-.story-text{margin-top:7px;height:50px;overflow:hidden;font-size:13px;}
-.section-title{font-size:22px;font-weight:950;margin-bottom:14px;}
-.empty{padding:45px 15px;text-align:center;color:var(--muted);}
-.searchbox{display:flex;gap:8px;}
-.searchbox input{flex:1}
-.user-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);}
-.user-row:last-child{border-bottom:0}
-.user-row-main{flex:1;min-width:0;}
-.profile-head{padding:20px;}
-.profile-top{display:flex;gap:18px;align-items:center;}
-.profile-info{flex:1;min-width:0;}
-.profile-name{font-size:25px;font-weight:950;}
-.profile-bio{margin-top:8px;color:#c4cad2;white-space:pre-wrap;}
-.stats{display:flex;gap:25px;margin-top:15px;}
-.stat strong{display:block;font-size:18px;}
-.stat span{color:var(--muted);font-size:12px;}
-.notification{display:flex;gap:10px;padding:13px 0;border-bottom:1px solid var(--line);}
-.notification:last-child{border-bottom:0}
-.dot{width:8px;height:8px;min-width:8px;margin-top:7px;border-radius:50%;background:var(--accent);}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Nexus — Social Platform</title>
 
-/* CHAT */
-.message-layout{display:grid;grid-template-columns:225px 1fr;min-height:650px;}
-.chat-list{border-right:1px solid var(--line);padding:12px;min-width:0;}
-.chat-item{display:flex;gap:9px;padding:10px;border-radius:12px;}
-.chat-item:hover,.chat-item.active{background:var(--panel2);}
-.chat-main{flex:1;min-width:0;}
-.chat-window{display:flex;flex-direction:column;min-width:0;}
-.chat-head{padding:14px;border-bottom:1px solid var(--line);}
-.messages{flex:1;overflow:auto;min-height:430px;max-height:550px;padding:15px;}
-.msg{display:flex;margin:7px 0;}
-.msg.mine{justify-content:flex-end;}
-.bubble{max-width:75%;padding:9px 12px;border:1px solid var(--line);background:var(--panel2);border-radius:14px;}
-.mine .bubble{background:#382d72;border-color:#5543a1;}
-.msg-meta{color:var(--muted);font-size:10px;margin-top:4px;}
-.chat-compose{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);}
-.chat-compose input{flex:1}
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-/* ONLINE STATUS */
-.online-wrap{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  color:var(--muted);
-  font-size:12px;
-  margin-top:3px;
-}
+  <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
 
-.online-dot{
-  width:8px;
-  height:8px;
-  min-width:8px;
-  border-radius:50%;
-  background:#707782;
-  display:inline-block;
-}
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-.online-dot.online{
-  background:var(--green);
-  box-shadow:0 0 0 2px rgba(56,212,134,.12);
-}
+    html,
+    body,
+    #root {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      background: #050505;
+      color: #fff;
+    }
 
-/* CHAT SEARCH */
-.chat-search{
-  position:relative;
-  margin-bottom:10px;
-}
+    body {
+      min-height: 100vh;
+    }
 
-.chat-search input{
-  padding:9px 10px;
-  font-size:13px;
-}
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
 
-.chat-search-results{
-  position:absolute;
-  z-index:100;
-  left:0;
-  right:0;
-  top:calc(100% + 5px);
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:12px;
-  overflow:hidden;
-  box-shadow:0 15px 40px rgba(0,0,0,.45);
-  max-height:300px;
-  overflow-y:auto;
-}
+    button {
+      cursor: pointer;
+    }
 
-.chat-search-user{
-  width:100%;
-  display:flex;
-  align-items:center;
-  gap:9px;
-  border:0;
-  background:transparent;
-  color:var(--text);
-  padding:10px;
-  text-align:left;
-}
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
 
-.chat-search-user:hover{
-  background:var(--panel2);
-}
+    /* BOOT */
 
-.chat-search-info{
-  flex:1;
-  min-width:0;
-}
+    #boot-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background:
+        radial-gradient(circle at top, #1c1c1c, #090909 40%, #000);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity .4s ease, visibility .4s ease;
+    }
 
-.chat-search-name{
-  font-weight:800;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
+    #boot-screen.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
 
-.chat-search-username{
-  color:var(--muted);
-  font-size:11px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
+    .boot-box {
+      text-align: center;
+    }
 
-.chat-search-empty{
-  padding:15px 10px;
-  text-align:center;
-  color:var(--muted);
-  font-size:12px;
-}
+    .boot-logo {
+      width: 78px;
+      height: 78px;
+      margin: auto auto 18px;
+      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 42px;
+      font-weight: 900;
+      background: linear-gradient(135deg,#fff,#888);
+      color: #000;
+    }
 
-/* TYPING */
-.typing-indicator{
-  display:flex;
-  align-items:center;
-  gap:7px;
-  padding:5px 14px;
-  color:var(--muted);
-  font-size:12px;
-  min-height:25px;
-}
+    .boot-title {
+      font-size: 32px;
+      font-weight: 900;
+    }
 
-.typing-dots{
-  display:flex;
-  align-items:center;
-  gap:3px;
-}
+    .boot-made {
+      color: #aaa;
+      margin-top: 6px;
+      font-size: 14px;
+    }
 
-.typing-dots span{
-  width:5px;
-  height:5px;
-  border-radius:50%;
-  background:var(--muted);
-  animation:nexusTyping 1.2s infinite ease-in-out;
-}
+    .boot-spinner {
+      width: 26px;
+      height: 26px;
+      border: 3px solid #333;
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin: 25px auto 12px;
+    }
 
-.typing-dots span:nth-child(2){
-  animation-delay:.15s;
-}
+    .boot-loading {
+      color: #777;
+      font-size: 13px;
+    }
 
-.typing-dots span:nth-child(3){
-  animation-delay:.3s;
-}
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
-@keyframes nexusTyping{
-  0%,60%,100%{
-    transform:translateY(0);
-    opacity:.4;
-  }
-  30%{
-    transform:translateY(-3px);
-    opacity:1;
-  }
-}
+    /* APP */
 
-.right-card{padding:15px;margin-bottom:13px;}
-.trend{padding:10px 0;border-bottom:1px solid var(--line);}
-.trend:last-child{border-bottom:0}
-.loading-screen,.error-screen{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;background:var(--bg);}
-.boot-box{width:min(600px,100%);background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:30px;text-align:center;}
-.boot-box h1{font-size:35px;margin:0 0 10px;}
-.boot-error{margin:15px 0;padding:13px;background:#38151d;color:#ff9ba7;border-radius:10px;text-align:left;white-space:pre-wrap;word-break:break-word;}
-.mobile-nav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:50;background:#0b0d11f5;border-top:1px solid var(--line);padding:7px;grid-template-columns:repeat(5,1fr);}
-.mobile-nav button{border:0;background:transparent;color:var(--muted);font-size:11px;padding:7px 2px;}
-.mobile-nav button.active{color:#fff;}
-.modal-bg{position:fixed;inset:0;z-index:100;background:#000c;display:flex;align-items:center;justify-content:center;padding:20px;}
-.modal{width:min(560px,100%);max-height:90vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;}
-@media(max-width:1050px){.layout{grid-template-columns:210px minmax(0,1fr);}.right{display:none}}
-@media(max-width:760px){
-  .layout{display:block;padding:10px 10px 80px;}
-  .left{display:none}
-  .topbar{display:flex}
-  .mobile-nav{display:grid}
-  .post-body,.post-actions,.poll,.comments{margin-left:0;}
-  .message-layout{grid-template-columns:1fr;}
-  .chat-list{
-    display:block;
-    border-right:0;
-    border-bottom:1px solid var(--line);
-    max-height:280px;
-    overflow:auto;
-  }
-  .chat-window{min-height:550px;}
-  .profile-top{align-items:flex-start;}
-  .avatar.large{width:70px;height:70px;min-width:70px;}
-}
-</style>
+    .app {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 50% -10%,#1c1c1c,#080808 35%,#050505 70%);
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 64px;
+      border-bottom: 1px solid #222;
+      background: rgba(5,5,5,.9);
+      backdrop-filter: blur(18px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      background: #fff;
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #292929;
+      background: #111;
+      color: #fff;
+      border-radius: 12px;
+    }
+
+    .layout {
+      width: min(1180px,100%);
+      margin: auto;
+      display: grid;
+      grid-template-columns: 230px minmax(0,650px) 260px;
+      gap: 22px;
+      padding: 24px 16px;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 88px;
+      height: fit-content;
+    }
+
+    .nav-card,
+    .side-card {
+      background: rgba(15,15,15,.85);
+      border: 1px solid #242424;
+      border-radius: 18px;
+      padding: 10px;
+    }
+
+    .nav-item {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: #aaa;
+      padding: 12px;
+      border-radius: 12px;
+      text-align: left;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      background: #1b1b1b;
+      color: #fff;
+    }
+
+    main,
+    .feed {
+      min-width: 0;
+    }
+
+    /* COMPOSER */
+
+    .composer {
+      background: #101010;
+      border: 1px solid #252525;
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+
+    .composer textarea {
+      width: 100%;
+      min-height: 90px;
+      resize: vertical;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #fff;
+      font-size: 16px;
+    }
+
+    .composer-bottom {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .primary {
+      border: 0;
+      background: #fff;
+      color: #000;
+      padding: 10px 17px;
+      border-radius: 11px;
+      font-weight: 800;
+    }
+
+    .primary:hover {
+      background: #ddd;
+    }
+
+    .secondary {
+      border: 1px solid #303030;
+      background: #151515;
+      color: #fff;
+      padding: 9px 15px;
+      border-radius: 11px;
+    }
+
+    /* SEARCH */
+
+    .search-box {
+      margin-bottom: 17px;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: #111;
+      color: #fff;
+      border: 1px solid #282828;
+      border-radius: 13px;
+      padding: 12px 14px;
+      outline: none;
+    }
+
+    /* POSTS */
+
+    .post {
+      background: #101010;
+      border: 1px solid #252525;
+      border-radius: 18px;
+      padding: 17px;
+      margin-bottom: 15px;
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg,#fff,#777);
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .avatar.small {
+      width: 34px;
+      height: 34px;
+      font-size: 13px;
+    }
+
+    .post-author {
+      font-weight: 800;
+    }
+
+    .post-time {
+      color: #666;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .post-content {
+      white-space: pre-wrap;
+      word-break: break-word;
+      margin: 15px 0;
+      line-height: 1.55;
+      color: #eee;
+    }
+
+    .hashtag {
+      color: #8ab4ff;
+    }
+
+    .post-actions {
+      display: flex;
+      gap: 5px;
+      border-top: 1px solid #202020;
+      padding-top: 11px;
+    }
+
+    .action-btn {
+      border: 0;
+      background: transparent;
+      color: #888;
+      padding: 8px 10px;
+      border-radius: 9px;
+    }
+
+    .action-btn:hover {
+      background: #1b1b1b;
+      color: #fff;
+    }
+
+    .action-btn.liked {
+      color: #ff6b8a;
+    }
+
+    .post-menu {
+      border: 0;
+      background: transparent;
+      color: #777;
+      font-size: 19px;
+    }
+
+    /* COMMENTS */
+
+    .comments {
+      margin-top: 12px;
+      border-top: 1px solid #202020;
+      padding-top: 12px;
+    }
+
+    .comment {
+      display: flex;
+      gap: 9px;
+      margin-bottom: 10px;
+    }
+
+    .comment-body {
+      background: #181818;
+      border-radius: 12px;
+      padding: 8px 11px;
+      flex: 1;
+    }
+
+    .comment-name {
+      font-size: 12px;
+      font-weight: 800;
+      color: #aaa;
+    }
+
+    .comment-text {
+      font-size: 14px;
+      margin-top: 3px;
+      line-height: 1.4;
+    }
+
+    .comment-input {
+      width: 100%;
+      background: #181818;
+      border: 1px solid #292929;
+      border-radius: 11px;
+      padding: 10px;
+      color: #fff;
+      outline: none;
+      margin-top: 7px;
+    }
+
+    /* PROFILE */
+
+    .profile-card {
+      background: #101010;
+      border: 1px solid #252525;
+      border-radius: 18px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .profile-cover {
+      height: 150px;
+      background:
+        radial-gradient(circle at 20% 20%,#555,transparent 35%),
+        linear-gradient(135deg,#292929,#050505);
+    }
+
+    .profile-main {
+      padding: 0 20px 20px;
+    }
+
+    .profile-avatar {
+      width: 86px;
+      height: 86px;
+      margin-top: -43px;
+      border: 5px solid #101010;
+      border-radius: 50%;
+      background: linear-gradient(135deg,#fff,#777);
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      font-weight: 900;
+    }
+
+    .profile-name {
+      font-size: 24px;
+      font-weight: 900;
+      margin-top: 12px;
+    }
+
+    .profile-username {
+      color: #777;
+      margin-top: 3px;
+    }
+
+    .profile-bio {
+      color: #ccc;
+      margin-top: 13px;
+      line-height: 1.5;
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 25px;
+      margin-top: 18px;
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 18px;
+    }
+
+    .stat span {
+      color: #777;
+      font-size: 12px;
+    }
+
+    /* SIDE */
+
+    .side-title {
+      font-weight: 800;
+      margin-bottom: 13px;
+    }
+
+    .person {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 12px;
+    }
+
+    .person-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .person-name {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .person-user {
+      color: #666;
+      font-size: 12px;
+    }
+
+    .follow-btn {
+      border: 1px solid #333;
+      background: #fff;
+      color: #000;
+      padding: 6px 10px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    /* MODAL */
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      background: rgba(0,0,0,.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .modal {
+      width: min(500px,100%);
+      background: #111;
+      border: 1px solid #303030;
+      border-radius: 20px;
+      padding: 20px;
+    }
+
+    .field {
+      margin-bottom: 13px;
+    }
+
+    .field label {
+      display: block;
+      color: #888;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+
+    .field input,
+    .field textarea {
+      width: 100%;
+      background: #181818;
+      border: 1px solid #303030;
+      border-radius: 11px;
+      padding: 11px;
+      color: #fff;
+      outline: none;
+    }
+
+    .field textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    /* ERROR */
+
+    .error-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: #050505;
+    }
+
+    .error-card {
+      width: min(650px,100%);
+      background: #111;
+      border: 1px solid #3b2222;
+      border-radius: 20px;
+      padding: 25px;
+    }
+
+    .error-message {
+      background: #190d0d;
+      border: 1px solid #3c1d1d;
+      border-radius: 12px;
+      padding: 12px;
+      color: #ffb5b5;
+      font-family: monospace;
+      word-break: break-word;
+      margin: 15px 0;
+    }
+
+    .setup-list {
+      color: #bbb;
+      line-height: 1.7;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 50px 20px;
+      color: #666;
+    }
+
+    .status {
+      font-size: 12px;
+      color: #555;
+      margin: -8px 0 15px;
+    }
+
+    /* MOBILE */
+
+    @media(max-width:950px) {
+      .layout {
+        grid-template-columns: 190px minmax(0,1fr);
+      }
+
+      .right-sidebar {
+        display: none;
+      }
+    }
+
+    @media(max-width:700px) {
+      .layout {
+        display: block;
+        padding: 15px 10px 80px;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: auto;
+        z-index: 200;
+        padding: 7px;
+        background: rgba(5,5,5,.94);
+        border-top: 1px solid #222;
+      }
+
+      .nav-card {
+        display: flex;
+        justify-content: space-around;
+        padding: 3px;
+      }
+
+      .nav-item {
+        width: auto;
+        margin: 0;
+        text-align: center;
+        font-size: 12px;
+      }
+
+      .topbar {
+        height: 58px;
+      }
+
+      .post,
+      .composer,
+      .profile-card {
+        border-radius: 14px;
+      }
+    }
+  </style>
 </head>
 
 <body>
-<div id="root">
-  <div class="loading-screen">
-    <div class="boot-box">
-      <h1>Nex<span style="color:#7c5cff">us</span></h1>
-      <p>Loading Nexus…</p>
-      <div style="margin-top:28px;padding-top:18px;border-top:1px solid #292f38;color:#9099a7;font-size:13px;">
-        Made by <strong style="color:#fff">YASH KISHORE Michalite</strong>
-      </div>
-    </div>
+
+<div id="boot-screen">
+  <div class="boot-box">
+    <div class="boot-logo">N</div>
+    <div class="boot-title">Nexus</div>
+    <div class="boot-made">Made by Yash</div>
+    <div class="boot-spinner"></div>
+    <div class="boot-loading">Connecting to Firebase...</div>
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-<script>
-setTimeout(function(){
-  const root=document.getElementById("root");
-
-  if(!window.React || !window.ReactDOM){
-    root.innerHTML=`<div class="error-screen"><div class="boot-box"><h1>React failed to load</h1><div class="boot-error">The React library could not be loaded. Check your internet connection and reload.</div><button class="btn primary" onclick="location.reload()">Reload</button></div></div>`;
-  }
-
-  if(!window.firebase){
-    root.innerHTML=`<div class="error-screen"><div class="boot-box"><h1>Firebase failed to load</h1><div class="boot-error">The Firebase SDK could not be loaded.</div><button class="btn primary" onclick="location.reload()">Reload</button></div></div>`;
-  }
-},3000);
-
-window.addEventListener("error",function(e){
-  console.error("Nexus error:",e.error||e.message);
-});
-
-window.addEventListener("unhandledrejection",function(e){
-  console.error("Nexus promise error:",e.reason);
-});
-</script>
+<div id="root"></div>
 
 <script type="text/babel">
 
-const { useState, useEffect, useRef } = React;
+const {
+  useState,
+  useEffect,
+  useMemo
+} = React;
+
+
+/* =========================================================
+   FIREBASE
+========================================================= */
 
 const firebaseConfig = {
   apiKey: "AIzaSyDTrvD7c1TUtPUUOSX7_-0VV9itC28LOg0",
@@ -334,1060 +722,610 @@ const firebaseConfig = {
 };
 
 const APP_ID = "nexus-37600";
-const ROOT = "artifacts/" + APP_ID + "/public/data";
 
-let db = null;
 let auth = null;
-let firebaseError = null;
+let db = null;
 
 try {
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  db = firebase.firestore();
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+
   auth = firebase.auth();
-} catch(e) {
-  firebaseError = e;
-  console.error(e);
+  db = firebase.firestore();
+
+} catch (error) {
+  console.error("Firebase initialization failed:", error);
 }
 
-function C(name) {
-  return db.collection(ROOT + "/" + name);
+
+function collectionPath(name) {
+  if (!db) {
+    throw new Error("Firestore is not initialized.");
+  }
+
+  return db
+    .collection("artifacts")
+    .doc(APP_ID)
+    .collection("public")
+    .doc("data")
+    .collection(name);
 }
 
-function serverTime() {
-  return firebase.firestore.FieldValue.serverTimestamp();
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function timestampMillis(value) {
+
+  if (!value) return 0;
+
+  try {
+
+    if (typeof value.toMillis === "function") {
+      return value.toMillis();
+    }
+
+    if (typeof value.seconds === "number") {
+      return value.seconds * 1000;
+    }
+
+    if (value instanceof Date) {
+      return value.getTime();
+    }
+
+    const date = new Date(value);
+
+    return Number.isFinite(date.getTime())
+      ? date.getTime()
+      : 0;
+
+  } catch {
+    return 0;
+  }
 }
 
-function currentUid() {
-  return auth?.currentUser?.uid || null;
+
+function formatTime(timestamp) {
+
+  const time = timestampMillis(timestamp);
+
+  if (!time) return "now";
+
+  const diff = Math.max(0, Date.now() - time);
+
+  const seconds = Math.floor(diff / 1000);
+
+  if (seconds < 60) {
+    return `${seconds}s`;
+  }
+
+  const minutes = Math.floor(seconds / 60);
+
+  if (minutes < 60) {
+    return `${minutes}m`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+
+  if (hours < 24) {
+    return `${hours}h`;
+  }
+
+  const days = Math.floor(hours / 24);
+
+  if (days < 30) {
+    return `${days}d`;
+  }
+
+  return new Date(time).toLocaleDateString();
 }
 
-function text(v) {
-  return String(v || "").trim();
-}
 
-function initials(name) {
-  return text(name || "User")
+function getInitials(name) {
+
+  if (!name) return "N";
+
+  return name
+    .trim()
     .split(/\s+/)
+    .filter(Boolean)
     .slice(0,2)
     .map(x => x[0])
     .join("")
-    .toUpperCase();
+    .toUpperCase() || "N";
 }
 
-function timeAgo(value) {
-  if (!value) return "";
 
-  let d;
+function makeHashtags(text) {
 
-  if (value.toDate) d = value.toDate();
-  else if (value.seconds) d = new Date(value.seconds * 1000);
-  else d = new Date(value);
+  if (!text) return [];
 
-  if (isNaN(d.getTime())) return "";
-
-  const seconds = Math.max(
-    1,
-    Math.floor((Date.now() - d.getTime()) / 1000)
-  );
-
-  if (seconds < 60) return seconds + "s";
-  if (seconds < 3600) return Math.floor(seconds / 60) + "m";
-  if (seconds < 86400) return Math.floor(seconds / 3600) + "h";
-  if (seconds < 604800) return Math.floor(seconds / 86400) + "d";
-
-  return d.toLocaleDateString();
+  return [
+    ...new Set(
+      (text.match(/#[a-zA-Z0-9_]+/g) || [])
+        .map(x => x.toLowerCase())
+    )
+  ];
 }
 
-function username(v) {
-  return text(v)
-    .toLowerCase()
-    .replace(/^@/,"")
-    .replace(/[^a-z0-9_]/g,"")
-    .slice(0,24);
-}
 
-function hashtags(v) {
-  const result = [];
-  const re = /(^|\s)#([a-zA-Z0-9_]+)/g;
-  let m;
-
-  while ((m = re.exec(v))) {
-    result.push(m[2].toLowerCase());
-  }
-
-  return [...new Set(result)];
-}
-
-function mentions(v) {
-  const result = [];
-  const re = /(^|\s)@([a-zA-Z0-9_]+)/g;
-  let m;
-
-  while ((m = re.exec(v))) {
-    result.push(m[2].toLowerCase());
-  }
-
-  return [...new Set(result)];
-}
-
-function renderText(v) {
-  return text(v)
-    .split(/(\#[a-zA-Z0-9_]+|\@[a-zA-Z0-9_]+)/)
-    .map((p, i) => {
-      if (p.startsWith("#")) {
-        return <span className="hashtag" key={i}>{p}</span>;
-      }
-
-      if (p.startsWith("@")) {
-        return <span className="mention" key={i}>{p}</span>;
-      }
-
-      return <React.Fragment key={i}>{p}</React.Fragment>;
-    });
-}
-
-/* -------------------------------------------------------
-   REAL-TIME PRESENCE
-------------------------------------------------------- */
-
-function isUserOnline(person) {
-  if (!person || person.showOnline === false) return false;
-  if (!person.lastSeen) return false;
-
-  let lastSeen;
-
-  try {
-    if (person.lastSeen.toDate) {
-      lastSeen = person.lastSeen.toDate();
-    } else if (person.lastSeen.seconds) {
-      lastSeen = new Date(person.lastSeen.seconds * 1000);
-    } else {
-      lastSeen = new Date(person.lastSeen);
-    }
-  } catch(e) {
-    return false;
-  }
-
-  if (isNaN(lastSeen.getTime())) return false;
-
-  return Date.now() - lastSeen.getTime() < 30000;
-}
-
-function usePresence(profile) {
-  useEffect(() => {
-    if (!profile?.uid || !db) return;
-
-    let stopped = false;
-
-    async function heartbeat() {
-      if (stopped || !currentUid()) return;
-
-      try {
-        await C("users").doc(profile.uid).set({
-          online: true,
-          lastSeen: serverTime()
-        }, { merge: true });
-      } catch(e) {
-        console.error("Presence heartbeat:", e);
-      }
-    }
-
-    heartbeat();
-
-    const timer = setInterval(heartbeat, 15000);
-
-    return () => {
-      stopped = true;
-      clearInterval(timer);
-    };
-  }, [profile?.uid]);
-}
-
-/* -------------------------------------------------------
+/* =========================================================
    AUTH
-------------------------------------------------------- */
+========================================================= */
 
 function useAuth() {
-  const [profile, setProfile] = useState(null);
-  const [user, setUser] = useState(null);
-  const [ready, setReady] = useState(false);
-  const [error, setError] = useState(null);
+
+  const [user,setUser] = useState(null);
+  const [profile,setProfile] = useState(null);
+  const [loading,setLoading] = useState(true);
+  const [error,setError] = useState(null);
 
   useEffect(() => {
-    if (firebaseError) {
-      setError(firebaseError);
-      setReady(true);
+
+    if (!auth || !db) {
+
+      setError({
+        code: "firebase/init-failed",
+        message: "Firebase could not initialize."
+      });
+
+      setLoading(false);
+
       return;
     }
 
-    let stopped = false;
+    let cancelled = false;
 
-    const unsubscribe = auth.onAuthStateChanged(async u => {
-      try {
-        if (!u) {
-          await auth.signInAnonymously();
-          return;
-        }
+    const unsubscribe =
+      auth.onAuthStateChanged(async currentUser => {
 
-        if (stopped) return;
+        if (cancelled) return;
 
-        setUser(u);
+        try {
 
-        const ref = C("users").doc(u.uid);
-        const snap = await ref.get();
+          if (!currentUser) {
 
-        if (!snap.exists) {
-          const newProfile = {
-            uid: u.uid,
-            displayName: "Nexus User",
-            username: "user_" + u.uid.slice(0, 8),
-            bio: "",
-            followersCount: 0,
-            followingCount: 0,
-            postsCount: 0,
-            showOnline: true,
-            notifyLikes: true,
-            notifyMessages: true,
-            online: true,
-            lastSeen: serverTime(),
-            createdAt: serverTime(),
-            updatedAt: serverTime()
-          };
+            await auth.signInAnonymously();
 
-          await ref.set(newProfile);
+            return;
+          }
 
-          setProfile({
-            ...newProfile,
-            createdAt: null,
-            updatedAt: null,
-            lastSeen: null
+          setUser(currentUser);
+
+          const userRef =
+            collectionPath("users")
+              .doc(currentUser.uid);
+
+          const snapshot =
+            await userRef.get();
+
+          if (!snapshot.exists) {
+
+            const newProfile = {
+              uid: currentUser.uid,
+              displayName: "Yash",
+              username:
+                "yash_" +
+                currentUser.uid.slice(0,6),
+              bio: "Welcome to Nexus 👋",
+              followers: 0,
+              following: 0,
+              createdAt:
+                firebase.firestore.FieldValue
+                  .serverTimestamp()
+            };
+
+            await userRef.set(newProfile);
+
+            setProfile({
+              ...newProfile,
+              uid: currentUser.uid
+            });
+
+          } else {
+
+            setProfile({
+              uid: currentUser.uid,
+              ...snapshot.data()
+            });
+          }
+
+          setError(null);
+          setLoading(false);
+
+          setTimeout(() => {
+
+            const screen =
+              document.getElementById("boot-screen");
+
+            if (screen) {
+              screen.classList.add("hide");
+            }
+
+          },300);
+
+        } catch (error) {
+
+          console.error(error);
+
+          setError({
+            code: error.code || "firebase/error",
+            message:
+              error.message ||
+              "Could not connect to Firebase."
           });
-        } else {
-          setProfile({
-            uid: u.uid,
-            ...snap.data()
-          });
+
+          setLoading(false);
+
+          const screen =
+            document.getElementById("boot-screen");
+
+          if (screen) {
+            screen.classList.add("hide");
+          }
         }
 
-        setReady(true);
-
-      } catch(e) {
-        console.error(e);
-
-        if (!stopped) {
-          setError(e);
-          setReady(true);
-        }
-      }
-    }, e => {
-      setError(e);
-      setReady(true);
-    });
+      });
 
     return () => {
-      stopped = true;
-      unsubscribe();
+
+      cancelled = true;
+
+      if (unsubscribe) {
+        unsubscribe();
+      }
+
     };
-  }, []);
+
+  },[]);
 
   return {
     user,
     profile,
     setProfile,
-    ready,
+    loading,
     error
   };
 }
 
-/* -------------------------------------------------------
-   COLLECTION
-------------------------------------------------------- */
 
-function useCollection(name, makeQuery, deps = []) {
-  const [items, setItems] = useState([]);
-  const [error, setError] = useState(null);
+/* =========================================================
+   REALTIME DATA
+========================================================= */
+
+const COLLECTIONS = [
+  "users",
+  "posts",
+  "comments",
+  "likes",
+  "follows",
+  "notifications",
+  "messages"
+];
+
+
+function useRealtimeData(uid) {
+
+  const [data,setData] = useState({
+    users: [],
+    posts: [],
+    comments: [],
+    likes: [],
+    follows: [],
+    notifications: [],
+    messages: []
+  });
+
+  const [ready,setReady] = useState(false);
+  const [firestoreError,setFirestoreError] = useState(null);
 
   useEffect(() => {
-    if (!db) return;
 
-    let query;
-
-    try {
-      query = makeQuery(C(name));
-    } catch(e) {
-      setError(e);
+    if (!uid || !db) {
       return;
     }
 
-    const unsubscribe = query.onSnapshot(snap => {
-
-      const result = snap.docs.map(d => ({
-        id: d.id,
-        ...d.data()
-      }));
-
-      result.sort((a, b) => {
-
-        function timestamp(x) {
-          if (!x) return 0;
-
-          if (x.toDate) return x.toDate().getTime();
-          if (x.seconds) return x.seconds * 1000;
-
-          const d = new Date(x);
-
-          return isNaN(d.getTime()) ? 0 : d.getTime();
-        }
-
-        return timestamp(b.createdAt) - timestamp(a.createdAt);
-      });
-
-      setItems(result);
-      setError(null);
-
-    }, e => {
-      console.error("Nexus " + name + " error:", e);
-      setError(e);
-    });
-
-    return unsubscribe;
-
-  }, deps);
-
-  return {
-    items,
-    error
-  };
-}
-
-/* -------------------------------------------------------
-   DATA
-------------------------------------------------------- */
-
-function useData(profile) {
-
-  const id = profile?.uid;
-
-  const posts = useCollection(
-    "posts",
-    ref => ref.limit(500),
-    []
-  );
-
-  const users = useCollection(
-    "users",
-    ref => ref.limit(500),
-    []
-  );
-
-  const follows = useCollection(
-    "follows",
-    ref => ref.where("followerId", "==", id),
-    [id]
-  );
-
-  const likes = useCollection(
-    "likes",
-    ref => ref.where("userId", "==", id),
-    [id]
-  );
-
-  const bookmarks = useCollection(
-    "bookmarks",
-    ref => ref.where("userId", "==", id),
-    [id]
-  );
-
-  const reposts = useCollection(
-    "reposts",
-    ref => ref.where("userId", "==", id),
-    [id]
-  );
-
-  const blocks = useCollection(
-    "blocks",
-    ref => ref.where("blockerId", "==", id),
-    [id]
-  );
-
-  const mutes = useCollection(
-    "mutes",
-    ref => ref.where("muterId", "==", id),
-    [id]
-  );
-
-  const notifications = useCollection(
-    "notifications",
-    ref => ref.where("recipientId", "==", id).limit(100),
-    [id]
-  );
-
-  const stories = useCollection(
-    "stories",
-    ref => ref.limit(300),
-    []
-  );
-
-  return {
-    posts: posts.items,
-    users: users.items,
-    follows: follows.items,
-    likes: likes.items,
-    bookmarks: bookmarks.items,
-    reposts: reposts.items,
-    blocks: blocks.items,
-    mutes: mutes.items,
-    notifications: notifications.items,
-    stories: stories.items
-  };
-}
-
-/* -------------------------------------------------------
-   NOTIFICATIONS
-------------------------------------------------------- */
-
-async function notify(recipient, message, type, data = {}) {
-
-  if (!recipient || recipient === currentUid()) return;
-
-  try {
-
-    await C("notifications").add({
-      recipientId: recipient,
-      actorId: currentUid(),
-      message,
-      type,
-      read: false,
-      createdAt: serverTime(),
-      ...data
-    });
-
-  } catch(e) {
-    console.error("Notification:", e);
-  }
-}
-
-/* -------------------------------------------------------
-   AVATAR
-------------------------------------------------------- */
-
-function Avatar({ profile, size = "" }) {
-
-  return (
-    <div className={"avatar " + size}>
-      {initials(
-        profile?.displayName ||
-        profile?.username ||
-        "User"
-      )}
-    </div>
-  );
-}
-
-/* -------------------------------------------------------
-   FOLLOW
-------------------------------------------------------- */
-
-function FollowButton({ targetId, following }) {
-
-  const [busy, setBusy] = useState(false);
-
-  async function toggle() {
-
-    if (busy || !targetId || targetId === currentUid()) return;
-
-    setBusy(true);
-
-    try {
-
-      const snap = await C("follows")
-        .where("followerId", "==", currentUid())
-        .where("followingId", "==", targetId)
-        .limit(1)
-        .get();
-
-      if (snap.empty) {
-
-        await C("follows").add({
-          followerId: currentUid(),
-          followingId: targetId,
-          createdAt: serverTime()
-        });
-
-        await C("users")
-          .doc(targetId)
-          .set({
-            followersCount:
-              firebase.firestore.FieldValue.increment(1)
-          }, { merge: true });
-
-        await C("users")
-          .doc(currentUid())
-          .set({
-            followingCount:
-              firebase.firestore.FieldValue.increment(1)
-          }, { merge: true });
-
-        await notify(
-          targetId,
-          "started following you",
-          "follow"
-        );
-
-      } else {
-
-        const batch = db.batch();
-
-        snap.docs.forEach(d => batch.delete(d.ref));
-
-        await batch.commit();
-
-        await C("users")
-          .doc(targetId)
-          .set({
-            followersCount:
-              firebase.firestore.FieldValue.increment(-1)
-          }, { merge: true });
-
-        await C("users")
-          .doc(currentUid())
-          .set({
-            followingCount:
-              firebase.firestore.FieldValue.increment(-1)
-          }, { merge: true });
-      }
-
-    } catch(e) {
-      console.error(e.message);
-    }
-
-    setBusy(false);
-  }
-
-  return (
-    <button
-      className={"btn " + (!following ? "primary" : "")}
-      onClick={toggle}
-      disabled={busy}
-    >
-      {following ? "Following" : "Follow"}
-    </button>
-  );
-}
-
-/* -------------------------------------------------------
-   COMPOSER
-------------------------------------------------------- */
-
-function Composer({ profile }) {
-
-  const [value, setValue] = useState("");
-  const [poll, setPoll] = useState(false);
-  const [question, setQuestion] = useState("");
-  const [options, setOptions] = useState(["", ""]);
-  const [busy, setBusy] = useState(false);
-
-  async function publish() {
-
-    const body = text(value);
-
-    if (!body && !poll) return;
-
-    setBusy(true);
-
-    try {
-
-      const data = {
-        authorId: currentUid(),
-        authorName: profile.displayName || "Nexus User",
-        authorUsername: profile.username || "user",
-        text: body,
-        createdAt: serverTime(),
-        likesCount: 0,
-        commentsCount: 0,
-        repostsCount: 0,
-        hashtags: hashtags(body),
-        mentions: mentions(body)
-      };
-
-      if (poll) {
-
-        const clean = options.map(text).filter(Boolean);
-
-        if (!text(question) || clean.length < 2) {
-          console.error(
-            "A poll needs a question and at least 2 options."
-          );
-
-          setBusy(false);
-          return;
-        }
-
-        data.poll = {
-          question: text(question),
-          options: clean.map(x => ({
-            text: x,
-            votes: 0
-          }))
-        };
-      }
-
-      const ref = await C("posts").add(data);
-
-      for (const mention of mentions(body)) {
-
-        const users = await C("users")
-          .where("username", "==", mention)
-          .limit(1)
-          .get();
-
-        if (!users.empty) {
-          await notify(
-            users.docs[0].id,
-            "mentioned you in a post",
-            "mention",
-            { postId: ref.id }
-          );
-        }
-      }
-
-      await C("users")
-        .doc(currentUid())
-        .set({
-          postsCount:
-            firebase.firestore.FieldValue.increment(1)
-        }, { merge: true });
-
-      setValue("");
-      setPoll(false);
-      setQuestion("");
-      setOptions(["", ""]);
-
-    } catch(e) {
-      console.error(e.message);
-    }
-
-    setBusy(false);
-  }
-
-  return (
-    <div className="card composer">
-      <div className="composer-row">
-        <Avatar profile={profile} />
-
-        <div style={{ flex: 1 }}>
-
-          <textarea
-            value={value}
-            onChange={e => setValue(e.target.value)}
-            placeholder="What's happening on Nexus?"
-          />
-
-          {poll && (
-            <div
-              style={{
-                marginTop: 10,
-                border: "1px solid var(--line)",
-                borderRadius: 12,
-                padding: 10
-              }}
-            >
-              <input
-                value={question}
-                onChange={e => setQuestion(e.target.value)}
-                placeholder="Poll question"
-              />
-
-              {options.map((x, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: "flex",
-                    gap: 6,
-                    marginTop: 7
-                  }}
-                >
-                  <input
-                    value={x}
-                    onChange={e => {
-                      const copy = [...options];
-                      copy[i] = e.target.value;
-                      setOptions(copy);
-                    }}
-                    placeholder={"Option " + (i + 1)}
-                  />
-
-                  {options.length > 2 && (
-                    <button
-                      className="btn"
-                      onClick={() =>
-                        setOptions(
-                          options.filter((_, n) => n !== i)
-                        )
-                      }
-                    >
-                      ×
-                    </button>
-                  )}
-                </div>
-              ))}
-
-              <button
-                className="btn"
-                style={{ marginTop: 8 }}
-                onClick={() => {
-                  if (options.length < 6) {
-                    setOptions([...options, ""]);
-                  }
-                }}
-              >
-                + Option
-              </button>
-            </div>
-          )}
-
-          <div className="composer-tools">
-
-            <button
-              className={"btn " + (poll ? "primary" : "")}
-              onClick={() => setPoll(!poll)}
-            >
-              📊 Poll
-            </button>
-
-            <span
-              className="muted"
-              style={{
-                padding: "8px 2px",
-                fontSize: 12
-              }}
-            >
-              #hashtags · @mentions
-            </span>
-
-            <div style={{ marginLeft: "auto" }}>
-              <button
-                className="btn primary"
-                disabled={busy}
-                onClick={publish}
-              >
-                {busy ? "Posting..." : "Post"}
-              </button>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* -------------------------------------------------------
-   POLL
-------------------------------------------------------- */
-
-function Poll({ post }) {
-
-  const [options, setOptions] = useState(
-    post.poll?.options || []
-  );
-
-  const [voted, setVoted] = useState(false);
-
-  useEffect(() => {
-
-    C("pollVotes")
-      .where("pollId", "==", post.id)
-      .where("userId", "==", currentUid())
-      .limit(1)
-      .get()
-      .then(snap => setVoted(!snap.empty))
-      .catch(() => {});
-
-  }, [post.id]);
-
-  async function vote(index) {
-
-    if (voted) return;
-
-    try {
-
-      await C("pollVotes").add({
-        pollId: post.id,
-        postId: post.id,
-        userId: currentUid(),
-        option: index,
-        createdAt: serverTime()
-      });
-
-      const next = options.map((x, i) =>
-        i === index
-          ? {
-              ...x,
-              votes: Number(x.votes || 0) + 1
+    setReady(false);
+    setFirestoreError(null);
+
+    const loaded = new Set();
+    const unsubscribers = [];
+
+    COLLECTIONS.forEach(name => {
+
+      const unsubscribe =
+        collectionPath(name)
+          .onSnapshot(
+
+            snapshot => {
+
+              const items =
+                snapshot.docs.map(doc => ({
+                  id: doc.id,
+                  ...doc.data()
+                }));
+
+              setData(previous => ({
+                ...previous,
+                [name]: items
+              }));
+
+              loaded.add(name);
+
+              if (
+                loaded.size ===
+                COLLECTIONS.length
+              ) {
+                setReady(true);
+              }
+
+            },
+
+            error => {
+
+              console.error(
+                `Firestore ${name} error:`,
+                error
+              );
+
+              /*
+                IMPORTANT:
+                We no longer silently hide Firestore
+                permission/read errors.
+              */
+
+              setFirestoreError({
+                collection: name,
+                code: error.code,
+                message: error.message
+              });
+
+              loaded.add(name);
+
+              if (
+                loaded.size ===
+                COLLECTIONS.length
+              ) {
+                setReady(true);
+              }
             }
-          : x
+          );
+
+      unsubscribers.push(unsubscribe);
+
+    });
+
+    return () => {
+
+      unsubscribers.forEach(
+        unsubscribe => unsubscribe()
       );
 
-      await C("posts")
-        .doc(post.id)
-        .set({
-          poll: {
-            ...post.poll,
-            options: next
-          }
-        }, { merge: true });
+    };
 
-      setOptions(next);
-      setVoted(true);
+  },[uid]);
 
-    } catch(e) {
-      console.error(e.message);
-    }
-  }
+  return {
+    data,
+    ready,
+    firestoreError
+  };
+}
 
-  const total = options.reduce(
-    (a, x) => a + Number(x.votes || 0),
-    0
-  );
+
+/* =========================================================
+   ERROR SCREEN
+========================================================= */
+
+function FirebaseErrorScreen({error,retry}) {
 
   return (
-    <div className="poll">
+    <div className="error-page">
 
-      <strong>{post.poll.question}</strong>
+      <div className="error-card">
 
-      {options.map((x, i) => {
+        <div style={{fontSize:40}}>
+          ⚠️
+        </div>
 
-        const percent = total
-          ? Math.round(
-              Number(x.votes || 0) * 100 / total
-            )
-          : 0;
+        <h1>Firebase Error</h1>
 
-        return (
-          <button
-            className="poll-option"
-            key={i}
-            disabled={voted}
-            onClick={() => vote(i)}
-          >
-            <span
-              className="poll-bar"
-              style={{ width: percent + "%" }}
-            />
+        <p style={{color:"#aaa"}}>
+          Nexus could not access Firebase correctly.
+        </p>
 
-            <span className="poll-content">
-              <span>{x.text}</span>
-              <span>{percent}%</span>
-            </span>
-          </button>
-        );
-      })}
+        <div className="error-message">
 
-      <div className="muted">
-        {total} votes
-        {voted ? " · You voted" : ""}
+          <strong>
+            {error?.code || "unknown-error"}
+          </strong>
+
+          <br/><br/>
+
+          {error?.message || "Unknown Firebase error."}
+
+        </div>
+
+        <h3>Check these settings</h3>
+
+        <ol className="setup-list">
+
+          <li>
+            Firebase project:
+            <strong> nexus-37600</strong>
+          </li>
+
+          <li>
+            Authentication →
+            <strong> Sign-in method →
+            Anonymous → Enabled</strong>
+          </li>
+
+          <li>
+            Firestore Database must exist.
+          </li>
+
+          <li>
+            Firestore rules must allow the
+            Nexus path to be read.
+          </li>
+
+          <li>
+            Reload Nexus after changing Firebase.
+          </li>
+
+        </ol>
+
+        <button
+          className="primary"
+          onClick={retry}
+        >
+          Retry
+        </button>
+
       </div>
 
     </div>
   );
 }
 
-/* -------------------------------------------------------
-   COMMENTS
-------------------------------------------------------- */
 
-function Comments({ postId, users }) {
+/* =========================================================
+   FIRESTORE ERROR BANNER
+========================================================= */
 
-  const [comments, setComments] = useState([]);
-  const [value, setValue] = useState("");
-  const [reply, setReply] = useState(null);
+function FirestoreErrorBanner({error}) {
 
-  useEffect(() => {
-
-    const unsubscribe = C("comments")
-      .where("postId", "==", postId)
-      .limit(500)
-      .onSnapshot(snap => {
-
-        const arr = snap.docs.map(d => ({
-          id: d.id,
-          ...d.data()
-        }));
-
-        arr.sort((a, b) => {
-
-          function t(x) {
-            if (!x) return 0;
-            if (x.toDate) return x.toDate().getTime();
-            if (x.seconds) return x.seconds * 1000;
-            return new Date(x).getTime() || 0;
-          }
-
-          return t(a.createdAt) - t(b.createdAt);
-        });
-
-        setComments(arr);
-
-      }, e => console.error(e));
-
-    return unsubscribe;
-
-  }, [postId]);
-
-  async function send() {
-
-    if (!text(value)) return;
-
-    try {
-
-      await C("comments").add({
-        postId,
-        authorId: currentUid(),
-        text: text(value),
-        parentId: reply || null,
-        createdAt: serverTime()
-      });
-
-      await C("posts")
-        .doc(postId)
-        .set({
-          commentsCount:
-            firebase.firestore.FieldValue.increment(1)
-        }, { merge: true });
-
-      const post = await C("posts")
-        .doc(postId)
-        .get();
-
-      if (post.exists) {
-        await notify(
-          post.data().authorId,
-          "commented on your post",
-          "comment",
-          { postId }
-        );
-      }
-
-      setValue("");
-      setReply(null);
-
-    } catch(e) {
-      console.error(e.message);
-    }
-  }
-
-  function renderComment(c) {
-
-    const author = users.find(
-      u => u.uid === c.authorId
-    );
-
-    const replies = comments.filter(
-      x => x.parentId === c.id
-    );
-
-    return (
-      <div className="comment" key={c.id}>
-
-        <div className="comment-row">
-
-          <Avatar
-            profile={author || { displayName: "User" }}
-            size="small"
-          />
-
-          <div className="comment-body">
-
-            <strong>
-              {author?.displayName || "User"}
-            </strong>
-
-            <span className="muted">
-              @{author?.username || "user"}
-            </span>
-
-            <div
-              style={{
-                marginTop: 3,
-                whiteSpace: "pre-wrap"
-              }}
-            >
-              {renderText(c.text)}
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                gap: 8,
-                marginTop: 5
-              }}
-            >
-              <button
-                className="btn"
-                onClick={() => {
-                  setReply(c.id);
-                  setValue(
-                    "@" +
-                    (author?.username || "user") +
-                    " "
-                  );
-                }}
-              >
-                Reply
-              </button>
-            </div>
-
-          </div>
-
-        </div>
-
-        {replies.length > 0 && (
-          <div className="reply-list">
-            {replies.map(renderComment)}
-          </div>
-        )}
-
-      </div>
-    );
-  }
+  if (!error) return null;
 
   return (
-    <div className="comments">
+    <div
+      style={{
+        background:"#190d0d",
+        border:"1px solid #4a2222",
+        color:"#ffbaba",
+        borderRadius:12,
+        padding:12,
+        marginBottom:15,
+        fontSize:13
+      }}
+    >
 
-      {comments
-        .filter(x => !x.parentId)
-        .map(renderComment)}
+      <strong>
+        Firestore warning
+      </strong>
+
+      <div style={{marginTop:5}}>
+        Collection: {error.collection}
+      </div>
+
+      <div style={{marginTop:3}}>
+        {error.message}
+      </div>
 
       <div
         style={{
-          display: "flex",
-          gap: 7,
-          marginTop: 8
+          marginTop:7,
+          color:"#aaa"
         }}
       >
+        Check your Firestore security rules.
+      </div>
 
-        <input
-          value={value}
-          onChange={e => setValue(e.target.value)}
-          placeholder={
-            reply
-              ? "Write a reply..."
-              : "Write a comment..."
-          }
-          onKeyDown={e => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              send();
-            }
+    </div>
+  );
+}
+
+
+/* =========================================================
+   COMPOSER
+========================================================= */
+
+function Composer({user,profile}) {
+
+  const [text,setText] = useState("");
+  const [saving,setSaving] = useState(false);
+
+  async function createPost() {
+
+    const clean = text.trim();
+
+    if (!clean || !user || saving) {
+      return;
+    }
+
+    setSaving(true);
+
+    try {
+
+      await collectionPath("posts").add({
+
+        authorId: user.uid,
+
+        authorName:
+          profile?.displayName || "Yash",
+
+        authorUsername:
+          profile?.username || "yash",
+
+        content: clean,
+
+        hashtags: makeHashtags(clean),
+
+        createdAt:
+          firebase.firestore.FieldValue
+            .serverTimestamp()
+
+      });
+
+      setText("");
+
+    } catch(error) {
+
+      console.error(error);
+
+      alert(
+        "Could not create post:\n\n" +
+        error.message
+      );
+
+    } finally {
+
+      setSaving(false);
+
+    }
+  }
+
+  return (
+    <div className="composer">
+
+      <textarea
+        value={text}
+        onChange={e => setText(e.target.value)}
+        placeholder="What's happening on Nexus?"
+        maxLength={1000}
+      />
+
+      <div className="composer-bottom">
+
+        <span
+          style={{
+            color:"#555",
+            fontSize:12,
+            marginRight:"auto"
           }}
-        />
+        >
+          {text.length}/1000
+        </span>
 
         <button
-          className="btn primary"
-          onClick={send}
+          className="primary"
+          disabled={saving || !text.trim()}
+          onClick={createPost}
         >
-          Send
+          {saving ? "Posting..." : "Post"}
         </button>
 
       </div>
@@ -1396,725 +1334,511 @@ function Comments({ postId, users }) {
   );
 }
 
-/* -------------------------------------------------------
-   POST
-------------------------------------------------------- */
 
-function Post({
+/* =========================================================
+   POST CARD
+========================================================= */
+
+function PostCard({
   post,
-  users,
-  liked,
-  saved,
-  reposted,
-  following
+  currentUser,
+  profile,
+  comments,
+  likes,
+  onProfile,
+  onEdit
 }) {
 
-  const [commentsOpen, setCommentsOpen] = useState(false);
-  const [menu, setMenu] = useState(false);
+  const [commentText,setCommentText] = useState("");
+  const [showComments,setShowComments] = useState(false);
+  const [sending,setSending] = useState(false);
 
-  const authorId =
-    post.authorId ||
-    post.authorUid ||
-    post.uid ||
-    null;
+  const postLikes =
+    likes.filter(x => x.postId === post.id);
 
-  const author = users.find(
-    u => u.uid === authorId
-  );
+  const liked =
+    postLikes.some(
+      x => x.userId === currentUser?.uid
+    );
 
-  const authorName =
-    author?.displayName ||
-    post.authorName ||
-    post.authorDisplayName ||
-    post.displayName ||
-    post.name ||
-    "Nexus User";
+  const postComments =
+    comments
+      .filter(x => x.postId === post.id)
+      .sort(
+        (a,b) =>
+          timestampMillis(a.createdAt) -
+          timestampMillis(b.createdAt)
+      );
 
-  const authorUsername =
-    author?.username ||
-    post.authorUsername ||
-    post.authorUserName ||
-    post.username ||
-    "user";
+  async function toggleLike() {
 
-  const authorProfile =
-    author || {
-      uid: authorId,
-      displayName: authorName,
-      username: authorUsername
-    };
-
-  async function like() {
+    if (!currentUser) return;
 
     try {
 
-      const snap = await C("likes")
-        .where("postId", "==", post.id)
-        .where("userId", "==", currentUid())
-        .limit(1)
-        .get();
-
-      if (snap.empty) {
-
-        await C("likes").add({
-          postId: post.id,
-          userId: currentUid(),
-          createdAt: serverTime()
-        });
-
-        await C("posts")
-          .doc(post.id)
-          .set({
-            likesCount:
-              firebase.firestore.FieldValue.increment(1)
-          }, { merge: true });
-
-        await notify(
-          authorId,
-          "liked your post",
-          "like",
-          { postId: post.id }
+      const existing =
+        postLikes.find(
+          x =>
+            x.userId === currentUser.uid
         );
+
+      if (existing) {
+
+        await collectionPath("likes")
+          .doc(existing.id)
+          .delete();
 
       } else {
 
-        const batch = db.batch();
+        await collectionPath("likes").add({
 
-        snap.docs.forEach(d =>
-          batch.delete(d.ref)
-        );
+          postId: post.id,
 
-        await batch.commit();
+          userId: currentUser.uid,
 
-        await C("posts")
-          .doc(post.id)
-          .set({
-            likesCount:
-              firebase.firestore.FieldValue.increment(-1)
-          }, { merge: true });
+          createdAt:
+            firebase.firestore.FieldValue
+              .serverTimestamp()
+
+        });
+
+        if (
+          post.authorId &&
+          post.authorId !== currentUser.uid
+        ) {
+
+          await collectionPath("notifications").add({
+
+            userId: post.authorId,
+
+            actorId: currentUser.uid,
+
+            actorName:
+              profile?.displayName || "Someone",
+
+            type: "like",
+
+            postId: post.id,
+
+            read: false,
+
+            createdAt:
+              firebase.firestore.FieldValue
+                .serverTimestamp()
+
+          });
+
+        }
       }
 
-    } catch(e) {
-      console.error(e.message);
+    } catch(error) {
+
+      alert(
+        "Like failed:\n\n" +
+        error.message
+      );
+
     }
   }
 
-  async function save() {
+
+  async function addComment() {
+
+    const clean = commentText.trim();
+
+    if (!clean || !currentUser || sending) {
+      return;
+    }
+
+    setSending(true);
 
     try {
 
-      const snap = await C("bookmarks")
-        .where("postId", "==", post.id)
-        .where("userId", "==", currentUid())
-        .limit(1)
-        .get();
+      await collectionPath("comments").add({
 
-      if (snap.empty) {
+        postId: post.id,
 
-        await C("bookmarks").add({
+        userId: currentUser.uid,
+
+        userName:
+          profile?.displayName || "Yash",
+
+        text: clean,
+
+        createdAt:
+          firebase.firestore.FieldValue
+            .serverTimestamp()
+
+      });
+
+      if (
+        post.authorId &&
+        post.authorId !== currentUser.uid
+      ) {
+
+        await collectionPath("notifications").add({
+
+          userId: post.authorId,
+
+          actorId: currentUser.uid,
+
+          actorName:
+            profile?.displayName || "Someone",
+
+          type: "comment",
+
           postId: post.id,
-          userId: currentUid(),
-          createdAt: serverTime()
+
+          read: false,
+
+          createdAt:
+            firebase.firestore.FieldValue
+              .serverTimestamp()
+
         });
 
-      } else {
-
-        const batch = db.batch();
-
-        snap.docs.forEach(d =>
-          batch.delete(d.ref)
-        );
-
-        await batch.commit();
       }
 
-    } catch(e) {
-      console.error(e.message);
+      setCommentText("");
+
+    } catch(error) {
+
+      alert(
+        "Comment failed:\n\n" +
+        error.message
+      );
+
+    } finally {
+
+      setSending(false);
+
     }
   }
 
-  async function repost() {
-
-    try {
-
-      const snap = await C("reposts")
-        .where("postId", "==", post.id)
-        .where("userId", "==", currentUid())
-        .limit(1)
-        .get();
-
-      if (snap.empty) {
-
-        await C("reposts").add({
-          postId: post.id,
-          userId: currentUid(),
-          createdAt: serverTime()
-        });
-
-        await C("posts")
-          .doc(post.id)
-          .set({
-            repostsCount:
-              firebase.firestore.FieldValue.increment(1)
-          }, { merge: true });
-
-      } else {
-
-        const batch = db.batch();
-
-        snap.docs.forEach(d =>
-          batch.delete(d.ref)
-        );
-
-        await batch.commit();
-
-        await C("posts")
-          .doc(post.id)
-          .set({
-            repostsCount:
-              firebase.firestore.FieldValue.increment(-1)
-          }, { merge: true });
-      }
-
-    } catch(e) {
-      console.error(e.message);
-    }
-  }
 
   async function deletePost() {
 
-    if (authorId !== currentUid()) return;
-
-    try {
-      await C("posts").doc(post.id).delete();
-    } catch(e) {
-      console.error(e.message);
+    if (
+      !confirm("Delete this post?")
+    ) {
+      return;
     }
-  }
-
-  async function pin() {
-
-    if (authorId !== currentUid()) return;
 
     try {
 
-      await C("posts")
+      await collectionPath("posts")
         .doc(post.id)
-        .set({
-          pinned: !post.pinned
-        }, { merge: true });
+        .delete();
 
-    } catch(e) {
-      console.error(e.message);
+      const relatedLikes =
+        likes.filter(
+          x => x.postId === post.id
+        );
+
+      const relatedComments =
+        comments.filter(
+          x => x.postId === post.id
+        );
+
+      await Promise.all([
+        ...relatedLikes.map(
+          x =>
+            collectionPath("likes")
+              .doc(x.id)
+              .delete()
+        ),
+        ...relatedComments.map(
+          x =>
+            collectionPath("comments")
+              .doc(x.id)
+              .delete()
+        )
+      ]);
+
+    } catch(error) {
+
+      alert(
+        "Delete failed:\n\n" +
+        error.message
+      );
+
     }
   }
 
-  async function report() {
-
-    try {
-
-      await C("reports").add({
-        reporterId: currentUid(),
-        targetType: "post",
-        targetId: post.id,
-        targetAuthorId: authorId,
-        reason: "Reported via App",
-        status: "open",
-        createdAt: serverTime()
-      });
-
-      console.log("Report submitted.");
-
-    } catch(e) {
-      console.error(e.message);
-    }
-  }
 
   return (
-    <article className="card post">
+    <article className="post">
 
-      <div className="post-head">
+      <div className="post-header">
 
-        <Avatar profile={authorProfile} />
-
-        <div className="post-user">
-
-          <div className="name">
-
-            {authorName}
-
-            {post.pinned && (
-              <span
-                style={{
-                  color: "var(--yellow)",
-                  fontSize: 11,
-                  marginLeft: 7
-                }}
-              >
-                PINNED
-              </span>
-            )}
-
-          </div>
-
-          <div className="username">
-            @{authorUsername}
-          </div>
-
-        </div>
-
-        <div className="post-time">
-          {timeAgo(post.createdAt)}
-        </div>
-
-        <button
-          className="btn"
-          onClick={() => setMenu(!menu)}
+        <div
+          className="avatar"
+          onClick={() => onProfile?.(post.authorId)}
+          style={{cursor:"pointer"}}
         >
-          •••
-        </button>
+          {getInitials(post.authorName)}
+        </div>
+
+        <div
+          onClick={() => onProfile?.(post.authorId)}
+          style={{cursor:"pointer"}}
+        >
+
+          <div className="post-author">
+            {post.authorName || "User"}
+          </div>
+
+          <div className="post-time">
+            @{post.authorUsername || "user"}
+            {" · "}
+            {formatTime(post.createdAt)}
+            {post.editedAt ? " · edited" : ""}
+          </div>
+
+        </div>
+
+        {post.authorId === currentUser?.uid && (
+
+          <div
+            style={{
+              marginLeft:"auto",
+              display:"flex",
+              gap:5
+            }}
+          >
+
+            <button
+              className="post-menu"
+              onClick={() => onEdit?.(post)}
+              title="Edit"
+            >
+              ✎
+            </button>
+
+            <button
+              className="post-menu"
+              onClick={deletePost}
+              title="Delete"
+            >
+              🗑
+            </button>
+
+          </div>
+
+        )}
 
       </div>
 
-      <div className="post-body">
-        {renderText(post.text)}
+
+      <div className="post-content">
+
+        {(post.content || "")
+          .split(/(#[a-zA-Z0-9_]+)/g)
+          .map((part,index) =>
+            part.startsWith("#")
+              ? (
+                <span
+                  className="hashtag"
+                  key={index}
+                >
+                  {part}
+                </span>
+              )
+              : part
+          )}
+
       </div>
 
-      {post.poll && <Poll post={post} />}
 
       <div className="post-actions">
 
         <button
-          className={"action " + (liked ? "liked" : "")}
-          onClick={like}
+          className={
+            "action-btn " +
+            (liked ? "liked" : "")
+          }
+          onClick={toggleLike}
         >
-          ♥ {post.likesCount || 0}
+          {liked ? "♥" : "♡"} {postLikes.length}
         </button>
 
         <button
-          className="action"
+          className="action-btn"
           onClick={() =>
-            setCommentsOpen(!commentsOpen)
+            setShowComments(x => !x)
           }
         >
-          💬 {post.commentsCount || 0}
+          💬 {postComments.length}
         </button>
 
         <button
-          className={
-            "action " +
-            (reposted ? "reposted" : "")
-          }
-          onClick={repost}
-        >
-          ↻ {post.repostsCount || 0}
-        </button>
+          className="action-btn"
+          onClick={() => {
 
-        <button
-          className={
-            "action " +
-            (saved ? "saved" : "")
-          }
-          onClick={save}
-        >
-          🔖
-        </button>
+            if (navigator.clipboard) {
 
-        {authorId &&
-          authorId !== currentUid() && (
-            <FollowButton
-              targetId={authorId}
-              following={following}
-            />
-          )}
+              navigator.clipboard
+                .writeText(post.content || "")
+                .then(() => {
+                  alert("Post copied.");
+                })
+                .catch(() => {});
+            }
+
+          }}
+        >
+          ↗ Share
+        </button>
 
       </div>
 
-      {menu && (
 
-        <div
-          style={{
-            display: "flex",
-            gap: 7,
-            flexWrap: "wrap",
-            marginTop: 10,
-            paddingTop: 10,
-            borderTop: "1px solid var(--line)"
-          }}
-        >
+      {showComments && (
 
-          {authorId === currentUid() && (
-            <>
-              <button
-                className="btn"
-                onClick={pin}
-              >
-                {post.pinned ? "Unpin" : "Pin"}
-              </button>
+        <div className="comments">
 
-              <button
-                className="btn danger"
-                onClick={deletePost}
-              >
-                Delete
-              </button>
-            </>
-          )}
+          {postComments.map(comment => (
 
-          {authorId !== currentUid() && (
-            <button
-              className="btn danger"
-              onClick={report}
+            <div
+              className="comment"
+              key={comment.id}
             >
-              Report
-            </button>
-          )}
+
+              <div className="avatar small">
+                {getInitials(comment.userName)}
+              </div>
+
+              <div className="comment-body">
+
+                <div className="comment-name">
+                  {comment.userName || "User"}
+                </div>
+
+                <div className="comment-text">
+                  {comment.text}
+                </div>
+
+              </div>
+
+            </div>
+
+          ))}
+
+
+          <input
+            className="comment-input"
+            value={commentText}
+            onChange={e =>
+              setCommentText(e.target.value)
+            }
+            onKeyDown={e => {
+
+              if (
+                e.key === "Enter" &&
+                !e.shiftKey
+              ) {
+
+                e.preventDefault();
+                addComment();
+
+              }
+
+            }}
+            placeholder="Write a comment..."
+          />
 
         </div>
-      )}
 
-      {commentsOpen && (
-        <Comments
-          postId={post.id}
-          users={users}
-        />
       )}
 
     </article>
   );
 }
 
-/* -------------------------------------------------------
-   FEED
-------------------------------------------------------- */
 
-function Feed({ mode, data, profile }) {
+/* =========================================================
+   EDIT POST
+========================================================= */
 
-  const following = new Set(
-    data.follows.map(x => x.followingId)
-  );
+function EditPostModal({post,onClose}) {
 
-  const liked = new Set(
-    data.likes.map(x => x.postId)
-  );
+  const [text,setText] =
+    useState(post.content || "");
 
-  const saved = new Set(
-    data.bookmarks.map(x => x.postId)
-  );
+  const [saving,setSaving] =
+    useState(false);
 
-  const reposted = new Set(
-    data.reposts.map(x => x.postId)
-  );
+  async function save() {
 
-  let posts = [...data.posts];
+    const clean = text.trim();
 
-  if (mode === "following") {
+    if (!clean || saving) return;
 
-    posts = posts.filter(p => {
-
-      const authorId =
-        p.authorId ||
-        p.authorUid ||
-        p.uid;
-
-      return (
-        following.has(authorId) ||
-        authorId === currentUid()
-      );
-    });
-  }
-
-  if (mode === "saved") {
-    posts = posts.filter(p =>
-      saved.has(p.id)
-    );
-  }
-
-  if (posts.length === 0) {
-
-    return (
-      <div className="card empty">
-        {mode === "saved"
-          ? "No saved posts yet."
-          : mode === "following"
-          ? "Follow people to see their posts here."
-          : "No posts yet. Create the first post!"}
-      </div>
-    );
-  }
-
-  return (
-    <>
-      {posts.map(post => {
-
-        const authorId =
-          post.authorId ||
-          post.authorUid ||
-          post.uid;
-
-        return (
-          <Post
-            key={post.id}
-            post={post}
-            users={data.users}
-            liked={liked.has(post.id)}
-            saved={saved.has(post.id)}
-            reposted={reposted.has(post.id)}
-            following={following.has(authorId)}
-          />
-        );
-      })}
-    </>
-  );
-}
-
-/* -------------------------------------------------------
-   STORIES
-------------------------------------------------------- */
-
-function Stories({ stories, users }) {
-
-  const [viewStory, setViewStory] = useState(null);
-
-  const active = stories.filter(s => {
-
-    if (!s.expiresAt) return true;
-
-    const d = s.expiresAt.toDate
-      ? s.expiresAt.toDate()
-      : new Date(s.expiresAt);
-
-    return d.getTime() > Date.now();
-  });
-
-  const unique = [
-    ...new Map(
-      active.map(s => [
-        s.authorId ||
-        s.authorUid ||
-        s.uid,
-        s
-      ])
-    ).values()
-  ];
-
-  return (
-    <div className="card story-box">
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: 10
-        }}
-      >
-        <strong>Stories</strong>
-        <span className="muted">24 hours</span>
-      </div>
-
-      <div className="story-strip">
-
-        {unique.length === 0 && (
-          <span className="muted">
-            No active stories.
-          </span>
-        )}
-
-        {unique.map(s => {
-
-          const author = users.find(
-            u =>
-              u.uid ===
-              (
-                s.authorId ||
-                s.authorUid ||
-                s.uid
-              )
-          );
-
-          const storyName =
-            author?.username ||
-            s.authorUsername ||
-            s.username ||
-            "user";
-
-          return (
-            <button
-              key={s.id}
-              className="story"
-              onClick={() =>
-                setViewStory({
-                  story: s,
-                  name: storyName
-                })
-              }
-            >
-
-              <Avatar
-                profile={
-                  author || {
-                    displayName:
-                      s.authorName || "User"
-                  }
-                }
-                size="small"
-              />
-
-              <div
-                style={{
-                  fontSize: 12,
-                  marginTop: 5
-                }}
-              >
-                @{storyName}
-              </div>
-
-              <div className="story-text">
-                {s.text}
-              </div>
-
-            </button>
-          );
-        })}
-
-      </div>
-
-      {viewStory && (
-
-        <div
-          className="modal-bg"
-          onClick={() => setViewStory(null)}
-        >
-
-          <div
-            className="modal"
-            onClick={e => e.stopPropagation()}
-          >
-
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: 15
-              }}
-            >
-
-              <h3>
-                @{viewStory.name}
-              </h3>
-
-              <button
-                className="btn"
-                onClick={() =>
-                  setViewStory(null)
-                }
-              >
-                Close
-              </button>
-
-            </div>
-
-            <div
-              style={{
-                fontSize: 18,
-                whiteSpace: "pre-wrap"
-              }}
-            >
-              {viewStory.story.text}
-            </div>
-
-          </div>
-
-        </div>
-      )}
-
-    </div>
-  );
-}
-
-/* -------------------------------------------------------
-   STORY CREATOR
-------------------------------------------------------- */
-
-function StoryCreator() {
-
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
-
-  async function publish() {
-
-    if (!text(value)) return;
+    setSaving(true);
 
     try {
 
-      await C("stories").add({
-        authorId: currentUid(),
-        text: text(value),
-        createdAt: serverTime(),
-        expiresAt:
-          new Date(
-            Date.now() +
-            24 * 60 * 60 * 1000
-          )
-      });
+      await collectionPath("posts")
+        .doc(post.id)
+        .update({
 
-      setValue("");
-      setOpen(false);
+          content: clean,
 
-    } catch(e) {
-      console.error(e.message);
+          hashtags: makeHashtags(clean),
+
+          editedAt:
+            firebase.firestore.FieldValue
+              .serverTimestamp()
+
+        });
+
+      onClose();
+
+    } catch(error) {
+
+      alert(
+        "Could not edit post:\n\n" +
+        error.message
+      );
+
+    } finally {
+
+      setSaving(false);
+
     }
   }
 
-  if (!open) {
-
-    return (
-      <button
-        className="btn"
-        onClick={() => setOpen(true)}
-      >
-        + Story
-      </button>
-    );
-  }
-
   return (
-    <div className="modal-bg">
+    <div className="modal-backdrop">
 
       <div className="modal">
 
-        <h3>Create Story</h3>
+        <h2>Edit post</h2>
 
-        <textarea
-          value={value}
-          onChange={e =>
-            setValue(e.target.value)
-          }
-          placeholder="Share something..."
-        />
+        <div className="field">
 
-        <div
-          style={{
-            display: "flex",
-            gap: 8,
-            justifyContent: "flex-end",
-            marginTop: 10
-          }}
-        >
+          <textarea
+            value={text}
+            onChange={e => setText(e.target.value)}
+          />
+
+        </div>
+
+        <div className="modal-actions">
 
           <button
-            className="btn"
-            onClick={() => setOpen(false)}
+            className="secondary"
+            onClick={onClose}
           >
             Cancel
           </button>
 
           <button
-            className="btn primary"
-            onClick={publish}
+            className="primary"
+            disabled={saving || !text.trim()}
+            onClick={save}
           >
-            Publish
+            {saving ? "Saving..." : "Save"}
           </button>
 
         </div>
@@ -2125,1534 +1849,617 @@ function StoryCreator() {
   );
 }
 
-/* -------------------------------------------------------
-   HOME
-------------------------------------------------------- */
 
-function Home({ profile, data }) {
+/* =========================================================
+   EDIT PROFILE
+========================================================= */
 
-  const [mode, setMode] = useState("home");
-
-  return (
-    <>
-      <Stories
-        stories={data.stories}
-        users={data.users}
-      />
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          marginBottom: 10
-        }}
-      >
-        <StoryCreator />
-      </div>
-
-      <Composer profile={profile} />
-
-      <div className="feed-tabs">
-
-        <button
-          className={
-            mode === "home"
-              ? "active"
-              : ""
-          }
-          onClick={() =>
-            setMode("home")
-          }
-        >
-          For You
-        </button>
-
-        <button
-          className={
-            mode === "following"
-              ? "active"
-              : ""
-          }
-          onClick={() =>
-            setMode("following")
-          }
-        >
-          Following
-        </button>
-
-        <button
-          className={
-            mode === "saved"
-              ? "active"
-              : ""
-          }
-          onClick={() =>
-            setMode("saved")
-          }
-        >
-          Saved
-        </button>
-
-      </div>
-
-      <Feed
-        mode={mode}
-        data={data}
-        profile={profile}
-      />
-    </>
-  );
-}
-
-/* -------------------------------------------------------
-   EXPLORE
-------------------------------------------------------- */
-
-function Explore({ data, onProfile }) {
-
-  const [query, setQuery] = useState("");
-  const [tab, setTab] = useState("users");
-
-  const q = query.toLowerCase().trim();
-
-  const users = data.users.filter(u =>
-    !q ||
-    String(u.displayName || "")
-      .toLowerCase()
-      .includes(q) ||
-    String(u.username || "")
-      .toLowerCase()
-      .includes(q)
-  );
-
-  const posts = data.posts.filter(p =>
-    !q ||
-    (p.text || "")
-      .toLowerCase()
-      .includes(q) ||
-    (p.hashtags || [])
-      .some(h => h.includes(q))
-  );
-
-  return (
-    <>
-      <div className="section-title">
-        Explore
-      </div>
-
-      <div className="searchbox card pad">
-
-        <input
-          value={query}
-          onChange={e =>
-            setQuery(e.target.value)
-          }
-          placeholder="Search users, hashtags, posts..."
-        />
-
-      </div>
-
-      <div
-        className="feed-tabs"
-        style={{ marginTop: 15 }}
-      >
-
-        <button
-          className={
-            tab === "users"
-              ? "active"
-              : ""
-          }
-          onClick={() =>
-            setTab("users")
-          }
-        >
-          Users
-        </button>
-
-        <button
-          className={
-            tab === "posts"
-              ? "active"
-              : ""
-          }
-          onClick={() =>
-            setTab("posts")
-          }
-        >
-          Posts
-        </button>
-
-      </div>
-
-      {tab === "users" && (
-
-        <div className="card pad">
-
-          {users.length === 0 ? (
-
-            <div className="empty">
-              No users found.
-            </div>
-
-          ) : users.map(u => (
-
-            <div
-              className="user-row"
-              key={u.uid}
-            >
-
-              <Avatar profile={u} />
-
-              <div
-                className="user-row-main"
-                onClick={() =>
-                  onProfile(u.uid)
-                }
-              >
-
-                <div className="name">
-                  {u.displayName || "User"}
-                </div>
-
-                <div className="username">
-                  @{u.username || "user"}
-                </div>
-
-              </div>
-
-              <button
-                className="btn"
-                onClick={() =>
-                  onProfile(u.uid)
-                }
-              >
-                View
-              </button>
-
-            </div>
-
-          ))}
-
-        </div>
-      )}
-
-      {tab === "posts" && (
-        <Feed
-          mode="home"
-          data={{
-            ...data,
-            posts
-          }}
-        />
-      )}
-
-    </>
-  );
-}
-
-/* -------------------------------------------------------
-   PROFILE
-------------------------------------------------------- */
-
-function Profile({
+function EditProfileModal({
+  user,
   profile,
-  users,
-  posts,
-  follows,
-  viewedId,
-  onEdit
+  onSave,
+  onClose
 }) {
 
-  const viewed =
-    viewedId === profile.uid
-      ? profile
-      : (
-          users.find(
-            u => u.uid === viewedId
-          ) || profile
-        );
+  const [name,setName] =
+    useState(profile?.displayName || "");
 
-  const myPosts = posts.filter(
-    p =>
-      (
-        p.authorId ||
-        p.authorUid ||
-        p.uid
-      ) === viewed.uid
-  );
+  const [username,setUsername] =
+    useState(profile?.username || "");
 
-  const pinned = myPosts.filter(
-    p => p.pinned
-  );
+  const [bio,setBio] =
+    useState(profile?.bio || "");
 
-  const normal = myPosts.filter(
-    p => !p.pinned
-  );
+  const [saving,setSaving] =
+    useState(false);
 
-  const following = follows.some(
-    x => x.followingId === viewed.uid
-  );
+  async function save() {
 
-  return (
-    <>
-      <div className="card profile-head">
+    if (!name.trim() || saving) return;
 
-        <div className="profile-top">
+    setSaving(true);
 
-          <Avatar
-            profile={viewed}
-            size="large"
-          />
+    try {
 
-          <div className="profile-info">
+      const cleanUsername =
+        username
+          .trim()
+          .replace(/^@/,"")
+          .replace(/\s+/g,"_")
+          .toLowerCase();
 
-            <div className="profile-name">
-              {viewed.displayName ||
-                "Nexus User"}
-            </div>
+      const updated = {
 
-            <div
-              className="username"
-              style={{ fontSize: 16 }}
-            >
-              @{viewed.username || "user"}
-            </div>
+        displayName: name.trim(),
 
-            {viewed.bio && (
-              <div className="profile-bio">
-                {viewed.bio}
-              </div>
-            )}
+        username:
+          cleanUsername ||
+          ("yash_" + user.uid.slice(0,6)),
 
-            <div className="stats">
+        bio: bio.trim()
 
-              <div className="stat">
-                <strong>
-                  {myPosts.length}
-                </strong>
-                <span>Posts</span>
-              </div>
+      };
 
-              <div className="stat">
-                <strong>
-                  {viewed.followersCount || 0}
-                </strong>
-                <span>Followers</span>
-              </div>
+      await collectionPath("users")
+        .doc(user.uid)
+        .update(updated);
 
-              <div className="stat">
-                <strong>
-                  {viewed.followingCount || 0}
-                </strong>
-                <span>Following</span>
-              </div>
+      onSave({
+        ...profile,
+        ...updated
+      });
 
-            </div>
+      onClose();
 
-            <div style={{ marginTop: 18 }}>
+    } catch(error) {
 
-              {viewed.uid === profile.uid
-                ? (
-                  <button
-                    className="btn primary"
-                    onClick={onEdit}
-                  >
-                    Edit Profile
-                  </button>
-                )
-                : (
-                  <FollowButton
-                    targetId={viewed.uid}
-                    following={following}
-                  />
-                )}
+      alert(
+        "Profile update failed:\n\n" +
+        error.message
+      );
 
-            </div>
+    } finally {
 
-          </div>
+      setSaving(false);
 
-        </div>
-
-      </div>
-
-      {pinned.length > 0 && (
-        <>
-          <div
-            className="section-title"
-            style={{ marginTop: 20 }}
-          >
-            Pinned
-          </div>
-
-          <Feed
-            mode="home"
-            data={{
-              posts: pinned,
-              users,
-              follows,
-              likes: [],
-              bookmarks: [],
-              reposts: []
-            }}
-            profile={profile}
-          />
-        </>
-      )}
-
-      <div
-        className="section-title"
-        style={{ marginTop: 20 }}
-      >
-        Posts
-      </div>
-
-      <Feed
-        mode="home"
-        data={{
-          posts: normal,
-          users,
-          follows,
-          likes: [],
-          bookmarks: [],
-          reposts: []
-        }}
-        profile={profile}
-      />
-
-    </>
-  );
-}
-
-/* -------------------------------------------------------
-   NOTIFICATIONS
-------------------------------------------------------- */
-
-function Notifications({
-  notifications,
-  users
-}) {
-
-  if (notifications.length === 0) {
-
-    return (
-      <div className="card empty">
-        No notifications yet.
-      </div>
-    );
+    }
   }
 
   return (
-    <div className="card pad">
+    <div className="modal-backdrop">
 
-      <div className="section-title">
-        Notifications
+      <div className="modal">
+
+        <h2>Edit profile</h2>
+
+        <div className="field">
+
+          <label>Display name</label>
+
+          <input
+            value={name}
+            onChange={e => setName(e.target.value)}
+          />
+
+        </div>
+
+        <div className="field">
+
+          <label>Username</label>
+
+          <input
+            value={username}
+            onChange={e =>
+              setUsername(e.target.value)
+            }
+          />
+
+        </div>
+
+        <div className="field">
+
+          <label>Bio</label>
+
+          <textarea
+            value={bio}
+            onChange={e => setBio(e.target.value)}
+          />
+
+        </div>
+
+        <div className="modal-actions">
+
+          <button
+            className="secondary"
+            onClick={onClose}
+          >
+            Cancel
+          </button>
+
+          <button
+            className="primary"
+            disabled={saving}
+            onClick={save}
+          >
+            {saving ? "Saving..." : "Save"}
+          </button>
+
+        </div>
+
       </div>
 
-      <button
-        className="btn"
-        style={{ marginBottom: 15 }}
-        onClick={() => {
+    </div>
+  );
+}
 
-          const batch = db.batch();
 
-          notifications
-            .filter(n => !n.read)
-            .forEach(n =>
-              batch.update(
-                C("notifications").doc(n.id),
-                { read: true }
-              )
-            );
+/* =========================================================
+   WHO TO FOLLOW
+========================================================= */
 
-          batch.commit().catch(() => {});
-        }}
-      >
-        Mark all read
-      </button>
+function WhoToFollow({
+  users,
+  currentUser,
+  follows
+}) {
 
-      {notifications.map(n => {
+  const candidates =
+    users
+      .filter(
+        x => x.uid !== currentUser?.uid
+      )
+      .slice(0,5);
 
-        const actor = users.find(
-          u => u.uid === n.actorId
-        );
+  async function toggleFollow(person) {
+
+    if (!currentUser) return;
+
+    const existing =
+      follows.find(
+        x =>
+          x.followerId === currentUser.uid &&
+          x.followingId === person.uid
+      );
+
+    try {
+
+      if (existing) {
+
+        await collectionPath("follows")
+          .doc(existing.id)
+          .delete();
+
+      } else {
+
+        await collectionPath("follows").add({
+
+          followerId: currentUser.uid,
+
+          followingId: person.uid,
+
+          createdAt:
+            firebase.firestore.FieldValue
+              .serverTimestamp()
+
+        });
+
+        await collectionPath("notifications").add({
+
+          userId: person.uid,
+
+          actorId: currentUser.uid,
+
+          actorName:
+            currentUser.displayName ||
+            "Someone",
+
+          type: "follow",
+
+          read: false,
+
+          createdAt:
+            firebase.firestore.FieldValue
+              .serverTimestamp()
+
+        });
+
+      }
+
+    } catch(error) {
+
+      alert(
+        "Follow failed:\n\n" +
+        error.message
+      );
+
+    }
+  }
+
+  return (
+    <div className="side-card">
+
+      <div className="side-title">
+        Who to follow
+      </div>
+
+      {candidates.length === 0 && (
+
+        <div style={{
+          color:"#666",
+          fontSize:13
+        }}>
+          No suggestions yet.
+        </div>
+
+      )}
+
+      {candidates.map(person => {
+
+        const following =
+          follows.some(
+            x =>
+              x.followerId === currentUser?.uid &&
+              x.followingId === person.uid
+          );
 
         return (
+
           <div
-            className="notification"
-            key={n.id}
+            className="person"
+            key={person.uid}
           >
 
-            {!n.read && (
-              <div className="dot" />
-            )}
+            <div className="avatar small">
+              {getInitials(person.displayName)}
+            </div>
 
-            <Avatar
-              profile={actor}
-              size="small"
-            />
+            <div className="person-info">
 
-            <div style={{ flex: 1 }}>
+              <div className="person-name">
+                {person.displayName}
+              </div>
 
-              <strong>
-                {actor?.displayName ||
-                  "Someone"}
-              </strong>{" "}
-
-              {n.message}
-
-              <div
-                className="muted"
-                style={{ fontSize: 12 }}
-              >
-                {timeAgo(n.createdAt)}
+              <div className="person-user">
+                @{person.username}
               </div>
 
             </div>
 
+            <button
+              className="follow-btn"
+              onClick={() =>
+                toggleFollow(person)
+              }
+            >
+              {following ? "Following" : "Follow"}
+            </button>
+
           </div>
+
         );
+
       })}
 
     </div>
   );
 }
 
-/* =======================================================
-   MESSAGES
-   FINAL FIXED CHAT SYSTEM
-======================================================= */
 
-function Messages({ users }) {
+/* =========================================================
+   FEED
+========================================================= */
 
-  const [chats, setChats] = useState([]);
-  const [activeChat, setActiveChat] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [textVal, setTextVal] = useState("");
-  const [chatSearch, setChatSearch] = useState("");
-  const [typingUsers, setTypingUsers] = useState([]);
-  const typingTimer = useRef(null);
+function FeedView({
+  user,
+  profile,
+  data,
+  onProfile,
+  onEdit,
+  firestoreError
+}) {
 
-  /* -----------------------------------------------------
-     REAL-TIME CHAT LIST
-  ----------------------------------------------------- */
+  const [query,setQuery] = useState("");
 
-  useEffect(() => {
+  const posts =
+    useMemo(() => {
 
-    const uid = currentUid();
+      const q = query.trim().toLowerCase();
 
-    if (!uid) return;
+      return [...data.posts]
+        .sort(
+          (a,b) =>
+            timestampMillis(b.createdAt) -
+            timestampMillis(a.createdAt)
+        )
+        .filter(post => {
 
-    const unsub = C("chats")
-      .where(
-        "participants",
-        "array-contains",
-        uid
-      )
-      .onSnapshot(snap => {
-
-        const list = snap.docs.map(d => ({
-          id: d.id,
-          ...d.data()
-        }));
-
-        list.sort((a, b) => {
-
-          function getTime(v) {
-
-            if (!v) return 0;
-
-            if (v.toDate) {
-              return v.toDate().getTime();
-            }
-
-            if (v.seconds) {
-              return v.seconds * 1000;
-            }
-
-            const d = new Date(v);
-
-            return isNaN(d.getTime())
-              ? 0
-              : d.getTime();
-          }
+          if (!q) return true;
 
           return (
-            getTime(b.updatedAt) -
-            getTime(a.updatedAt)
+            post.content?.toLowerCase().includes(q) ||
+            post.authorName?.toLowerCase().includes(q) ||
+            post.authorUsername?.toLowerCase().includes(q) ||
+            (post.hashtags || []).some(
+              tag => tag.toLowerCase().includes(q)
+            )
           );
+
         });
 
-        setChats(list);
+    },[data.posts,query]);
 
-      }, e => {
-        console.error(
-          "Chat list error:",
-          e
-        );
-      });
-
-    return unsub;
-
-  }, []);
-
-  /* -----------------------------------------------------
-     REAL-TIME MESSAGES
-  ----------------------------------------------------- */
-
-  useEffect(() => {
-
-    if (!activeChat) {
-      setMessages([]);
-      return;
-    }
-
-    const unsub = C("chats")
-      .doc(activeChat.id)
-      .collection("messages")
-      .orderBy("createdAt", "asc")
-      .onSnapshot(snap => {
-
-        setMessages(
-          snap.docs.map(d => ({
-            id: d.id,
-            ...d.data()
-          }))
-        );
-
-      }, e => {
-        console.error(
-          "Messages error:",
-          e
-        );
-      });
-
-    return unsub;
-
-  }, [activeChat?.id]);
-
-  /* -----------------------------------------------------
-     REAL-TIME TYPING
-  ----------------------------------------------------- */
-
-  useEffect(() => {
-
-    if (!activeChat) {
-      setTypingUsers([]);
-      return;
-    }
-
-    const unsub = C("chats")
-      .doc(activeChat.id)
-      .collection("typing")
-      .onSnapshot(snap => {
-
-        const now = Date.now();
-
-        const active = snap.docs
-          .map(d => ({
-            id: d.id,
-            ...d.data()
-          }))
-          .filter(item => {
-
-            if (item.uid === currentUid()) {
-              return false;
-            }
-
-            if (!item.typing) {
-              return false;
-            }
-
-            if (!item.updatedAt) {
-              return false;
-            }
-
-            let updated;
-
-            try {
-
-              if (item.updatedAt.toDate) {
-                updated =
-                  item.updatedAt.toDate().getTime();
-              } else if (item.updatedAt.seconds) {
-                updated =
-                  item.updatedAt.seconds * 1000;
-              } else {
-                updated =
-                  new Date(
-                    item.updatedAt
-                  ).getTime();
-              }
-
-            } catch(e) {
-              return false;
-            }
-
-            return (
-              !isNaN(updated) &&
-              now - updated < 5000
-            );
-          });
-
-        setTypingUsers(active);
-
-      }, e => {
-
-        console.error(
-          "Typing listener error:",
-          e
-        );
-
-        setTypingUsers([]);
-
-      });
-
-    return unsub;
-
-  }, [activeChat?.id]);
-
-  /* -----------------------------------------------------
-     STOP TYPING
-  ----------------------------------------------------- */
-
-  async function stopTyping(chatId) {
-
-    if (!chatId || !currentUid()) return;
-
-    try {
-
-      await C("chats")
-        .doc(chatId)
-        .collection("typing")
-        .doc(currentUid())
-        .delete();
-
-    } catch(e) {
-
-      console.error(
-        "Stop typing:",
-        e
-      );
-    }
-  }
-
-  /* -----------------------------------------------------
-     SET TYPING
-  ----------------------------------------------------- */
-
-  async function updateTyping(value) {
-
-    if (!activeChat || !currentUid()) {
-      return;
-    }
-
-    const typingRef = C("chats")
-      .doc(activeChat.id)
-      .collection("typing")
-      .doc(currentUid());
-
-    try {
-
-      if (!text(value)) {
-
-        await typingRef.delete();
-
-        return;
-      }
-
-      await typingRef.set({
-        uid: currentUid(),
-        typing: true,
-        updatedAt: serverTime()
-      }, { merge: true });
-
-      if (typingTimer.current) {
-        clearTimeout(typingTimer.current);
-      }
-
-      typingTimer.current = setTimeout(() => {
-        stopTyping(activeChat.id);
-      }, 2000);
-
-    } catch(e) {
-
-      console.error(
-        "Typing update:",
-        e
-      );
-    }
-  }
-
-  /* -----------------------------------------------------
-     CLEANUP
-  ----------------------------------------------------- */
-
-  useEffect(() => {
-
-    return () => {
-
-      if (typingTimer.current) {
-        clearTimeout(typingTimer.current);
-      }
-
-      if (activeChat?.id) {
-        stopTyping(activeChat.id);
-      }
-
-    };
-
-  }, [activeChat?.id]);
-
-  /* -----------------------------------------------------
-     SEARCH USERS
-  ----------------------------------------------------- */
-
-  const search = chatSearch
-    .trim()
-    .toLowerCase();
-
-  const searchResults = search
-    ? users
-        .filter(u => u.uid !== currentUid())
-        .filter(u =>
-          String(u.displayName || "")
-            .toLowerCase()
-            .includes(search) ||
-          String(u.username || "")
-            .toLowerCase()
-            .includes(search)
-        )
-        .slice(0, 20)
-    : [];
-
-  /* -----------------------------------------------------
-     OPEN / CREATE CHAT
-  ----------------------------------------------------- */
-
-  async function startChat(user) {
-
-    if (!user || user.uid === currentUid()) {
-      return;
-    }
-
-    try {
-
-      const participants = [
-        currentUid(),
-        user.uid
-      ].sort();
-
-      const snap = await C("chats")
-        .where(
-          "participants",
-          "==",
-          participants
-        )
-        .limit(1)
-        .get();
-
-      if (!snap.empty) {
-
-        setActiveChat({
-          id: snap.docs[0].id,
-          ...snap.docs[0].data()
-        });
-
-      } else {
-
-        const ref = await C("chats").add({
-          participants,
-          updatedAt: serverTime(),
-          lastMessage: ""
-        });
-
-        setActiveChat({
-          id: ref.id,
-          participants,
-          updatedAt: null,
-          lastMessage: ""
-        });
-      }
-
-      setChatSearch("");
-
-    } catch(e) {
-
-      console.error(
-        "Start chat:",
-        e
-      );
-
-      alert(
-        "Could not open chat.\n\n" +
-        (e?.message || String(e))
-      );
-    }
-  }
-
-  /* -----------------------------------------------------
-     OLD NEW CHAT SUPPORT
-  ----------------------------------------------------- */
-
-  async function newChat() {
-
-    if (!text(chatSearch)) return;
-
-    const target = username(chatSearch);
-
-    const user = users.find(
-      u => u.username === target
-    );
-
-    if (!user) {
-      alert("User not found.");
-      return;
-    }
-
-    await startChat(user);
-  }
-
-  /* -----------------------------------------------------
-     FINAL MESSAGE SEND
-  ----------------------------------------------------- */
-
-  async function send() {
-
-    if (!activeChat) {
-      alert("Please select a chat first.");
-      return;
-    }
-
-    const messageText = text(textVal);
-
-    if (!messageText) {
-      return;
-    }
-
-    const uid = currentUid();
-
-    if (!uid) {
-      alert(
-        "You are not signed in. Please reload the app."
-      );
-      return;
-    }
-
-    const chatId = activeChat.id;
-
-    try {
-
-      /*
-       * Typing cleanup can never block sending.
-       */
-      if (typingTimer.current) {
-        clearTimeout(typingTimer.current);
-        typingTimer.current = null;
-      }
-
-      stopTyping(chatId).catch(() => {});
-
-      /*
-       * WRITE MESSAGE FIRST
-       */
-      await C("chats")
-        .doc(chatId)
-        .collection("messages")
-        .add({
-          text: messageText,
-          senderId: uid,
-          createdAt: serverTime()
-        });
-
-      /*
-       * UPDATE CHAT
-       */
-      await C("chats")
-        .doc(chatId)
-        .set({
-          participants: activeChat.participants,
-          lastMessage: messageText,
-          updatedAt: serverTime()
-        }, { merge: true });
-
-      /*
-       * Clear only after successful message write.
-       */
-      setTextVal("");
-
-      /*
-       * Notification is completely separate.
-       * It cannot make the message fail.
-       */
-      const otherId =
-        activeChat.participants.find(
-          p => p !== uid
-        );
-
-      if (otherId) {
-
-        notify(
-          otherId,
-          "sent you a message",
-          "message"
-        ).catch(e => {
-          console.error(
-            "Message notification failed:",
-            e
-          );
-        });
-
-      }
-
-    } catch(e) {
-
-      console.error(
-        "MESSAGE SEND ERROR:",
-        e
-      );
-
-      alert(
-        "Message could not be sent.\n\n" +
-        (e?.message || String(e))
-      );
-    }
-  }
-
-  /* -----------------------------------------------------
-     CURRENT CHAT USER
-  ----------------------------------------------------- */
-
-  const activeOtherId =
-    activeChat?.participants?.find(
-      p => p !== currentUid()
-    );
-
-  const activeOther =
-    users.find(
-      u => u.uid === activeOtherId
-    );
-
-  /* -----------------------------------------------------
-     RENDER
-  ----------------------------------------------------- */
 
   return (
+    <div className="feed">
 
-    <div className="card message-layout">
+      <FirestoreErrorBanner
+        error={firestoreError}
+      />
 
-      <div className="chat-list">
+      <div className="search-box">
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginBottom: 10,
-            alignItems: "center"
-          }}
-        >
+        <input
+          placeholder="Search Nexus..."
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+        />
 
-          <strong>Chats</strong>
+      </div>
 
-          <span
-            className="muted"
-            style={{ fontSize: 11 }}
+      <Composer
+        user={user}
+        profile={profile}
+      />
+
+      <div className="status">
+        {posts.length} post{posts.length === 1 ? "" : "s"} loaded
+      </div>
+
+      {posts.length === 0 ? (
+
+        <div className="empty">
+
+          <div style={{fontSize:35}}>
+            ✨
+          </div>
+
+          <div>
+            {query
+              ? "No matching posts."
+              : "No posts yet."}
+          </div>
+
+          <div
+            style={{
+              fontSize:13,
+              marginTop:5
+            }}
           >
-            {chats.length}
-          </span>
+            {query
+              ? "Try another search."
+              : "Be the first person to post."}
+          </div>
 
         </div>
 
-        <div className="chat-search">
+      ) : (
 
-          <input
-            value={chatSearch}
-            onChange={e =>
-              setChatSearch(e.target.value)
-            }
-            placeholder="Search people..."
-            onKeyDown={e => {
+        posts.map(post => (
 
-              if (
-                e.key === "Enter" &&
-                searchResults.length > 0
-              ) {
-                e.preventDefault();
-                startChat(searchResults[0]);
-              }
-
-            }}
+          <PostCard
+            key={post.id}
+            post={post}
+            currentUser={user}
+            profile={profile}
+            comments={data.comments}
+            likes={data.likes}
+            onProfile={onProfile}
+            onEdit={onEdit}
           />
 
-          {search && (
+        ))
 
-            <div className="chat-search-results">
+      )}
 
-              {searchResults.length === 0 ? (
+    </div>
+  );
+}
 
-                <div className="chat-search-empty">
-                  No users found
-                </div>
 
-              ) : (
+/* =========================================================
+   PROFILE
+========================================================= */
 
-                searchResults.map(person => {
+function ProfileView({
+  profile,
+  user,
+  data,
+  onEditProfile,
+  onProfile
+}) {
 
-                  const online =
-                    isUserOnline(person);
+  const userPosts =
+    data.posts
+      .filter(
+        x => x.authorId === profile?.uid
+      )
+      .sort(
+        (a,b) =>
+          timestampMillis(b.createdAt) -
+          timestampMillis(a.createdAt)
+      );
 
-                  return (
+  const followers =
+    data.follows.filter(
+      x => x.followingId === profile?.uid
+    ).length;
 
-                    <button
-                      key={person.uid}
-                      className="chat-search-user"
-                      onClick={() =>
-                        startChat(person)
-                      }
-                    >
+  const following =
+    data.follows.filter(
+      x => x.followerId === profile?.uid
+    ).length;
 
-                      <Avatar
-                        profile={person}
-                        size="small"
-                      />
+  if (!profile) {
+    return (
+      <div className="empty">
+        Profile not found.
+      </div>
+    );
+  }
 
-                      <div className="chat-search-info">
+  return (
+    <div className="feed">
 
-                        <div className="chat-search-name">
-                          {person.displayName ||
-                            "User"}
-                        </div>
+      <div className="profile-card">
 
-                        <div className="chat-search-username">
-                          @{person.username ||
-                            "user"}
-                        </div>
+        <div className="profile-cover"></div>
 
-                      </div>
+        <div className="profile-main">
 
-                      <span
-                        className={
-                          "online-dot " +
-                          (online
-                            ? "online"
-                            : "")
-                        }
-                      />
+          <div className="profile-avatar">
+            {getInitials(profile.displayName)}
+          </div>
 
-                    </button>
+          <div className="profile-name">
+            {profile.displayName}
+          </div>
 
-                  );
-                })
+          <div className="profile-username">
+            @{profile.username}
+          </div>
 
-              )}
+          <div className="profile-bio">
+            {profile.bio || "No bio yet."}
+          </div>
 
+          <div className="profile-stats">
+
+            <div className="stat">
+              <strong>{followers}</strong>
+              <span>Followers</span>
             </div>
+
+            <div className="stat">
+              <strong>{following}</strong>
+              <span>Following</span>
+            </div>
+
+            <div className="stat">
+              <strong>{userPosts.length}</strong>
+              <span>Posts</span>
+            </div>
+
+          </div>
+
+          {profile.uid === user.uid && (
+
+            <button
+              className="secondary"
+              style={{marginTop:18}}
+              onClick={onEditProfile}
+            >
+              Edit profile
+            </button>
+
           )}
 
         </div>
 
-        {chats.length === 0 ? (
-
-          <div
-            className="empty"
-            style={{
-              padding: "25px 5px",
-              fontSize: 12
-            }}
-          >
-            Search for someone above to start
-            a conversation.
-          </div>
-
-        ) : (
-
-          chats.map(c => {
-
-            const otherId =
-              c.participants.find(
-                p => p !== currentUid()
-              );
-
-            const other =
-              users.find(
-                u => u.uid === otherId
-              );
-
-            const online =
-              isUserOnline(other);
-
-            const isTyping =
-              typingUsers.some(
-                t => t.uid === otherId
-              );
-
-            return (
-
-              <button
-                key={c.id}
-                className={
-                  "chat-item " +
-                  (
-                    activeChat?.id === c.id
-                      ? "active"
-                      : ""
-                  )
-                }
-                style={{
-                  width: "100%",
-                  border: 0,
-                  background:
-                    activeChat?.id === c.id
-                      ? undefined
-                      : "transparent",
-                  color: "var(--text)",
-                  textAlign: "left",
-                  cursor: "pointer"
-                }}
-                onClick={() => {
-
-                  if (activeChat?.id !== c.id) {
-                    setActiveChat(c);
-                    setTextVal("");
-                  }
-
-                }}
-              >
-
-                <div style={{ position: "relative" }}>
-
-                  <Avatar
-                    profile={other}
-                    size="small"
-                  />
-
-                  <span
-                    className={
-                      "online-dot " +
-                      (
-                        online
-                          ? "online"
-                          : ""
-                      )
-                    }
-                    style={{
-                      position: "absolute",
-                      right: -1,
-                      bottom: 1,
-                      border: "2px solid var(--panel)",
-                      width: 10,
-                      height: 10
-                    }}
-                  />
-
-                </div>
-
-                <div
-                  style={{
-                    flex: 1,
-                    minWidth: 0
-                  }}
-                >
-
-                  <div
-                    style={{
-                      fontWeight: 800,
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis"
-                    }}
-                  >
-                    {other?.displayName ||
-                      "User"}
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: 12,
-                      color:
-                        isTyping
-                          ? "var(--accent2)"
-                          : "var(--muted)",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis"
-                    }}
-                  >
-
-                    {isTyping
-                      ? "typing…"
-                      : (
-                        c.lastMessage ||
-                        "Start chatting"
-                      )}
-
-                  </div>
-
-                </div>
-
-              </button>
-            );
-          })
-        )}
-
       </div>
 
-      <div className="chat-window">
+      {userPosts.map(post => (
 
-        {activeChat ? (
+        <PostCard
+          key={post.id}
+          post={post}
+          currentUser={user}
+          profile={profile}
+          comments={data.comments}
+          likes={data.likes}
+          onProfile={onProfile}
+          onEdit={() => {}}
+        />
 
-          <>
+      ))}
 
-            <div className="chat-head">
+      {userPosts.length === 0 && (
 
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10
-                }}
-              >
+        <div className="empty">
+          No posts yet.
+        </div>
 
-                <div style={{ position: "relative" }}>
+      )}
 
-                  <Avatar
-                    profile={activeOther}
-                    size="small"
-                  />
+    </div>
+  );
+}
 
-                  <span
-                    className={
-                      "online-dot " +
-                      (
-                        isUserOnline(activeOther)
-                          ? "online"
-                          : ""
-                      )
-                    }
-                    style={{
-                      position: "absolute",
-                      right: -1,
-                      bottom: 0,
-                      border:
-                        "2px solid var(--panel)",
-                      width: 10,
-                      height: 10
-                    }}
-                  />
 
-                </div>
+/* =========================================================
+   NOTIFICATIONS
+========================================================= */
 
-                <div>
+function NotificationsView({user,data}) {
 
-                  <div
-                    style={{
-                      fontWeight: 900
-                    }}
-                  >
-                    {activeOther?.displayName ||
-                      "Chat"}
-                  </div>
+  const notifications =
+    data.notifications
+      .filter(x => x.userId === user.uid)
+      .sort(
+        (a,b) =>
+          timestampMillis(b.createdAt) -
+          timestampMillis(a.createdAt)
+      );
 
-                  <div className="online-wrap">
+  return (
+    <div className="feed">
 
-                    <span
-                      className={
-                        "online-dot " +
-                        (
-                          isUserOnline(activeOther)
-                            ? "online"
-                            : ""
-                        )
-                      }
-                    />
+      <div className="side-card">
 
-                    {isUserOnline(activeOther)
-                      ? "Online"
-                      : "Offline"}
+        <h2>Notifications</h2>
 
-                  </div>
+        {notifications.length === 0 && (
 
-                </div>
+          <div className="empty">
+            No notifications yet.
+          </div>
 
-              </div>
+        )}
 
-            </div>
-
-            <div className="messages">
-
-              {messages.length === 0 && (
-
-                <div
-                  className="empty"
-                  style={{
-                    padding: 25
-                  }}
-                >
-                  No messages yet. Say hello!
-                </div>
-              )}
-
-              {messages.map(m => {
-
-                const mine =
-                  m.senderId === currentUid();
-
-                return (
-
-                  <div
-                    key={m.id}
-                    className={
-                      "msg " +
-                      (
-                        mine
-                          ? "mine"
-                          : ""
-                      )
-                    }
-                  >
-
-                    <div className="bubble">
-
-                      <div>
-                        {m.text}
-                      </div>
-
-                      <div
-                        className="msg-meta"
-                        style={{
-                          textAlign:
-                            mine
-                              ? "right"
-                              : "left"
-                        }}
-                      >
-                        {timeAgo(m.createdAt)}
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                );
-              })}
-
-            </div>
-
-            <div className="typing-indicator">
-
-              {typingUsers.length > 0 ? (
-
-                <>
-
-                  <div className="typing-dots">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                  </div>
-
-                  <span>
-                    {typingUsers.length === 1
-                      ? (
-                        (activeOther?.displayName ||
-                          "Someone") +
-                        " is typing…"
-                      )
-                      : (
-                        typingUsers.length +
-                        " people are typing…"
-                      )}
-                  </span>
-
-                </>
-
-              ) : (
-                <span>&nbsp;</span>
-              )}
-
-            </div>
-
-            <div className="chat-compose">
-
-              <input
-                value={textVal}
-                onChange={e => {
-
-                  const value =
-                    e.target.value;
-
-                  setTextVal(value);
-
-                  updateTyping(value);
-
-                }}
-                onBlur={() => {
-
-                  stopTyping(
-                    activeChat.id
-                  );
-
-                  if (typingTimer.current) {
-                    clearTimeout(
-                      typingTimer.current
-                    );
-                  }
-
-                }}
-                placeholder="Type a message..."
-                onKeyDown={e => {
-
-                  if (e.key === "Enter") {
-
-                    e.preventDefault();
-
-                    send();
-
-                  }
-
-                }}
-              />
-
-              <button
-                className="btn primary"
-                onClick={send}
-              >
-                Send
-              </button>
-
-            </div>
-
-          </>
-
-        ) : (
+        {notifications.map(notification => (
 
           <div
-            className="empty"
+            key={notification.id}
             style={{
-              flex: 1,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "column",
-              gap: 8
+              padding:"14px 0",
+              borderBottom:"1px solid #222"
             }}
           >
+
+            <strong>
+              {notification.actorName || "Someone"}
+            </strong>
+
+            {" "}
+
+            {notification.type === "like"
+              ? "liked your post ❤️"
+              : notification.type === "comment"
+              ? "commented on your post 💬"
+              : "followed you 👤"}
 
             <div
               style={{
-                fontSize: 30
+                color:"#666",
+                fontSize:12,
+                marginTop:5
               }}
             >
-              💬
-            </div>
-
-            <div>
-              Select a chat or search for
-              someone above.
+              {formatTime(notification.createdAt)}
             </div>
 
           </div>
 
-        )}
+        ))}
 
       </div>
 
@@ -3660,775 +2467,636 @@ function Messages({ users }) {
   );
 }
 
-/* -------------------------------------------------------
-   SETTINGS
-------------------------------------------------------- */
 
-function Settings({
+/* =========================================================
+   MESSAGES
+========================================================= */
+
+function MessagingView({
+  user,
   profile,
-  setProfile
+  data
 }) {
 
-  const [name, setName] =
-    useState(profile.displayName || "");
+  const [recipient,setRecipient] = useState("");
+  const [text,setText] = useState("");
+  const [sending,setSending] = useState(false);
 
-  const [uname, setUname] =
-    useState(profile.username || "");
+  async function sendMessage() {
 
-  const [bio, setBio] =
-    useState(profile.bio || "");
-
-  const [online, setOnline] =
-    useState(profile.showOnline !== false);
-
-  async function save() {
-
-    if (!text(uname)) {
-      console.error(
-        "Username cannot be empty."
-      );
+    if (
+      !recipient.trim() ||
+      !text.trim() ||
+      sending
+    ) {
       return;
     }
 
-    try {
+    const username =
+      recipient
+        .trim()
+        .replace(/^@/,"")
+        .toLowerCase();
 
-      if (
-        text(uname) !==
-        profile.username
-      ) {
-
-        const snap = await C("users")
-          .where(
-            "username",
-            "==",
-            text(uname)
-          )
-          .limit(1)
-          .get();
-
-        if (!snap.empty) {
-          console.error(
-            "Username already taken."
-          );
-          return;
-        }
-      }
-
-      const data = {
-        displayName: text(name),
-        username: text(uname).toLowerCase(),
-        bio: text(bio),
-        showOnline: online,
-        updatedAt: serverTime()
-      };
-
-      await C("users")
-        .doc(profile.uid)
-        .set(data, { merge: true });
-
-      setProfile({
-        ...profile,
-        ...data,
-        updatedAt: null
-      });
-
-      console.log(
-        "Profile updated."
+    const target =
+      data.users.find(
+        x =>
+          String(x.username || "")
+            .toLowerCase() === username
       );
 
-    } catch(e) {
-      console.error(e.message);
+    if (!target) {
+
+      alert("User not found.");
+
+      return;
+    }
+
+    setSending(true);
+
+    try {
+
+      await collectionPath("messages").add({
+
+        senderId: user.uid,
+
+        senderName:
+          profile?.displayName || "Yash",
+
+        receiverId: target.uid,
+
+        receiverName:
+          target.displayName,
+
+        text: text.trim(),
+
+        createdAt:
+          firebase.firestore.FieldValue
+            .serverTimestamp()
+
+      });
+
+      setText("");
+
+    } catch(error) {
+
+      alert(
+        "Message failed:\n\n" +
+        error.message
+      );
+
+    } finally {
+
+      setSending(false);
+
     }
   }
 
+  const messages =
+    data.messages
+      .filter(
+        message =>
+          message.senderId === user.uid ||
+          message.receiverId === user.uid
+      )
+      .sort(
+        (a,b) =>
+          timestampMillis(a.createdAt) -
+          timestampMillis(b.createdAt)
+      );
+
   return (
-    <div className="card pad">
+    <div className="feed">
 
-      <div className="section-title">
-        Settings
-      </div>
+      <div className="side-card">
 
-      <div style={{ marginBottom: 15 }}>
+        <h2>Messages</h2>
 
-        <label
-          style={{
-            display: "block",
-            marginBottom: 5
-          }}
-        >
-          Display Name
-        </label>
+        <div className="field">
 
-        <input
-          value={name}
-          onChange={e =>
-            setName(e.target.value)
-          }
-        />
-
-      </div>
-
-      <div style={{ marginBottom: 15 }}>
-
-        <label
-          style={{
-            display: "block",
-            marginBottom: 5
-          }}
-        >
-          Username
-        </label>
-
-        <input
-          value={uname}
-          onChange={e =>
-            setUname(e.target.value)
-          }
-        />
-
-      </div>
-
-      <div style={{ marginBottom: 15 }}>
-
-        <label
-          style={{
-            display: "block",
-            marginBottom: 5
-          }}
-        >
-          Bio
-        </label>
-
-        <textarea
-          value={bio}
-          onChange={e =>
-            setBio(e.target.value)
-          }
-        />
-
-      </div>
-
-      <div style={{ marginBottom: 15 }}>
-
-        <label
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10
-          }}
-        >
+          <label>Username</label>
 
           <input
-            type="checkbox"
-            checked={online}
+            value={recipient}
             onChange={e =>
-              setOnline(e.target.checked)
+              setRecipient(e.target.value)
             }
-            style={{
-              width: "auto"
-            }}
+            placeholder="@username"
           />
 
-          Show online status
+        </div>
 
-        </label>
+        <div className="field">
 
-      </div>
+          <textarea
+            value={text}
+            onChange={e => setText(e.target.value)}
+            placeholder="Write a message..."
+          />
 
-      <button
-        className="btn primary"
-        onClick={save}
-      >
-        Save Profile
-      </button>
-
-      <div
-        style={{
-          marginTop: 40,
-          paddingTop: 20,
-          borderTop:
-            "1px solid var(--line)"
-        }}
-      >
+        </div>
 
         <button
-          className="btn danger"
-          onClick={() =>
-            auth.signOut()
-          }
+          className="primary"
+          disabled={sending}
+          onClick={sendMessage}
         >
-          Log Out
+          {sending ? "Sending..." : "Send message"}
         </button>
 
       </div>
 
+
+      <div
+        className="side-card"
+        style={{marginTop:15}}
+      >
+
+        {messages.length === 0 ? (
+
+          <div className="empty">
+            No messages yet.
+          </div>
+
+        ) : (
+
+          messages.map(message => (
+
+            <div
+              key={message.id}
+              style={{
+                padding:"12px 0",
+                borderBottom:"1px solid #222"
+              }}
+            >
+
+              <strong>
+                {message.senderId === user.uid
+                  ? "You"
+                  : message.senderName}
+              </strong>
+
+              <div
+                style={{
+                  color:"#ccc",
+                  marginTop:5
+                }}
+              >
+                {message.text}
+              </div>
+
+              <div
+                style={{
+                  color:"#555",
+                  fontSize:11,
+                  marginTop:5
+                }}
+              >
+                {formatTime(message.createdAt)}
+              </div>
+
+            </div>
+
+          ))
+
+        )}
+
+      </div>
+
     </div>
   );
 }
 
-/* -------------------------------------------------------
-   RIGHT SIDEBAR
-------------------------------------------------------- */
 
-function RightSidebar({
-  data,
-  onProfile
-}) {
+/* =========================================================
+   MAIN
+========================================================= */
 
-  const hashtags = {};
-
-  data.posts.forEach(p => {
-
-    (p.hashtags || []).forEach(h => {
-
-      hashtags[h] =
-        (hashtags[h] || 0) + 1;
-
-    });
-  });
-
-  const trends =
-    Object.entries(hashtags)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
-
-  return (
-    <aside className="right">
-
-      <div className="card right-card">
-
-        <strong style={{ fontSize: 18 }}>
-          Trending
-        </strong>
-
-        <div style={{ marginTop: 10 }}>
-
-          {trends.length === 0 ? (
-
-            <div className="muted">
-              No trends yet.
-            </div>
-
-          ) : trends.map(t => (
-
-            <div
-              className="trend"
-              key={t[0]}
-            >
-
-              <div
-                style={{
-                  fontWeight: 800
-                }}
-              >
-                #{t[0]}
-              </div>
-
-              <div
-                className="muted"
-                style={{
-                  fontSize: 12
-                }}
-              >
-                {t[1]} posts
-              </div>
-
-            </div>
-          ))}
-
-        </div>
-
-      </div>
-
-      <div className="card right-card">
-
-        <strong style={{ fontSize: 18 }}>
-          Suggested Users
-        </strong>
-
-        <div style={{ marginTop: 10 }}>
-
-          {data.users
-            .slice(0, 5)
-            .map(u => (
-
-              <div
-                className="user-row"
-                key={u.uid}
-                style={{
-                  cursor: "pointer"
-                }}
-                onClick={() =>
-                  onProfile(u.uid)
-                }
-              >
-
-                <Avatar
-                  profile={u}
-                  size="small"
-                />
-
-                <div
-                  className="user-row-main"
-                >
-
-                  <div
-                    className="name"
-                    style={{
-                      fontSize: 14
-                    }}
-                  >
-                    {u.displayName ||
-                      "User"}
-                  </div>
-
-                  <div
-                    className="username"
-                    style={{
-                      fontSize: 12
-                    }}
-                  >
-                    @{u.username ||
-                      "user"}
-                  </div>
-
-                </div>
-
-              </div>
-
-            ))}
-
-        </div>
-
-      </div>
-
-      <div
-        style={{
-          fontSize: 12,
-          color: "var(--muted)",
-          padding: "0 15px"
-        }}
-      >
-        © 2026 Nexus Social
-        <br />
-        Made by YASH KISHORE Michalite
-      </div>
-
-    </aside>
-  );
-}
-
-/* -------------------------------------------------------
-   APP
-------------------------------------------------------- */
-
-function App() {
+function Nexus() {
 
   const {
     user,
     profile,
     setProfile,
-    ready,
+    loading,
     error
   } = useAuth();
 
-  usePresence(profile);
+  const {
+    data,
+    ready,
+    firestoreError
+  } = useRealtimeData(user?.uid);
 
-  const [page, setPage] =
-    useState("home");
+  const [page,setPage] = useState("home");
+  const [selectedProfile,setSelectedProfile] = useState(null);
+  const [editingProfile,setEditingProfile] = useState(false);
+  const [editingPost,setEditingPost] = useState(null);
 
-  const [profileId, setProfileId] =
-    useState(null);
 
-  const data = useData(profile);
+  function retry() {
+    window.location.reload();
+  }
+
+
+  function openProfile(uid) {
+
+    if (!uid) return;
+
+    const target =
+      data.users.find(
+        x => x.uid === uid
+      );
+
+    if (!target) {
+
+      if (uid === user?.uid && profile) {
+        setSelectedProfile(profile);
+        setPage("profile");
+      }
+
+      return;
+    }
+
+    setSelectedProfile(target);
+    setPage("profile");
+  }
+
+
+  function openMyProfile() {
+
+    if (!profile) return;
+
+    setSelectedProfile(profile);
+    setPage("profile");
+  }
+
+
+  if (loading) {
+    return null;
+  }
+
 
   if (error) {
 
     return (
-      <div className="error-screen">
-
-        <div className="boot-box">
-
-          <h1>Nexus Error</h1>
-
-          <div className="boot-error">
-            {error.message ||
-              String(error)}
-          </div>
-
-          <button
-            className="btn primary"
-            onClick={() =>
-              location.reload()
-            }
-          >
-            Reload App
-          </button>
-
-          <div
-            style={{
-              marginTop: 20,
-              color: "var(--muted)",
-              fontSize: 12
-            }}
-          >
-
-            <p>
-              If you see a Firestore
-              permissions error, you need
-              to configure your database
-              rules or run in local emulator.
-            </p>
-
-            <p>
-              If running locally, use a
-              local server instead of file://.
-            </p>
-
-          </div>
-
-        </div>
-
-      </div>
+      <FirebaseErrorScreen
+        error={error}
+        retry={retry}
+      />
     );
   }
 
-  if (!ready || !profile) {
+
+  if (!user || !profile) {
 
     return (
-      <div className="loading-screen">
+      <FirebaseErrorScreen
+        error={{
+          code:"auth/no-user",
+          message:
+            "Firebase did not return a signed-in user."
+        }}
+        retry={retry}
+      />
+    );
+  }
 
-        <div className="boot-box">
 
-          <h1>
-            Nex
-            <span style={{
-              color:"#7c5cff"
-            }}>
-              us
-            </span>
-          </h1>
+  if (!ready) {
 
-          <p>
-            Authenticating...
-          </p>
-
-        </div>
-
+    return (
+      <div
+        style={{
+          minHeight:"100vh",
+          display:"flex",
+          alignItems:"center",
+          justifyContent:"center",
+          background:"#050505",
+          color:"#777"
+        }}
+      >
+        Loading Nexus data...
       </div>
     );
   }
 
-  const unreadCount =
-    data.notifications.filter(
-      n => !n.read
-    ).length;
 
-  function nav(target) {
+  let content = null;
 
-    setPage(target);
-    setProfileId(null);
 
-    window.scrollTo(0, 0);
+  if (page === "home") {
+
+    content = (
+      <FeedView
+        user={user}
+        profile={profile}
+        data={data}
+        onProfile={openProfile}
+        onEdit={setEditingPost}
+        firestoreError={firestoreError}
+      />
+    );
   }
+
+
+  if (page === "profile") {
+
+    content = (
+      <ProfileView
+        profile={
+          selectedProfile || profile
+        }
+        user={user}
+        data={data}
+        onEditProfile={() =>
+          setEditingProfile(true)
+        }
+        onProfile={openProfile}
+      />
+    );
+  }
+
+
+  if (page === "notifications") {
+
+    content = (
+      <NotificationsView
+        user={user}
+        data={data}
+      />
+    );
+  }
+
+
+  if (page === "messages") {
+
+    content = (
+      <MessagingView
+        user={user}
+        profile={profile}
+        data={data}
+      />
+    );
+  }
+
 
   return (
 
     <div className="app">
 
-      <div className="topbar">
+      <header className="topbar">
 
-        <div className="logo">
-          Nex<span>us</span>
+        <div className="brand">
+
+          <div className="brand-logo">
+            N
+          </div>
+
+          Nexus
+
         </div>
 
-        <div
-          onClick={() =>
-            nav("profile")
-          }
-          style={{
-            cursor: "pointer"
-          }}
+        <button
+          className="icon-btn"
+          onClick={openMyProfile}
+          title="Profile"
         >
-          <Avatar
-            profile={profile}
-            size="small"
-          />
-        </div>
+          {getInitials(profile.displayName)}
+        </button>
 
-      </div>
+      </header>
+
 
       <div className="layout">
 
-        <aside className="left">
+        <aside className="sidebar">
 
-          <div
-            className="logo"
-            style={{
-              display:
-                window.innerWidth <= 760
-                  ? "none"
-                  : "block"
-            }}
-          >
-            Nex<span>us</span>
-          </div>
-
-          <nav className="nav">
+          <div className="nav-card">
 
             <button
               className={
-                page === "home"
+                "nav-item " +
+                (page === "home"
                   ? "active"
-                  : ""
+                  : "")
               }
-              onClick={() =>
-                nav("home")
-              }
+              onClick={() => {
+                setPage("home");
+                setSelectedProfile(null);
+              }}
             >
               🏠 Home
             </button>
 
             <button
               className={
-                page === "explore"
+                "nav-item " +
+                (page === "profile"
                   ? "active"
-                  : ""
+                  : "")
               }
-              onClick={() =>
-                nav("explore")
-              }
-            >
-              🔍 Explore
-            </button>
-
-            <button
-              className={
-                page === "notifications"
-                  ? "active"
-                  : ""
-              }
-              onClick={() =>
-                nav("notifications")
-              }
-            >
-              🔔 Notifications
-
-              {unreadCount > 0 && (
-                <span
-                  style={{
-                    color:
-                      "var(--accent)",
-                    marginLeft: 5
-                  }}
-                >
-                  ({unreadCount})
-                </span>
-              )}
-
-            </button>
-
-            <button
-              className={
-                page === "messages"
-                  ? "active"
-                  : ""
-              }
-              onClick={() =>
-                nav("messages")
-              }
-            >
-              ✉️ Messages
-            </button>
-
-            <button
-              className={
-                page === "profile"
-                  ? "active"
-                  : ""
-              }
-              onClick={() =>
-                nav("profile")
-              }
+              onClick={openMyProfile}
             >
               👤 Profile
             </button>
 
             <button
               className={
-                page === "settings"
+                "nav-item " +
+                (page === "notifications"
                   ? "active"
-                  : ""
+                  : "")
               }
               onClick={() =>
-                nav("settings")
+                setPage("notifications")
               }
             >
-              ⚙️ Settings
+              🔔 Notifications
             </button>
 
-          </nav>
+            <button
+              className={
+                "nav-item " +
+                (page === "messages"
+                  ? "active"
+                  : "")
+              }
+              onClick={() =>
+                setPage("messages")
+              }
+            >
+              💬 Messages
+            </button>
+
+          </div>
 
         </aside>
 
-        <main className="main">
 
-          {page === "home" && (
-            <Home
-              profile={profile}
-              data={data}
-            />
-          )}
-
-          {page === "explore" && (
-            <Explore
-              data={data}
-              onProfile={id => {
-                setProfileId(id);
-                setPage("profile");
-              }}
-            />
-          )}
-
-          {page === "notifications" && (
-            <Notifications
-              notifications={
-                data.notifications
-              }
-              users={data.users}
-            />
-          )}
-
-          {page === "messages" && (
-            <Messages
-              users={data.users}
-            />
-          )}
-
-          {page === "profile" && (
-            <Profile
-              profile={profile}
-              users={data.users}
-              posts={data.posts}
-              follows={data.follows}
-              viewedId={
-                profileId ||
-                profile.uid
-              }
-              onEdit={() =>
-                nav("settings")
-              }
-            />
-          )}
-
-          {page === "settings" && (
-            <Settings
-              profile={profile}
-              setProfile={setProfile}
-            />
-          )}
-
+        <main>
+          {content}
         </main>
 
-        {page !== "messages" && (
 
-          <RightSidebar
-            data={data}
-            onProfile={id => {
-              setProfileId(id);
-              setPage("profile");
-            }}
+        <aside className="right-sidebar">
+
+          <WhoToFollow
+            users={data.users}
+            currentUser={user}
+            follows={data.follows}
           />
 
-        )}
+
+          <div
+            className="side-card"
+            style={{marginTop:15}}
+          >
+
+            <div className="side-title">
+              Trending
+            </div>
+
+            {(() => {
+
+              const counts = {};
+
+              data.posts.forEach(post => {
+
+                (post.hashtags || [])
+                  .forEach(tag => {
+
+                    counts[tag] =
+                      (counts[tag] || 0) + 1;
+
+                  });
+
+              });
+
+              const trending =
+                Object.entries(counts)
+                  .sort(
+                    (a,b) => b[1] - a[1]
+                  )
+                  .slice(0,5);
+
+              if (!trending.length) {
+
+                return (
+                  <div
+                    style={{
+                      color:"#666",
+                      fontSize:13
+                    }}
+                  >
+                    Start posting with hashtags
+                    to create trends.
+                  </div>
+                );
+              }
+
+              return trending.map(
+                ([tag,count]) => (
+
+                  <div
+                    key={tag}
+                    style={{padding:"8px 0"}}
+                  >
+
+                    <div
+                      style={{
+                        color:"#8ab4ff",
+                        fontWeight:700
+                      }}
+                    >
+                      {tag}
+                    </div>
+
+                    <div
+                      style={{
+                        color:"#666",
+                        fontSize:12
+                      }}
+                    >
+                      {count} post
+                      {count === 1 ? "" : "s"}
+                    </div>
+
+                  </div>
+
+                )
+              );
+
+            })()}
+
+          </div>
+
+
+          <div
+            style={{
+              color:"#444",
+              fontSize:11,
+              marginTop:20,
+              textAlign:"center"
+            }}
+          >
+            Nexus • Made by Yash
+          </div>
+
+        </aside>
 
       </div>
 
-      <div className="mobile-nav">
 
-        <button
-          className={
-            page === "home"
-              ? "active"
-              : ""
-          }
-          onClick={() =>
-            nav("home")
-          }
-        >
-          🏠
-        </button>
+      {editingProfile && (
 
-        <button
-          className={
-            page === "explore"
-              ? "active"
-              : ""
-          }
-          onClick={() =>
-            nav("explore")
-          }
-        >
-          🔍
-        </button>
+        <EditProfileModal
+          user={user}
+          profile={profile}
+          onSave={updated => {
 
-        <button
-          className={
-            page === "notifications"
-              ? "active"
-              : ""
-          }
-          onClick={() =>
-            nav("notifications")
-          }
-        >
-          🔔
-        </button>
+            setProfile(updated);
+            setSelectedProfile(updated);
 
-        <button
-          className={
-            page === "messages"
-              ? "active"
-              : ""
+          }}
+          onClose={() =>
+            setEditingProfile(false)
           }
-          onClick={() =>
-            nav("messages")
-          }
-        >
-          ✉️
-        </button>
+        />
 
-        <button
-          className={
-            page === "profile"
-              ? "active"
-              : ""
-          }
-          onClick={() =>
-            nav("profile")
-          }
-        >
-          👤
-        </button>
+      )}
 
-      </div>
+
+      {editingPost && (
+
+        <EditPostModal
+          post={editingPost}
+          onClose={() =>
+            setEditingPost(null)
+          }
+        />
+
+      )}
 
     </div>
   );
 }
 
-/* -------------------------------------------------------
-   START APP
-------------------------------------------------------- */
 
-const rootElement =
-  document.getElementById("root");
+/* =========================================================
+   START
+========================================================= */
 
 const root =
-  ReactDOM.createRoot(rootElement);
+  ReactDOM.createRoot(
+    document.getElementById("root")
+  );
 
-root.render(<App />);
+root.render(
+  <Nexus />
+);
 
 </script>
+
 </body>
 </html>
