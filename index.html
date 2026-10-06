@@ -5,705 +5,285 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="theme-color" content="#080a0d">
 <title>Nexus — Social Platform</title>
-
 <style>
 *{box-sizing:border-box}
 html,body,#root{margin:0;min-height:100%;width:100%}
-
-body{
-  background:#080a0d;
-  color:#f4f6f8;
-  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-}
-
+body{background:#080a0d;color:#f4f6f8;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.3;}
 button,input,textarea{font:inherit}
 button{cursor:pointer}
 button:disabled{opacity:.5;cursor:not-allowed}
-
-:root{
-  --bg:#080a0d;
-  --panel:#101318;
-  --panel2:#171b22;
-  --panel3:#1e242d;
-  --line:#292f38;
-  --text:#f4f6f8;
-  --muted:#9099a7;
-  --accent:#7c5cff;
-  --accent2:#a18cff;
-  --green:#38d486;
-  --red:#ff6175;
-  --yellow:#e9bf55;
-}
-
+:root{--bg:#080a0d;--panel:#101318;--panel2:#171b22;--panel3:#1e242d;--line:#292f38;--text:#f4f6f8;--muted:#9099a7;--accent:#7c5cff;--accent2:#a18cff;--green:#38d486;--red:#ff6175;--yellow:#e9bf55;}
 .app{min-height:100vh}
-
-.layout{
-  width:min(1380px,100%);
-  margin:auto;
-  display:grid;
-  grid-template-columns:240px minmax(0,680px) 290px;
-  gap:20px;
-  padding:20px;
-}
-
-.left,.right{
-  position:sticky;
-  top:20px;
-  height:max-content;
-}
-
+.layout{width:min(1380px,100%);margin:auto;display:grid;grid-template-columns:240px minmax(0,680px) 290px;gap:20px;padding:20px;}
+.left,.right{position:sticky;top:20px;height:max-content;}
 .main{min-width:0}
-
-.logo{
-  font-size:27px;
-  font-weight:950;
-  letter-spacing:-1.5px;
-  padding:5px 10px 25px;
-}
-
+.logo{font-size:27px;font-weight:950;letter-spacing:-1.5px;padding:5px 10px 25px;}
 .logo span{color:var(--accent)}
-
-.nav{
-  display:flex;
-  flex-direction:column;
-  gap:5px;
-}
-
-.nav button{
-  border:0;
-  background:transparent;
-  color:var(--muted);
-  text-align:left;
-  padding:13px 15px;
-  border-radius:13px;
-  font-weight:800;
-}
-
-.nav button:hover,
-.nav button.active{
-  background:var(--panel2);
-  color:#fff;
-}
-
+.nav{display:flex;flex-direction:column;gap:5px;}
+.nav button{border:0;background:transparent;color:var(--muted);text-align:left;padding:13px 15px;border-radius:13px;font-weight:800;}
+.nav button:hover,.nav button.active{background:var(--panel2);color:#fff;}
 .nav button.active{color:var(--accent2)}
-
-.card{
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:18px;
-}
-
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;}
 .pad{padding:18px}
-
-.topbar{
-  display:none;
-  position:sticky;
-  top:0;
-  z-index:30;
-  padding:12px 15px;
-  background:#080a0df2;
-  backdrop-filter:blur(15px);
-  border-bottom:1px solid var(--line);
-  align-items:center;
-  justify-content:space-between;
-}
-
-.btn{
-  border:1px solid var(--line);
-  background:var(--panel2);
-  color:#fff;
-  border-radius:10px;
-  padding:8px 12px;
-  font-weight:750;
-}
-
+.topbar{display:none;position:sticky;top:0;z-index:30;padding:12px 15px;background:#080a0df2;backdrop-filter:blur(15px);border-bottom:1px solid var(--line);align-items:center;justify-content:space-between;}
+.btn{border:1px solid var(--line);background:var(--panel2);color:#fff;border-radius:10px;padding:8px 12px;font-weight:750;}
 .btn:hover{background:var(--panel3)}
-
-.btn.primary{
-  background:var(--accent);
-  border-color:var(--accent);
-}
-
+.btn.primary{background:var(--accent);border-color:var(--accent);}
 .btn.danger{color:#ff7e8d}
-
 .muted{color:var(--muted)}
-
-.avatar{
-  width:44px;
-  height:44px;
-  min-width:44px;
-  border-radius:50%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:linear-gradient(135deg,#7252ff,#ba9eff);
-  color:white;
-  font-weight:950;
-  border:1px solid #ffffff18;
-}
-
-.avatar.small{
-  width:36px;
-  height:36px;
-  min-width:36px;
-  font-size:12px;
-}
-
-.avatar.large{
-  width:88px;
-  height:88px;
-  min-width:88px;
-  font-size:27px;
-}
-
-.feed-tabs{
-  display:flex;
-  gap:5px;
-  padding:5px;
-  margin-bottom:12px;
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:14px;
-}
-
-.feed-tabs button{
-  flex:1;
-  border:0;
-  background:transparent;
-  color:var(--muted);
-  padding:9px;
-  border-radius:10px;
-  font-weight:800;
-}
-
-.feed-tabs button.active{
-  background:var(--panel3);
-  color:#fff;
-}
-
-.composer{
-  padding:18px;
-  margin-bottom:13px;
-}
-
-.composer-row{
-  display:flex;
-  gap:12px;
-}
-
-textarea,input,select{
-  width:100%;
-  background:#0b0e12;
-  color:#fff;
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:11px 12px;
-  outline:none;
-}
-
-textarea{
-  min-height:100px;
-  resize:vertical;
-}
-
-textarea:focus,input:focus{
-  border-color:#6c55d7;
-}
-
-.composer-tools{
-  display:flex;
-  gap:7px;
-  flex-wrap:wrap;
-  margin-top:9px;
-}
-
-.post{
-  padding:18px;
-  margin-bottom:12px;
-}
-
-.post-head{
-  display:flex;
-  gap:10px;
-  align-items:flex-start;
-}
-
-.post-user{
-  flex:1;
-  min-width:0;
-}
-
+.avatar{width:44px;height:44px;min-width:44px;border-radius:50%;display:flex;justify-content:center;align-items:center;background:linear-gradient(135deg,#7252ff,#ba9eff);color:white;font-weight:950;border:1px solid #ffffff18;}
+.avatar.small{width:36px;height:36px;min-width:36px;font-size:12px;}
+.avatar.large{width:88px;height:88px;min-width:88px;font-size:27px;}
+.feed-tabs{display:flex;gap:5px;padding:5px;margin-bottom:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;}
+.feed-tabs button{flex:1;border:0;background:transparent;color:var(--muted);padding:9px;border-radius:10px;font-weight:800;}
+.feed-tabs button.active{background:var(--panel3);color:#fff;}
+.composer{padding:18px;margin-bottom:13px;}
+.composer-row{display:flex;gap:12px;}
+textarea,input,select{width:100%;background:#0b0e12;color:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 12px;outline:none;}
+textarea{min-height:100px;resize:vertical;}
+textarea:focus,input:focus{border-color:#6c55d7;}
+.composer-tools{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px;}
+.post{padding:18px;margin-bottom:12px;}
+.post-head{display:flex;gap:10px;align-items:flex-start;}
+.post-user{flex:1;min-width:0;}
 .name{font-weight:900}
-
-.username{
-  color:var(--muted);
-  font-size:14px;
-}
-
-.post-time{
-  color:var(--muted);
-  font-size:12px;
-}
-
-.post-body{
-  margin:13px 0 8px 54px;
-  line-height:1.6;
-  white-space:pre-wrap;
-  word-break:break-word;
-}
-
-.hashtag,.mention{
-  color:#a693ff;
-}
-
-.post-actions{
-  margin-left:54px;
-  display:flex;
-  gap:5px;
-  flex-wrap:wrap;
-}
-
-.action{
-  border:0;
-  background:transparent;
-  color:var(--muted);
-  border-radius:9px;
-  padding:7px 9px;
-}
-
-.action:hover{
-  background:var(--panel2);
-  color:#fff;
-}
-
+.username,.post-time{color:var(--muted);font-size:14px;}
+.post-time{font-size:12px;}
+.post-body{margin:13px 0 8px 54px;line-height:1.3;white-space:pre-wrap;word-break:break-word;}
+.hashtag,.mention{color:#a693ff;}
+.post-actions{margin-left:54px;display:flex;gap:5px;flex-wrap:wrap;}
+.action{border:0;background:transparent;color:var(--muted);border-radius:9px;padding:7px 9px;}
+.action:hover{background:var(--panel2);color:#fff;}
 .action.liked{color:#ff6680}
 .action.saved{color:#e4bd54}
 .action.reposted{color:#49dc9a}
+.poll{margin:13px 0 8px 54px;padding:12px;border:1px solid var(--line);border-radius:14px;}
+.poll-option{width:100%;position:relative;overflow:hidden;margin:7px 0;padding:10px;text-align:left;border:1px solid var(--line);background:#0b0e12;color:#fff;border-radius:10px;}
+.poll-bar{position:absolute;left:0;top:0;bottom:0;background:#7657ff24;}
+.poll-content{position:relative;display:flex;justify-content:space-between;}
+.comments{margin:12px 0 0 54px;padding-top:10px;border-top:1px solid var(--line);}
+.comment{padding:9px 0;}
+.comment-row{display:flex;gap:8px;}
+.comment-body{flex:1;min-width:0;}
+.reply-list{margin-left:42px;padding-left:10px;border-left:1px solid var(--line);}
+.story-box{padding:15px;margin-bottom:12px;}
+.story-strip{display:flex;gap:9px;overflow:auto;}
+.story{min-width:105px;border:1px solid var(--line);background:var(--panel2);color:#fff;border-radius:14px;padding:10px;text-align:left;}
+.story-text{margin-top:7px;height:50px;overflow:hidden;font-size:13px;}
+.section-title{font-size:22px;font-weight:950;margin-bottom:14px;}
+.empty{padding:45px 15px;text-align:center;color:var(--muted);}
+.searchbox{display:flex;gap:8px;}
+.searchbox input{flex:1}
+.user-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);}
+.user-row:last-child{border-bottom:0}
+.user-row-main{flex:1;min-width:0;}
+.profile-head{padding:20px;}
+.profile-top{display:flex;gap:18px;align-items:center;}
+.profile-info{flex:1;min-width:0;}
+.profile-name{font-size:25px;font-weight:950;}
+.profile-bio{margin-top:8px;color:#c4cad2;white-space:pre-wrap;}
+.stats{display:flex;gap:25px;margin-top:15px;}
+.stat strong{display:block;font-size:18px;}
+.stat span{color:var(--muted);font-size:12px;}
+.notification{display:flex;gap:10px;padding:13px 0;border-bottom:1px solid var(--line);}
+.notification:last-child{border-bottom:0}
+.dot{width:8px;height:8px;min-width:8px;margin-top:7px;border-radius:50%;background:var(--accent);}
 
-.poll{
-  margin:13px 0 8px 54px;
-  padding:12px;
-  border:1px solid var(--line);
-  border-radius:14px;
+/* CHAT */
+.message-layout{display:grid;grid-template-columns:225px 1fr;min-height:650px;}
+.chat-list{border-right:1px solid var(--line);padding:12px;min-width:0;}
+.chat-item{display:flex;gap:9px;padding:10px;border-radius:12px;}
+.chat-item:hover,.chat-item.active{background:var(--panel2);}
+.chat-main{flex:1;min-width:0;}
+.chat-window{display:flex;flex-direction:column;min-width:0;}
+.chat-head{padding:14px;border-bottom:1px solid var(--line);}
+.messages{flex:1;overflow:auto;min-height:430px;max-height:550px;padding:15px;}
+.msg{display:flex;margin:7px 0;}
+.msg.mine{justify-content:flex-end;}
+.bubble{max-width:75%;padding:9px 12px;border:1px solid var(--line);background:var(--panel2);border-radius:14px;}
+.mine .bubble{background:#382d72;border-color:#5543a1;}
+.msg-meta{color:var(--muted);font-size:10px;margin-top:4px;}
+.chat-compose{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);}
+.chat-compose input{flex:1}
+
+/* ONLINE STATUS */
+.online-wrap{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:var(--muted);
+  font-size:12px;
+  margin-top:3px;
 }
 
-.poll-option{
-  width:100%;
+.online-dot{
+  width:8px;
+  height:8px;
+  min-width:8px;
+  border-radius:50%;
+  background:#707782;
+  display:inline-block;
+}
+
+.online-dot.online{
+  background:var(--green);
+  box-shadow:0 0 0 2px rgba(56,212,134,.12);
+}
+
+/* CHAT SEARCH */
+.chat-search{
   position:relative;
-  overflow:hidden;
-  margin:7px 0;
-  padding:10px;
-  text-align:left;
-  border:1px solid var(--line);
-  background:#0b0e12;
-  color:#fff;
-  border-radius:10px;
+  margin-bottom:10px;
 }
 
-.poll-bar{
-  position:absolute;
-  left:0;
-  top:0;
-  bottom:0;
-  background:#7657ff24;
-}
-
-.poll-content{
-  position:relative;
-  display:flex;
-  justify-content:space-between;
-}
-
-.comments{
-  margin:12px 0 0 54px;
-  padding-top:10px;
-  border-top:1px solid var(--line);
-}
-
-.comment{
-  padding:9px 0;
-}
-
-.comment-row{
-  display:flex;
-  gap:8px;
-}
-
-.comment-body{
-  flex:1;
-  min-width:0;
-}
-
-.reply-list{
-  margin-left:42px;
-  padding-left:10px;
-  border-left:1px solid var(--line);
-}
-
-.story-box{
-  padding:15px;
-  margin-bottom:12px;
-}
-
-.story-strip{
-  display:flex;
-  gap:9px;
-  overflow:auto;
-}
-
-.story{
-  min-width:105px;
-  border:1px solid var(--line);
-  background:var(--panel2);
-  color:#fff;
-  border-radius:14px;
-  padding:10px;
-  text-align:left;
-}
-
-.story-text{
-  margin-top:7px;
-  height:50px;
-  overflow:hidden;
+.chat-search input{
+  padding:9px 10px;
   font-size:13px;
 }
 
-.section-title{
-  font-size:22px;
-  font-weight:950;
-  margin-bottom:14px;
+.chat-search-results{
+  position:absolute;
+  z-index:100;
+  left:0;
+  right:0;
+  top:calc(100% + 5px);
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:0 15px 40px rgba(0,0,0,.45);
+  max-height:300px;
+  overflow-y:auto;
 }
 
-.empty{
-  padding:45px 15px;
-  text-align:center;
+.chat-search-user{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  border:0;
+  background:transparent;
+  color:var(--text);
+  padding:10px;
+  text-align:left;
+}
+
+.chat-search-user:hover{
+  background:var(--panel2);
+}
+
+.chat-search-info{
+  flex:1;
+  min-width:0;
+}
+
+.chat-search-name{
+  font-weight:800;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.chat-search-username{
   color:var(--muted);
+  font-size:11px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-.searchbox{
-  display:flex;
-  gap:8px;
-}
-
-.searchbox input{flex:1}
-
-.user-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:12px 0;
-  border-bottom:1px solid var(--line);
-}
-
-.user-row:last-child{border-bottom:0}
-
-.user-row-main{
-  flex:1;
-  min-width:0;
-}
-
-.profile-head{
-  padding:20px;
-}
-
-.profile-top{
-  display:flex;
-  gap:18px;
-  align-items:center;
-}
-
-.profile-info{
-  flex:1;
-  min-width:0;
-}
-
-.profile-name{
-  font-size:25px;
-  font-weight:950;
-}
-
-.profile-bio{
-  margin-top:8px;
-  color:#c4cad2;
-  white-space:pre-wrap;
-}
-
-.stats{
-  display:flex;
-  gap:25px;
-  margin-top:15px;
-}
-
-.stat strong{
-  display:block;
-  font-size:18px;
-}
-
-.stat span{
+.chat-search-empty{
+  padding:15px 10px;
+  text-align:center;
   color:var(--muted);
   font-size:12px;
 }
 
-.notification{
+/* TYPING */
+.typing-indicator{
   display:flex;
-  gap:10px;
-  padding:13px 0;
-  border-bottom:1px solid var(--line);
+  align-items:center;
+  gap:7px;
+  padding:5px 14px;
+  color:var(--muted);
+  font-size:12px;
+  min-height:25px;
 }
 
-.notification:last-child{border-bottom:0}
+.typing-dots{
+  display:flex;
+  align-items:center;
+  gap:3px;
+}
 
-.dot{
-  width:8px;
-  height:8px;
-  min-width:8px;
-  margin-top:7px;
+.typing-dots span{
+  width:5px;
+  height:5px;
   border-radius:50%;
-  background:var(--accent);
+  background:var(--muted);
+  animation:nexusTyping 1.2s infinite ease-in-out;
 }
 
-.message-layout{
-  display:grid;
-  grid-template-columns:225px 1fr;
-  min-height:650px;
+.typing-dots span:nth-child(2){
+  animation-delay:.15s;
 }
 
-.chat-list{
-  border-right:1px solid var(--line);
-  padding:12px;
+.typing-dots span:nth-child(3){
+  animation-delay:.3s;
 }
 
-.chat-item{
-  display:flex;
-  gap:9px;
-  padding:10px;
-  border-radius:12px;
+@keyframes nexusTyping{
+  0%,60%,100%{
+    transform:translateY(0);
+    opacity:.4;
+  }
+  30%{
+    transform:translateY(-3px);
+    opacity:1;
+  }
 }
 
-.chat-item:hover,
-.chat-item.active{
-  background:var(--panel2);
-}
-
-.chat-main{
-  flex:1;
-  min-width:0;
-}
-
-.chat-window{
-  display:flex;
-  flex-direction:column;
-  min-width:0;
-}
-
-.chat-head{
-  padding:14px;
-  border-bottom:1px solid var(--line);
-}
-
-.messages{
-  flex:1;
-  overflow:auto;
-  min-height:430px;
-  max-height:550px;
-  padding:15px;
-}
-
-.msg{
-  display:flex;
-  margin:7px 0;
-}
-
-.msg.mine{
-  justify-content:flex-end;
-}
-
-.bubble{
-  max-width:75%;
-  padding:9px 12px;
-  border:1px solid var(--line);
-  background:var(--panel2);
-  border-radius:14px;
-}
-
-.mine .bubble{
-  background:#382d72;
-  border-color:#5543a1;
-}
-
-.msg-meta{
-  color:var(--muted);
-  font-size:10px;
-  margin-top:4px;
-}
-
-.chat-compose{
-  display:flex;
-  gap:8px;
-  padding:12px;
-  border-top:1px solid var(--line);
-}
-
-.chat-compose input{flex:1}
-
-.right-card{
-  padding:15px;
-  margin-bottom:13px;
-}
-
-.trend{
-  padding:10px 0;
-  border-bottom:1px solid var(--line);
-}
-
+.right-card{padding:15px;margin-bottom:13px;}
+.trend{padding:10px 0;border-bottom:1px solid var(--line);}
 .trend:last-child{border-bottom:0}
-
-.loading-screen,
-.error-screen{
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:20px;
-  background:var(--bg);
-}
-
-.boot-box{
-  width:min(600px,100%);
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:30px;
-  text-align:center;
-}
-
-.boot-box h1{
-  font-size:35px;
-  margin:0 0 10px;
-}
-
-.boot-error{
-  margin:15px 0;
-  padding:13px;
-  background:#38151d;
-  color:#ff9ba7;
-  border-radius:10px;
-  text-align:left;
-  white-space:pre-wrap;
-  word-break:break-word;
-}
-
-.mobile-nav{
-  display:none;
-  position:fixed;
-  left:0;
-  right:0;
-  bottom:0;
-  z-index:50;
-  background:#0b0d11f5;
-  border-top:1px solid var(--line);
-  padding:7px;
-  grid-template-columns:repeat(5,1fr);
-}
-
-.mobile-nav button{
-  border:0;
-  background:transparent;
-  color:var(--muted);
-  font-size:11px;
-  padding:7px 2px;
-}
-
-.mobile-nav button.active{
-  color:#fff;
-}
-
-.modal-bg{
-  position:fixed;
-  inset:0;
-  z-index:100;
-  background:#000c;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-}
-
-.modal{
-  width:min(560px,100%);
-  max-height:90vh;
-  overflow:auto;
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:18px;
-  padding:20px;
-}
-
-@media(max-width:1050px){
-  .layout{
-    grid-template-columns:210px minmax(0,1fr);
-  }
-
-  .right{display:none}
-}
-
+.loading-screen,.error-screen{min-height:100vh;display:flex;justify-content:center;align-items:center;padding:20px;background:var(--bg);}
+.boot-box{width:min(600px,100%);background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:30px;text-align:center;}
+.boot-box h1{font-size:35px;margin:0 0 10px;}
+.boot-error{margin:15px 0;padding:13px;background:#38151d;color:#ff9ba7;border-radius:10px;text-align:left;white-space:pre-wrap;word-break:break-word;}
+.mobile-nav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:50;background:#0b0d11f5;border-top:1px solid var(--line);padding:7px;grid-template-columns:repeat(5,1fr);}
+.mobile-nav button{border:0;background:transparent;color:var(--muted);font-size:11px;padding:7px 2px;}
+.mobile-nav button.active{color:#fff;}
+.modal-bg{position:fixed;inset:0;z-index:100;background:#000c;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal{width:min(560px,100%);max-height:90vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;}
+@media(max-width:1050px){.layout{grid-template-columns:210px minmax(0,1fr);}.right{display:none}}
 @media(max-width:760px){
-  .layout{
-    display:block;
-    padding:10px 10px 80px;
-  }
-
+  .layout{display:block;padding:10px 10px 80px;}
   .left{display:none}
-
   .topbar{display:flex}
-
   .mobile-nav{display:grid}
-
-  .post-body,
-  .post-actions,
-  .poll,
-  .comments{
-    margin-left:0;
+  .post-body,.post-actions,.poll,.comments{margin-left:0;}
+  .message-layout{grid-template-columns:1fr;}
+  .chat-list{
+    display:block;
+    border-right:0;
+    border-bottom:1px solid var(--line);
+    max-height:280px;
+    overflow:auto;
   }
-
-  .message-layout{
-    grid-template-columns:1fr;
-  }
-
-  .chat-list{display:none}
-
-  .profile-top{
-    align-items:flex-start;
-  }
-
-  .avatar.large{
-    width:70px;
-    height:70px;
-    min-width:70px;
-  }
+  .chat-window{min-height:550px;}
+  .profile-top{align-items:flex-start;}
+  .avatar.large{width:70px;height:70px;min-width:70px;}
 }
 </style>
 </head>
-
 <body>
-
 <div id="root">
   <div class="loading-screen">
     <div class="boot-box">
       <h1>Nex<span style="color:#7c5cff">us</span></h1>
       <p>Loading Nexus…</p>
-
-      <div style="
-        margin-top:28px;
-        padding-top:18px;
-        border-top:1px solid #292f38;
-        color:#9099a7;
-        font-size:13px;
-      ">
-        Made by
-        <strong style="color:#fff">
-          YASH KISHORE Michalite
-        </strong>
+      <div style="margin-top:28px;padding-top:18px;border-top:1px solid #292f38;color:#9099a7;font-size:13px;">
+        Made by <strong style="color:#fff">YASH KISHORE Michalite</strong>
       </div>
     </div>
   </div>
@@ -712,53 +292,21 @@ textarea:focus,input:focus{
 <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
-
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
 <script>
 setTimeout(function(){
-
   const root=document.getElementById("root");
 
   if(!window.React || !window.ReactDOM){
-    root.innerHTML=`
-      <div class="error-screen">
-        <div class="boot-box">
-          <h1>React failed to load</h1>
-
-          <div class="boot-error">
-            The React library could not be loaded.
-            Check your internet connection and reload.
-          </div>
-
-          <button class="btn primary"
-            onclick="location.reload()">
-            Reload
-          </button>
-        </div>
-      </div>`;
+    root.innerHTML=`<div class="error-screen"><div class="boot-box"><h1>React failed to load</h1><div class="boot-error">The React library could not be loaded. Check your internet connection and reload.</div><button class="btn primary" onclick="location.reload()">Reload</button></div></div>`;
   }
 
   if(!window.firebase){
-    root.innerHTML=`
-      <div class="error-screen">
-        <div class="boot-box">
-          <h1>Firebase failed to load</h1>
-
-          <div class="boot-error">
-            The Firebase SDK could not be loaded.
-          </div>
-
-          <button class="btn primary"
-            onclick="location.reload()">
-            Reload
-          </button>
-        </div>
-      </div>`;
+    root.innerHTML=`<div class="error-screen"><div class="boot-box"><h1>Firebase failed to load</h1><div class="boot-error">The Firebase SDK could not be loaded.</div><button class="btn primary" onclick="location.reload()">Reload</button></div></div>`;
   }
-
 },3000);
 
 window.addEventListener("error",function(e){
@@ -772,112 +320,84 @@ window.addEventListener("unhandledrejection",function(e){
 
 <script type="text/babel">
 
-const {
-  useState,
-  useEffect
-}=React;
+const { useState, useEffect, useRef } = React;
 
-
-/* =========================================================
-   FIREBASE
-========================================================= */
-
-const firebaseConfig={
-  apiKey:"AIzaSyDTrvD7c1TUtPUUOSX7_-0VV9itC28LOg0",
-  authDomain:"nexus-37600.firebaseapp.com",
-  projectId:"nexus-37600",
-  storageBucket:"nexus-37600.firebasestorage.app",
-  messagingSenderId:"61496309341",
-  appId:"1:61496309341:web:fdb3711264df47f318bfb4",
-  measurementId:"G-41S50YF5RF"
+const firebaseConfig = {
+  apiKey: "AIzaSyDTrvD7c1TUtPUUOSX7_-0VV9itC28LOg0",
+  authDomain: "nexus-37600.firebaseapp.com",
+  projectId: "nexus-37600",
+  storageBucket: "nexus-37600.firebasestorage.app",
+  messagingSenderId: "61496309341",
+  appId: "1:61496309341:web:fdb3711264df47f318bfb4",
+  measurementId: "G-41S50YF5RF"
 };
 
-const APP_ID="nexus-37600";
-const ROOT="artifacts/"+APP_ID+"/public/data";
+const APP_ID = "nexus-37600";
+const ROOT = "artifacts/" + APP_ID + "/public/data";
 
-let db=null;
-let auth=null;
-let firebaseError=null;
+let db = null;
+let auth = null;
+let firebaseError = null;
 
-try{
-
-  if(!firebase.apps.length){
-    firebase.initializeApp(firebaseConfig);
-  }
-
-  db=firebase.firestore();
-  auth=firebase.auth();
-
-}catch(e){
-
-  firebaseError=e;
+try {
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+  auth = firebase.auth();
+} catch(e) {
+  firebaseError = e;
   console.error(e);
 }
 
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function C(name){
-  return db.collection(ROOT+"/"+name);
+function C(name) {
+  return db.collection(ROOT + "/" + name);
 }
 
-function serverTime(){
+function serverTime() {
   return firebase.firestore.FieldValue.serverTimestamp();
 }
 
-function currentUid(){
-  return auth?.currentUser?.uid||null;
+function currentUid() {
+  return auth?.currentUser?.uid || null;
 }
 
-function text(v){
-  return String(v||"").trim();
+function text(v) {
+  return String(v || "").trim();
 }
 
-function initials(name){
-
-  return text(name||"User")
+function initials(name) {
+  return text(name || "User")
     .split(/\s+/)
     .slice(0,2)
-    .map(x=>x[0])
+    .map(x => x[0])
     .join("")
     .toUpperCase();
 }
 
-function timeAgo(value){
-
-  if(!value)return "";
+function timeAgo(value) {
+  if (!value) return "";
 
   let d;
 
-  if(value.toDate){
-    d=value.toDate();
-  }else if(value.seconds){
-    d=new Date(value.seconds*1000);
-  }else{
-    d=new Date(value);
-  }
+  if (value.toDate) d = value.toDate();
+  else if (value.seconds) d = new Date(value.seconds * 1000);
+  else d = new Date(value);
 
-  if(isNaN(d.getTime()))return "";
+  if (isNaN(d.getTime())) return "";
 
-  const seconds=Math.max(
+  const seconds = Math.max(
     1,
-    Math.floor(
-      (Date.now()-d.getTime())/1000
-    )
+    Math.floor((Date.now() - d.getTime()) / 1000)
   );
 
-  if(seconds<60)return seconds+"s";
-  if(seconds<3600)return Math.floor(seconds/60)+"m";
-  if(seconds<86400)return Math.floor(seconds/3600)+"h";
-  if(seconds<604800)return Math.floor(seconds/86400)+"d";
+  if (seconds < 60) return seconds + "s";
+  if (seconds < 3600) return Math.floor(seconds / 60) + "m";
+  if (seconds < 86400) return Math.floor(seconds / 3600) + "h";
+  if (seconds < 604800) return Math.floor(seconds / 86400) + "d";
 
   return d.toLocaleDateString();
 }
 
-function username(v){
-
+function username(v) {
   return text(v)
     .toLowerCase()
     .replace(/^@/,"")
@@ -885,168 +405,190 @@ function username(v){
     .slice(0,24);
 }
 
-function hashtags(v){
-
-  const result=[];
-  const re=/(^|\s)#([a-zA-Z0-9_]+)/g;
+function hashtags(v) {
+  const result = [];
+  const re = /(^|\s)#([a-zA-Z0-9_]+)/g;
   let m;
 
-  while((m=re.exec(v))){
+  while ((m = re.exec(v))) {
     result.push(m[2].toLowerCase());
   }
 
   return [...new Set(result)];
 }
 
-function mentions(v){
-
-  const result=[];
-  const re=/(^|\s)@([a-zA-Z0-9_]+)/g;
+function mentions(v) {
+  const result = [];
+  const re = /(^|\s)@([a-zA-Z0-9_]+)/g;
   let m;
 
-  while((m=re.exec(v))){
+  while ((m = re.exec(v))) {
     result.push(m[2].toLowerCase());
   }
 
   return [...new Set(result)];
 }
 
-function renderText(v){
-
+function renderText(v) {
   return text(v)
-    .split(
-      /(\#[a-zA-Z0-9_]+|\@[a-zA-Z0-9_]+)/
-    )
-    .map((p,i)=>{
-
-      if(p.startsWith("#")){
-        return (
-          <span
-            className="hashtag"
-            key={i}
-          >
-            {p}
-          </span>
-        );
+    .split(/(\#[a-zA-Z0-9_]+|\@[a-zA-Z0-9_]+)/)
+    .map((p, i) => {
+      if (p.startsWith("#")) {
+        return <span className="hashtag" key={i}>{p}</span>;
       }
 
-      if(p.startsWith("@")){
-        return (
-          <span
-            className="mention"
-            key={i}
-          >
-            {p}
-          </span>
-        );
+      if (p.startsWith("@")) {
+        return <span className="mention" key={i}>{p}</span>;
       }
 
-      return (
-        <React.Fragment key={i}>
-          {p}
-        </React.Fragment>
-      );
+      return <React.Fragment key={i}>{p}</React.Fragment>;
     });
 }
 
+/* -------------------------------------------------------
+   REAL-TIME PRESENCE
+------------------------------------------------------- */
 
-/* =========================================================
+function isUserOnline(person) {
+  if (!person || person.showOnline === false) return false;
+  if (!person.lastSeen) return false;
+
+  let lastSeen;
+
+  try {
+    if (person.lastSeen.toDate) {
+      lastSeen = person.lastSeen.toDate();
+    } else if (person.lastSeen.seconds) {
+      lastSeen = new Date(person.lastSeen.seconds * 1000);
+    } else {
+      lastSeen = new Date(person.lastSeen);
+    }
+  } catch(e) {
+    return false;
+  }
+
+  if (isNaN(lastSeen.getTime())) return false;
+
+  /* 30-second presence window */
+  return Date.now() - lastSeen.getTime() < 30000;
+}
+
+function usePresence(profile) {
+  useEffect(() => {
+    if (!profile?.uid || !db) return;
+
+    let stopped = false;
+
+    async function heartbeat() {
+      if (stopped || !currentUid()) return;
+
+      try {
+        await C("users").doc(profile.uid).set({
+          online: true,
+          lastSeen: serverTime()
+        }, { merge: true });
+      } catch(e) {
+        console.error("Presence heartbeat:", e);
+      }
+    }
+
+    heartbeat();
+
+    const timer = setInterval(heartbeat, 15000);
+
+    return () => {
+      stopped = true;
+      clearInterval(timer);
+    };
+  }, [profile?.uid]);
+}
+
+/* -------------------------------------------------------
    AUTH
-========================================================= */
+------------------------------------------------------- */
 
-function useAuth(){
+function useAuth() {
+  const [profile, setProfile] = useState(null);
+  const [user, setUser] = useState(null);
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState(null);
 
-  const [profile,setProfile]=useState(null);
-  const [user,setUser]=useState(null);
-  const [ready,setReady]=useState(false);
-  const [error,setError]=useState(null);
-
-  useEffect(()=>{
-
-    if(firebaseError){
+  useEffect(() => {
+    if (firebaseError) {
       setError(firebaseError);
       setReady(true);
       return;
     }
 
-    let stopped=false;
+    let stopped = false;
 
-    const unsubscribe=auth.onAuthStateChanged(
-      async u=>{
-
-        try{
-
-          if(!u){
-
-            await auth.signInAnonymously();
-
-            return;
-          }
-
-          if(stopped)return;
-
-          setUser(u);
-
-          const ref=C("users").doc(u.uid);
-          const snap=await ref.get();
-
-          if(!snap.exists){
-
-            const newProfile={
-              uid:u.uid,
-              displayName:"Nexus User",
-              username:"user_"+u.uid.slice(0,8),
-              bio:"",
-              followersCount:0,
-              followingCount:0,
-              postsCount:0,
-              showOnline:true,
-              notifyLikes:true,
-              notifyMessages:true,
-              createdAt:serverTime(),
-              updatedAt:serverTime()
-            };
-
-            await ref.set(newProfile);
-
-            setProfile({
-              ...newProfile,
-              createdAt:null,
-              updatedAt:null
-            });
-
-          }else{
-
-            setProfile({
-              uid:u.uid,
-              ...snap.data()
-            });
-          }
-
-          setReady(true);
-
-        }catch(e){
-
-          console.error(e);
-
-          if(!stopped){
-            setError(e);
-            setReady(true);
-          }
+    const unsubscribe = auth.onAuthStateChanged(async u => {
+      try {
+        if (!u) {
+          await auth.signInAnonymously();
+          return;
         }
-      },
-      e=>{
-        setError(e);
-        setReady(true);
-      }
-    );
 
-    return ()=>{
-      stopped=true;
+        if (stopped) return;
+
+        setUser(u);
+
+        const ref = C("users").doc(u.uid);
+        const snap = await ref.get();
+
+        if (!snap.exists) {
+          const newProfile = {
+            uid: u.uid,
+            displayName: "Nexus User",
+            username: "user_" + u.uid.slice(0, 8),
+            bio: "",
+            followersCount: 0,
+            followingCount: 0,
+            postsCount: 0,
+            showOnline: true,
+            notifyLikes: true,
+            notifyMessages: true,
+            online: true,
+            lastSeen: serverTime(),
+            createdAt: serverTime(),
+            updatedAt: serverTime()
+          };
+
+          await ref.set(newProfile);
+
+          setProfile({
+            ...newProfile,
+            createdAt: null,
+            updatedAt: null,
+            lastSeen: null
+          });
+        } else {
+          setProfile({
+            uid: u.uid,
+            ...snap.data()
+          });
+        }
+
+        setReady(true);
+
+      } catch(e) {
+        console.error(e);
+
+        if (!stopped) {
+          setError(e);
+          setReady(true);
+        }
+      }
+    }, e => {
+      setError(e);
+      setReady(true);
+    });
+
+    return () => {
+      stopped = true;
       unsubscribe();
     };
-
-  },[]);
+  }, []);
 
   return {
     user,
@@ -1057,83 +599,60 @@ function useAuth(){
   };
 }
 
+/* -------------------------------------------------------
+   COLLECTION
+------------------------------------------------------- */
 
-/* =========================================================
-   COLLECTION LISTENER
-========================================================= */
+function useCollection(name, makeQuery, deps = []) {
+  const [items, setItems] = useState([]);
+  const [error, setError] = useState(null);
 
-function useCollection(
-  name,
-  makeQuery,
-  deps=[]
-){
-
-  const [items,setItems]=useState([]);
-  const [error,setError]=useState(null);
-
-  useEffect(()=>{
-
-    if(!db)return;
+  useEffect(() => {
+    if (!db) return;
 
     let query;
 
-    try{
-      query=makeQuery(C(name));
-    }catch(e){
+    try {
+      query = makeQuery(C(name));
+    } catch(e) {
       setError(e);
       return;
     }
 
-    const unsubscribe=query.onSnapshot(
-      snap=>{
+    const unsubscribe = query.onSnapshot(snap => {
 
-        const result=snap.docs.map(d=>({
-          id:d.id,
-          ...d.data()
-        }));
+      const result = snap.docs.map(d => ({
+        id: d.id,
+        ...d.data()
+      }));
 
-        result.sort((a,b)=>{
+      result.sort((a, b) => {
 
-          function timestamp(x){
+        function timestamp(x) {
+          if (!x) return 0;
 
-            if(!x)return 0;
+          if (x.toDate) return x.toDate().getTime();
+          if (x.seconds) return x.seconds * 1000;
 
-            if(x.toDate){
-              return x.toDate().getTime();
-            }
+          const d = new Date(x);
 
-            if(x.seconds){
-              return x.seconds*1000;
-            }
+          return isNaN(d.getTime()) ? 0 : d.getTime();
+        }
 
-            const d=new Date(x);
+        return timestamp(b.createdAt) - timestamp(a.createdAt);
+      });
 
-            return isNaN(d.getTime())
-              ?0
-              :d.getTime();
-          }
+      setItems(result);
+      setError(null);
 
-          return timestamp(b.createdAt)-
-                 timestamp(a.createdAt);
-        });
-
-        setItems(result);
-        setError(null);
-      },
-      e=>{
-
-        console.error(
-          "Nexus "+name+" error:",
-          e
-        );
-
-        setError(e);
-      }
-    );
+    }, e => {
+      console.error("Nexus " + name + " error:", e);
+      setError(e);
+    });
 
     return unsubscribe;
 
-  },deps);
+  }, deps);
 
   return {
     items,
@@ -1141,240 +660,177 @@ function useCollection(
   };
 }
 
-
-/* =========================================================
+/* -------------------------------------------------------
    DATA
-========================================================= */
+------------------------------------------------------- */
 
-function useData(profile){
+function useData(profile) {
 
-  const id=profile?.uid;
+  const id = profile?.uid;
 
-  const posts=useCollection(
+  const posts = useCollection(
     "posts",
-    ref=>ref.limit(500),
+    ref => ref.limit(500),
     []
   );
 
-  const users=useCollection(
+  /*
+   * Users listener is important for real-time presence.
+   * Whenever a user's lastSeen changes, this listener updates.
+   */
+  const users = useCollection(
     "users",
-    ref=>ref.limit(500),
+    ref => ref.limit(500),
     []
   );
 
-  const follows=useCollection(
+  const follows = useCollection(
     "follows",
-    ref=>ref.where(
-      "followerId",
-      "==",
-      id
-    ),
+    ref => ref.where("followerId", "==", id),
     [id]
   );
 
-  const likes=useCollection(
+  const likes = useCollection(
     "likes",
-    ref=>ref.where(
-      "userId",
-      "==",
-      id
-    ),
+    ref => ref.where("userId", "==", id),
     [id]
   );
 
-  const bookmarks=useCollection(
+  const bookmarks = useCollection(
     "bookmarks",
-    ref=>ref.where(
-      "userId",
-      "==",
-      id
-    ),
+    ref => ref.where("userId", "==", id),
     [id]
   );
 
-  const reposts=useCollection(
+  const reposts = useCollection(
     "reposts",
-    ref=>ref.where(
-      "userId",
-      "==",
-      id
-    ),
+    ref => ref.where("userId", "==", id),
     [id]
   );
 
-  const blocks=useCollection(
+  const blocks = useCollection(
     "blocks",
-    ref=>ref.where(
-      "blockerId",
-      "==",
-      id
-    ),
+    ref => ref.where("blockerId", "==", id),
     [id]
   );
 
-  const mutes=useCollection(
+  const mutes = useCollection(
     "mutes",
-    ref=>ref.where(
-      "muterId",
-      "==",
-      id
-    ),
+    ref => ref.where("muterId", "==", id),
     [id]
   );
 
-  const notifications=useCollection(
+  const notifications = useCollection(
     "notifications",
-    ref=>ref.where(
-      "recipientId",
-      "==",
-      id
-    ).limit(100),
+    ref => ref.where("recipientId", "==", id).limit(100),
     [id]
   );
 
-  const stories=useCollection(
+  const stories = useCollection(
     "stories",
-    ref=>ref.limit(300),
+    ref => ref.limit(300),
     []
   );
 
   return {
-    posts:posts.items,
-    users:users.items,
-    follows:follows.items,
-    likes:likes.items,
-    bookmarks:bookmarks.items,
-    reposts:reposts.items,
-    blocks:blocks.items,
-    mutes:mutes.items,
-    notifications:notifications.items,
-    stories:stories.items
+    posts: posts.items,
+    users: users.items,
+    follows: follows.items,
+    likes: likes.items,
+    bookmarks: bookmarks.items,
+    reposts: reposts.items,
+    blocks: blocks.items,
+    mutes: mutes.items,
+    notifications: notifications.items,
+    stories: stories.items
   };
 }
 
-
-/* =========================================================
+/* -------------------------------------------------------
    NOTIFICATIONS
-========================================================= */
+------------------------------------------------------- */
 
-async function notify(
-  recipient,
-  message,
-  type,
-  data={}
-){
+async function notify(recipient, message, type, data = {}) {
 
-  if(
-    !recipient ||
-    recipient===currentUid()
-  ){
-    return;
-  }
+  if (!recipient || recipient === currentUid()) return;
 
-  try{
+  try {
 
     await C("notifications").add({
-      recipientId:recipient,
-      actorId:currentUid(),
+      recipientId: recipient,
+      actorId: currentUid(),
       message,
       type,
-      read:false,
-      createdAt:serverTime(),
+      read: false,
+      createdAt: serverTime(),
       ...data
     });
 
-  }catch(e){
-    console.error(
-      "Notification:",
-      e
-    );
+  } catch(e) {
+    console.error("Notification:", e);
   }
 }
 
-
-/* =========================================================
+/* -------------------------------------------------------
    AVATAR
-========================================================= */
+------------------------------------------------------- */
 
-function Avatar({
-  profile,
-  size=""
-}){
+function Avatar({ profile, size = "" }) {
 
   return (
-    <div className={"avatar "+size}>
+    <div className={"avatar " + size}>
       {initials(
-        profile?.displayName||
-        profile?.username||
+        profile?.displayName ||
+        profile?.username ||
         "User"
       )}
     </div>
   );
 }
 
-
-/* =========================================================
+/* -------------------------------------------------------
    FOLLOW
-========================================================= */
+------------------------------------------------------- */
 
-function FollowButton({
-  targetId,
-  following
-}){
+function FollowButton({ targetId, following }) {
 
-  const [busy,setBusy]=useState(false);
+  const [busy, setBusy] = useState(false);
 
-  async function toggle(){
+  async function toggle() {
 
-    if(
-      busy ||
-      !targetId ||
-      targetId===currentUid()
-    ){
-      return;
-    }
+    if (busy || !targetId || targetId === currentUid()) return;
 
     setBusy(true);
 
-    try{
+    try {
 
-      const snap=await C("follows")
-        .where(
-          "followerId",
-          "==",
-          currentUid()
-        )
-        .where(
-          "followingId",
-          "==",
-          targetId
-        )
+      const snap = await C("follows")
+        .where("followerId", "==", currentUid())
+        .where("followingId", "==", targetId)
         .limit(1)
         .get();
 
-      if(snap.empty){
+      if (snap.empty) {
 
         await C("follows").add({
-          followerId:currentUid(),
-          followingId:targetId,
-          createdAt:serverTime()
+          followerId: currentUid(),
+          followingId: targetId,
+          createdAt: serverTime()
         });
 
         await C("users")
           .doc(targetId)
           .set({
             followersCount:
-              firebase.firestore.FieldValue
-                .increment(1)
-          },{merge:true});
+              firebase.firestore.FieldValue.increment(1)
+          }, { merge: true });
 
         await C("users")
           .doc(currentUid())
           .set({
             followingCount:
-              firebase.firestore.FieldValue
-                .increment(1)
-          },{merge:true});
+              firebase.firestore.FieldValue.increment(1)
+          }, { merge: true });
 
         await notify(
           targetId,
@@ -1382,13 +838,11 @@ function FollowButton({
           "follow"
         );
 
-      }else{
+      } else {
 
-        const batch=db.batch();
+        const batch = db.batch();
 
-        snap.docs.forEach(d=>{
-          batch.delete(d.ref);
-        });
+        snap.docs.forEach(d => batch.delete(d.ref));
 
         await batch.commit();
 
@@ -1396,21 +850,19 @@ function FollowButton({
           .doc(targetId)
           .set({
             followersCount:
-              firebase.firestore.FieldValue
-                .increment(-1)
-          },{merge:true});
+              firebase.firestore.FieldValue.increment(-1)
+          }, { merge: true });
 
         await C("users")
           .doc(currentUid())
           .set({
             followingCount:
-              firebase.firestore.FieldValue
-                .increment(-1)
-          },{merge:true});
+              firebase.firestore.FieldValue.increment(-1)
+          }, { merge: true });
       }
 
-    }catch(e){
-      alert(e.message);
+    } catch(e) {
+      console.error(e.message);
     }
 
     setBusy(false);
@@ -1418,79 +870,56 @@ function FollowButton({
 
   return (
     <button
-      className={
-        "btn "+(!following?"primary":"")
-      }
+      className={"btn " + (!following ? "primary" : "")}
       onClick={toggle}
       disabled={busy}
     >
-      {following?"Following":"Follow"}
+      {following ? "Following" : "Follow"}
     </button>
   );
 }
 
-
-/* =========================================================
+/* -------------------------------------------------------
    COMPOSER
-========================================================= */
+------------------------------------------------------- */
 
-function Composer({profile}){
+function Composer({ profile }) {
 
-  const [value,setValue]=useState("");
-  const [poll,setPoll]=useState(false);
-  const [question,setQuestion]=useState("");
-  const [options,setOptions]=useState([
-    "",
-    ""
-  ]);
-  const [busy,setBusy]=useState(false);
+  const [value, setValue] = useState("");
+  const [poll, setPoll] = useState(false);
+  const [question, setQuestion] = useState("");
+  const [options, setOptions] = useState(["", ""]);
+  const [busy, setBusy] = useState(false);
 
-  async function publish(){
+  async function publish() {
 
-    const body=text(value);
+    const body = text(value);
 
-    if(!body && !poll)return;
+    if (!body && !poll) return;
 
     setBusy(true);
 
-    try{
+    try {
 
-      const data={
-        authorId:currentUid(),
-
-        /*
-          Store author information directly in the
-          post too. This makes old/missing user records
-          much safer and lets posts always display
-          their author correctly.
-        */
-        authorName:
-          profile.displayName||"Nexus User",
-
-        authorUsername:
-          profile.username||"user",
-
-        text:body,
-        createdAt:serverTime(),
-        likesCount:0,
-        commentsCount:0,
-        repostsCount:0,
-        hashtags:hashtags(body),
-        mentions:mentions(body)
+      const data = {
+        authorId: currentUid(),
+        authorName: profile.displayName || "Nexus User",
+        authorUsername: profile.username || "user",
+        text: body,
+        createdAt: serverTime(),
+        likesCount: 0,
+        commentsCount: 0,
+        repostsCount: 0,
+        hashtags: hashtags(body),
+        mentions: mentions(body)
       };
 
-      if(poll){
+      if (poll) {
 
-        const clean=options
-          .map(text)
-          .filter(Boolean);
+        const clean = options.map(text).filter(Boolean);
 
-        if(
-          !text(question) ||
-          clean.length<2
-        ){
-
-          alert(
+        if (!text(question) || clean.length < 2) {
+          console.error(
             "A poll needs a question and at least 2 options."
           );
 
@@ -1498,39 +927,30 @@ function Composer({profile}){
           return;
         }
 
-        data.poll={
-          question:text(question),
-          options:clean.map(x=>({
-            text:x,
-            votes:0
+        data.poll = {
+          question: text(question),
+          options: clean.map(x => ({
+            text: x,
+            votes: 0
           }))
         };
       }
 
-      const ref=await C("posts").add(data);
+      const ref = await C("posts").add(data);
 
-      for(
-        const mention of mentions(body)
-      ){
+      for (const mention of mentions(body)) {
 
-        const users=await C("users")
-          .where(
-            "username",
-            "==",
-            mention
-          )
+        const users = await C("users")
+          .where("username", "==", mention)
           .limit(1)
           .get();
 
-        if(!users.empty){
-
+        if (!users.empty) {
           await notify(
             users.docs[0].id,
             "mentioned you in a post",
             "mention",
-            {
-              postId:ref.id
-            }
+            { postId: ref.id }
           );
         }
       }
@@ -1539,21 +959,16 @@ function Composer({profile}){
         .doc(currentUid())
         .set({
           postsCount:
-            firebase.firestore.FieldValue
-              .increment(1)
-        },{merge:true});
+            firebase.firestore.FieldValue.increment(1)
+        }, { merge: true });
 
       setValue("");
       setPoll(false);
       setQuestion("");
-      setOptions([
-        "",
-        ""
-      ]);
+      setOptions(["", ""]);
 
-    }catch(e){
-
-      alert(e.message);
+    } catch(e) {
+      console.error(e.message);
     }
 
     setBusy(false);
@@ -1564,92 +979,76 @@ function Composer({profile}){
 
       <div className="composer-row">
 
-        <Avatar profile={profile}/>
+        <Avatar profile={profile} />
 
-        <div style={{flex:1}}>
+        <div style={{ flex: 1 }}>
 
           <textarea
             value={value}
-            onChange={e=>
-              setValue(e.target.value)
-            }
+            onChange={e => setValue(e.target.value)}
             placeholder="What's happening on Nexus?"
           />
 
           {poll && (
-            <div style={{
-              marginTop:10,
-              border:"1px solid var(--line)",
-              borderRadius:12,
-              padding:10
-            }}>
+            <div
+              style={{
+                marginTop: 10,
+                border: "1px solid var(--line)",
+                borderRadius: 12,
+                padding: 10
+              }}
+            >
 
               <input
                 value={question}
-                onChange={e=>
-                  setQuestion(e.target.value)
-                }
+                onChange={e => setQuestion(e.target.value)}
                 placeholder="Poll question"
               />
 
-              {options.map((x,i)=>(
+              {options.map((x, i) => (
+
                 <div
                   key={i}
                   style={{
-                    display:"flex",
-                    gap:6,
-                    marginTop:7
+                    display: "flex",
+                    gap: 6,
+                    marginTop: 7
                   }}
                 >
 
                   <input
                     value={x}
-                    onChange={e=>{
-
-                      const copy=[
-                        ...options
-                      ];
-
-                      copy[i]=e.target.value;
-
+                    onChange={e => {
+                      const copy = [...options];
+                      copy[i] = e.target.value;
                       setOptions(copy);
                     }}
-                    placeholder={
-                      "Option "+(i+1)
-                    }
+                    placeholder={"Option " + (i + 1)}
                   />
 
-                  {options.length>2 && (
+                  {options.length > 2 && (
                     <button
                       className="btn"
-                      onClick={()=>{
+                      onClick={() =>
                         setOptions(
-                          options.filter(
-                            (_,n)=>n!==i
-                          )
-                        );
-                      }}
+                          options.filter((_, n) => n !== i)
+                        )
+                      }
                     >
                       ×
                     </button>
                   )}
 
                 </div>
+
               ))}
 
               <button
                 className="btn"
-                style={{
-                  marginTop:8
-                }}
-                onClick={()=>{
-
-                  if(options.length<6){
-
-                    setOptions([
-                      ...options,
-                      ""
-                    ]);
+                style={{ marginTop: 8 }}
+                onClick={() => {
+                  if (options.length < 6) {
+                    setOptions([...options, ""]);
                   }
                 }}
               >
@@ -1662,12 +1061,8 @@ function Composer({profile}){
           <div className="composer-tools">
 
             <button
-              className={
-                "btn "+(poll?"primary":"")
-              }
-              onClick={()=>
-                setPoll(!poll)
-              }
+              className={"btn " + (poll ? "primary" : "")}
+              onClick={() => setPoll(!poll)}
             >
               📊 Poll
             </button>
@@ -1675,25 +1070,21 @@ function Composer({profile}){
             <span
               className="muted"
               style={{
-                padding:"8px 2px",
-                fontSize:12
+                padding: "8px 2px",
+                fontSize: 12
               }}
             >
               #hashtags · @mentions
             </span>
 
-            <div style={{
-              marginLeft:"auto"
-            }}>
+            <div style={{ marginLeft: "auto" }}>
 
               <button
                 className="btn primary"
                 disabled={busy}
                 onClick={publish}
               >
-                {busy
-                  ?"Posting..."
-                  :"Post"}
+                {busy ? "Posting..." : "Post"}
               </button>
 
             </div>
@@ -1701,144 +1092,111 @@ function Composer({profile}){
           </div>
 
         </div>
+
       </div>
+
     </div>
   );
 }
 
-
-/* =========================================================
+/* -------------------------------------------------------
    POLL
-========================================================= */
+------------------------------------------------------- */
 
-function Poll({post}){
+function Poll({ post }) {
 
-  const [options,setOptions]=useState(
-    post.poll?.options||[]
+  const [options, setOptions] = useState(
+    post.poll?.options || []
   );
 
-  const [voted,setVoted]=useState(false);
+  const [voted, setVoted] = useState(false);
 
-  useEffect(()=>{
+  useEffect(() => {
 
     C("pollVotes")
-      .where(
-        "pollId",
-        "==",
-        post.id
-      )
-      .where(
-        "userId",
-        "==",
-        currentUid()
-      )
+      .where("pollId", "==", post.id)
+      .where("userId", "==", currentUid())
       .limit(1)
       .get()
-      .then(snap=>{
-        setVoted(!snap.empty);
-      })
-      .catch(()=>{});
+      .then(snap => setVoted(!snap.empty))
+      .catch(() => {});
 
-  },[post.id]);
+  }, [post.id]);
 
-  async function vote(index){
+  async function vote(index) {
 
-    if(voted)return;
+    if (voted) return;
 
-    try{
+    try {
 
       await C("pollVotes").add({
-        pollId:post.id,
-        postId:post.id,
-        userId:currentUid(),
-        option:index,
-        createdAt:serverTime()
+        pollId: post.id,
+        postId: post.id,
+        userId: currentUid(),
+        option: index,
+        createdAt: serverTime()
       });
 
-      const next=options.map(
-        (x,i)=>{
-
-          if(i===index){
-
-            return {
+      const next = options.map((x, i) =>
+        i === index
+          ? {
               ...x,
-              votes:
-                Number(x.votes||0)+1
-            };
-          }
-
-          return x;
-        }
+              votes: Number(x.votes || 0) + 1
+            }
+          : x
       );
 
       await C("posts")
         .doc(post.id)
         .set({
-          poll:{
+          poll: {
             ...post.poll,
-            options:next
+            options: next
           }
-        },{merge:true});
+        }, { merge: true });
 
       setOptions(next);
       setVoted(true);
 
-    }catch(e){
-      alert(e.message);
+    } catch(e) {
+      console.error(e.message);
     }
   }
 
-  const total=options.reduce(
-    (a,x)=>
-      a+Number(x.votes||0),
+  const total = options.reduce(
+    (a, x) => a + Number(x.votes || 0),
     0
   );
 
   return (
     <div className="poll">
 
-      <strong>
-        {post.poll.question}
-      </strong>
+      <strong>{post.poll.question}</strong>
 
-      {options.map((x,i)=>{
+      {options.map((x, i) => {
 
-        const percent=total
-          ?Math.round(
-            Number(x.votes||0)*
-            100/
-            total
-          )
-          :0;
+        const percent = total
+          ? Math.round(
+              Number(x.votes || 0) * 100 / total
+            )
+          : 0;
 
         return (
           <button
             className="poll-option"
             key={i}
             disabled={voted}
-            onClick={()=>
-              vote(i)
-            }
+            onClick={() => vote(i)}
           >
 
             <span
               className="poll-bar"
-              style={{
-                width:
-                  percent+"%"
-              }}
+              style={{ width: percent + "%" }}
             />
 
             <span className="poll-content">
-
-              <span>
-                {x.text}
-              </span>
-
-              <span>
-                {percent}%
-              </span>
-
+              <span>{x.text}</span>
+              <span>{percent}%</span>
             </span>
 
           </button>
@@ -1847,191 +1205,153 @@ function Poll({post}){
 
       <div className="muted">
         {total} votes
-        {voted
-          ?" · You voted"
-          :""
-        }
+        {voted ? " · You voted" : ""}
       </div>
 
     </div>
   );
 }
 
-
-/* =========================================================
+/* -------------------------------------------------------
    COMMENTS
-========================================================= */
+------------------------------------------------------- */
 
-function Comments({
-  postId,
-  users
-}){
+function Comments({ postId, users }) {
 
-  const [comments,setComments]=useState([]);
-  const [value,setValue]=useState("");
-  const [reply,setReply]=useState(null);
+  const [comments, setComments] = useState([]);
+  const [value, setValue] = useState("");
+  const [reply, setReply] = useState(null);
 
-  useEffect(()=>{
+  useEffect(() => {
 
-    const unsubscribe=C("comments")
-      .where(
-        "postId",
-        "==",
-        postId
-      )
+    const unsubscribe = C("comments")
+      .where("postId", "==", postId)
       .limit(500)
-      .onSnapshot(
-        snap=>{
+      .onSnapshot(snap => {
 
-          const arr=snap.docs.map(
-            d=>({
-              id:d.id,
-              ...d.data()
-            })
-          );
+        const arr = snap.docs.map(d => ({
+          id: d.id,
+          ...d.data()
+        }));
 
-          arr.sort((a,b)=>{
+        arr.sort((a, b) => {
 
-            function t(x){
+          function t(x) {
 
-              if(!x)return 0;
+            if (!x) return 0;
+            if (x.toDate) return x.toDate().getTime();
+            if (x.seconds) return x.seconds * 1000;
 
-              if(x.toDate){
-                return x.toDate().getTime();
-              }
+            return new Date(x).getTime() || 0;
+          }
 
-              if(x.seconds){
-                return x.seconds*1000;
-              }
+          return t(a.createdAt) - t(b.createdAt);
+        });
 
-              return (
-                new Date(x).getTime()||0
-              );
-            }
+        setComments(arr);
 
-            return t(a.createdAt)-
-                   t(b.createdAt);
-          });
-
-          setComments(arr);
-        },
-        e=>console.error(e)
-      );
+      }, e => console.error(e));
 
     return unsubscribe;
 
-  },[postId]);
+  }, [postId]);
 
-  async function send(){
+  async function send() {
 
-    if(!text(value))return;
+    if (!text(value)) return;
 
-    try{
+    try {
 
       await C("comments").add({
         postId,
-        authorId:currentUid(),
-        text:text(value),
-        parentId:reply||null,
-        createdAt:serverTime()
+        authorId: currentUid(),
+        text: text(value),
+        parentId: reply || null,
+        createdAt: serverTime()
       });
 
       await C("posts")
         .doc(postId)
         .set({
           commentsCount:
-            firebase.firestore.FieldValue
-              .increment(1)
-        },{merge:true});
+            firebase.firestore.FieldValue.increment(1)
+        }, { merge: true });
 
-      const post=
-        await C("posts")
-          .doc(postId)
-          .get();
+      const post = await C("posts")
+        .doc(postId)
+        .get();
 
-      if(post.exists){
-
+      if (post.exists) {
         await notify(
           post.data().authorId,
           "commented on your post",
           "comment",
-          {
-            postId
-          }
+          { postId }
         );
       }
 
       setValue("");
       setReply(null);
 
-    }catch(e){
-      alert(e.message);
+    } catch(e) {
+      console.error(e.message);
     }
   }
 
-  function renderComment(c){
+  function renderComment(c) {
 
-    const author=users.find(
-      u=>u.uid===c.authorId
+    const author = users.find(
+      u => u.uid === c.authorId
     );
 
-    const replies=comments.filter(
-      x=>x.parentId===c.id
+    const replies = comments.filter(
+      x => x.parentId === c.id
     );
 
     return (
-      <div
-        className="comment"
-        key={c.id}
-      >
+      <div className="comment" key={c.id}>
 
         <div className="comment-row">
 
           <Avatar
-            profile={
-              author||{
-                displayName:"User"
-              }
-            }
+            profile={author || { displayName: "User" }}
             size="small"
           />
 
           <div className="comment-body">
 
             <strong>
-              {author?.displayName||"User"}
+              {author?.displayName || "User"}
             </strong>
 
             <span className="muted">
-              {" "}
-              @{author?.username||"user"}
+              @{author?.username || "user"}
             </span>
 
-            <div style={{
-              marginTop:3,
-              whiteSpace:"pre-wrap"
-            }}>
+            <div
+              style={{
+                marginTop: 3,
+                whiteSpace: "pre-wrap"
+              }}
+            >
               {renderText(c.text)}
             </div>
 
-            <div style={{
-              display:"flex",
-              gap:8,
-              marginTop:5
-            }}>
+            <div
+              style={{
+                display: "flex",
+                gap: 8,
+                marginTop: 5
+              }}
+            >
 
               <button
                 className="btn"
-                onClick={()=>{
-
+                onClick={() => {
                   setReply(c.id);
-
                   setValue(
-                    "@"+
-                    (
-                      author?.username||
-                      "user"
-                    )+
+                    "@" +
+                    (author?.username || "user") +
                     " "
                   );
                 }}
@@ -2042,9 +1362,10 @@ function Comments({
             </div>
 
           </div>
+
         </div>
 
-        {replies.length>0 && (
+        {replies.length > 0 && (
           <div className="reply-list">
             {replies.map(renderComment)}
           </div>
@@ -2058,31 +1379,28 @@ function Comments({
     <div className="comments">
 
       {comments
-        .filter(x=>!x.parentId)
+        .filter(x => !x.parentId)
         .map(renderComment)}
 
-      <div style={{
-        display:"flex",
-        gap:7,
-        marginTop:8
-      }}>
+      <div
+        style={{
+          display: "flex",
+          gap: 7,
+          marginTop: 8
+        }}
+      >
 
         <input
           value={value}
-          onChange={e=>
-            setValue(e.target.value)
-          }
+          onChange={e => setValue(e.target.value)}
           placeholder={
             reply
-              ?"Write a reply..."
-              :"Write a comment..."
+              ? "Write a reply..."
+              : "Write a comment..."
           }
-          onKeyDown={e=>{
-
-            if(e.key==="Enter"){
-
+          onKeyDown={e => {
+            if (e.key === "Enter") {
               e.preventDefault();
-
               send();
             }
           }}
@@ -2101,11 +1419,9 @@ function Comments({
   );
 }
 
-
-/* =========================================================
+/* -------------------------------------------------------
    POST
-   AUTHOR DISPLAY FIX
-========================================================= */
+------------------------------------------------------- */
 
 function Post({
   post,
@@ -2114,134 +1430,82 @@ function Post({
   saved,
   reposted,
   following
-}){
+}) {
 
-  const [
-    commentsOpen,
-    setCommentsOpen
-  ]=useState(false);
+  const [commentsOpen, setCommentsOpen] = useState(false);
+  const [menu, setMenu] = useState(false);
 
-  const [
-    menu,
-    setMenu
-  ]=useState(false);
-
-
-  /*
-    IMPORTANT FIX
-
-    Different versions of Nexus may have stored the
-    author ID under different field names.
-
-    We support all of these:
-      authorId
-      authorUid
-      uid
-  */
-
-  const authorId=
-    post.authorId||
-    post.authorUid||
-    post.uid||
+  const authorId =
+    post.authorId ||
+    post.authorUid ||
+    post.uid ||
     null;
 
-
-  /*
-    First try to find the complete user profile.
-  */
-
-  const author=users.find(
-    u=>u.uid===authorId
+  const author = users.find(
+    u => u.uid === authorId
   );
 
-
-  /*
-    If the user document is unavailable, use
-    information stored directly on the post.
-  */
-
-  const authorName=
-    author?.displayName||
-    post.authorName||
-    post.authorDisplayName||
-    post.displayName||
-    post.name||
+  const authorName =
+    author?.displayName ||
+    post.authorName ||
+    post.authorDisplayName ||
+    post.displayName ||
+    post.name ||
     "Nexus User";
 
-
-  const authorUsername=
-    author?.username||
-    post.authorUsername||
-    post.authorUserName||
-    post.username||
+  const authorUsername =
+    author?.username ||
+    post.authorUsername ||
+    post.authorUserName ||
+    post.username ||
     "user";
 
-
-  /*
-    This profile is used by Avatar.
-    Therefore even an old post with a missing
-    user document gets a proper avatar/name.
-  */
-
-  const authorProfile=
-    author||
-    {
-      uid:authorId,
-      displayName:authorName,
-      username:authorUsername
+  const authorProfile =
+    author || {
+      uid: authorId,
+      displayName: authorName,
+      username: authorUsername
     };
 
+  async function like() {
 
-  async function like(){
+    try {
 
-    try{
-
-      const snap=await C("likes")
-        .where(
-          "postId",
-          "==",
-          post.id
-        )
-        .where(
-          "userId",
-          "==",
-          currentUid()
-        )
+      const snap = await C("likes")
+        .where("postId", "==", post.id)
+        .where("userId", "==", currentUid())
         .limit(1)
         .get();
 
-      if(snap.empty){
+      if (snap.empty) {
 
         await C("likes").add({
-          postId:post.id,
-          userId:currentUid(),
-          createdAt:serverTime()
+          postId: post.id,
+          userId: currentUid(),
+          createdAt: serverTime()
         });
 
         await C("posts")
           .doc(post.id)
           .set({
             likesCount:
-              firebase.firestore.FieldValue
-                .increment(1)
-          },{merge:true});
+              firebase.firestore.FieldValue.increment(1)
+          }, { merge: true });
 
         await notify(
           authorId,
           "liked your post",
           "like",
-          {
-            postId:post.id
-          }
+          { postId: post.id }
         );
 
-      }else{
+      } else {
 
-        const batch=db.batch();
+        const batch = db.batch();
 
-        snap.docs.forEach(d=>{
-          batch.delete(d.ref);
-        });
+        snap.docs.forEach(d =>
+          batch.delete(d.ref)
+        );
 
         await batch.commit();
 
@@ -2249,101 +1513,81 @@ function Post({
           .doc(post.id)
           .set({
             likesCount:
-              firebase.firestore.FieldValue
-                .increment(-1)
-          },{merge:true});
+              firebase.firestore.FieldValue.increment(-1)
+          }, { merge: true });
       }
 
-    }catch(e){
-      alert(e.message);
+    } catch(e) {
+      console.error(e.message);
     }
   }
 
+  async function save() {
 
-  async function save(){
+    try {
 
-    try{
-
-      const snap=await C("bookmarks")
-        .where(
-          "postId",
-          "==",
-          post.id
-        )
-        .where(
-          "userId",
-          "==",
-          currentUid()
-        )
+      const snap = await C("bookmarks")
+        .where("postId", "==", post.id)
+        .where("userId", "==", currentUid())
         .limit(1)
         .get();
 
-      if(snap.empty){
+      if (snap.empty) {
 
         await C("bookmarks").add({
-          postId:post.id,
-          userId:currentUid(),
-          createdAt:serverTime()
+          postId: post.id,
+          userId: currentUid(),
+          createdAt: serverTime()
         });
 
-      }else{
+      } else {
 
-        const batch=db.batch();
+        const batch = db.batch();
 
-        snap.docs.forEach(d=>{
-          batch.delete(d.ref);
-        });
+        snap.docs.forEach(d =>
+          batch.delete(d.ref)
+        );
 
         await batch.commit();
       }
 
-    }catch(e){
-      alert(e.message);
+    } catch(e) {
+      console.error(e.message);
     }
   }
 
+  async function repost() {
 
-  async function repost(){
+    try {
 
-    try{
-
-      const snap=await C("reposts")
-        .where(
-          "postId",
-          "==",
-          post.id
-        )
-        .where(
-          "userId",
-          "==",
-          currentUid()
-        )
+      const snap = await C("reposts")
+        .where("postId", "==", post.id)
+        .where("userId", "==", currentUid())
         .limit(1)
         .get();
 
-      if(snap.empty){
+      if (snap.empty) {
 
         await C("reposts").add({
-          postId:post.id,
-          userId:currentUid(),
-          createdAt:serverTime()
+          postId: post.id,
+          userId: currentUid(),
+          createdAt: serverTime()
         });
 
         await C("posts")
           .doc(post.id)
           .set({
             repostsCount:
-              firebase.firestore.FieldValue
-                .increment(1)
-          },{merge:true});
+              firebase.firestore.FieldValue.increment(1)
+          }, { merge: true });
 
-      }else{
+      } else {
 
-        const batch=db.batch();
+        const batch = db.batch();
 
-        snap.docs.forEach(d=>{
-          batch.delete(d.ref);
-        });
+        snap.docs.forEach(d =>
+          batch.delete(d.ref)
+        );
 
         await batch.commit();
 
@@ -2351,89 +1595,70 @@ function Post({
           .doc(post.id)
           .set({
             repostsCount:
-              firebase.firestore.FieldValue
-                .increment(-1)
-          },{merge:true});
+              firebase.firestore.FieldValue.increment(-1)
+          }, { merge: true });
       }
 
-    }catch(e){
-      alert(e.message);
+    } catch(e) {
+      console.error(e.message);
     }
   }
 
+  async function deletePost() {
 
-  async function deletePost(){
+    if (authorId !== currentUid()) return;
 
-    if(authorId!==currentUid())return;
-
-    if(!confirm("Delete this post?"))return;
-
-    try{
-
-      await C("posts")
-        .doc(post.id)
-        .delete();
-
-    }catch(e){
-      alert(e.message);
+    try {
+      await C("posts").doc(post.id).delete();
+    } catch(e) {
+      console.error(e.message);
     }
   }
 
+  async function pin() {
 
-  async function pin(){
+    if (authorId !== currentUid()) return;
 
-    if(authorId!==currentUid())return;
-
-    try{
+    try {
 
       await C("posts")
         .doc(post.id)
         .set({
-          pinned:!post.pinned
-        },{merge:true});
+          pinned: !post.pinned
+        }, { merge: true });
 
-    }catch(e){
-      alert(e.message);
+    } catch(e) {
+      console.error(e.message);
     }
   }
 
+  async function report() {
 
-  async function report(){
-
-    const reason=prompt(
-      "Reason for reporting:"
-    );
-
-    if(!text(reason))return;
-
-    try{
+    try {
 
       await C("reports").add({
-        reporterId:currentUid(),
-        targetType:"post",
-        targetId:post.id,
-        targetAuthorId:authorId,
-        reason:text(reason),
-        status:"open",
-        createdAt:serverTime()
+        reporterId: currentUid(),
+        targetType: "post",
+        targetId: post.id,
+        targetAuthorId: authorId,
+        reason: "Reported via App",
+        status: "open",
+        createdAt: serverTime()
       });
 
-      alert("Report submitted.");
+      console.log("Report submitted.");
 
-    }catch(e){
-      alert(e.message);
+    } catch(e) {
+      console.error(e.message);
     }
   }
-
 
   return (
     <article className="card post">
 
       <div className="post-head">
 
-        <Avatar
-          profile={authorProfile}
-        />
+        <Avatar profile={authorProfile} />
 
         <div className="post-user">
 
@@ -2442,11 +1667,13 @@ function Post({
             {authorName}
 
             {post.pinned && (
-              <span style={{
-                color:"var(--yellow)",
-                fontSize:11,
-                marginLeft:7
-              }}>
+              <span
+                style={{
+                  color: "var(--yellow)",
+                  fontSize: 11,
+                  marginLeft: 7
+                }}
+              >
                 PINNED
               </span>
             )}
@@ -2465,105 +1692,87 @@ function Post({
 
         <button
           className="btn"
-          onClick={()=>
-            setMenu(!menu)
-          }
+          onClick={() => setMenu(!menu)}
         >
           •••
         </button>
 
       </div>
 
-
       <div className="post-body">
         {renderText(post.text)}
       </div>
 
-
-      {post.poll && (
-        <Poll post={post}/>
-      )}
-
+      {post.poll && <Poll post={post} />}
 
       <div className="post-actions">
 
         <button
-          className={
-            "action "+
-            (liked?"liked":"")
-          }
+          className={"action " + (liked ? "liked" : "")}
           onClick={like}
         >
-          ♥ {post.likesCount||0}
+          ♥ {post.likesCount || 0}
         </button>
-
 
         <button
           className="action"
-          onClick={()=>
-            setCommentsOpen(
-              !commentsOpen
-            )
+          onClick={() =>
+            setCommentsOpen(!commentsOpen)
           }
         >
-          💬 {post.commentsCount||0}
+          💬 {post.commentsCount || 0}
         </button>
-
 
         <button
           className={
-            "action "+
-            (reposted?"reposted":"")
+            "action " +
+            (reposted ? "reposted" : "")
           }
           onClick={repost}
         >
-          ↻ {post.repostsCount||0}
+          ↻ {post.repostsCount || 0}
         </button>
-
 
         <button
           className={
-            "action "+
-            (saved?"saved":"")
+            "action " +
+            (saved ? "saved" : "")
           }
           onClick={save}
         >
           🔖
         </button>
 
-
         {authorId &&
-         authorId!==currentUid() && (
-          <FollowButton
-            targetId={authorId}
-            following={following}
-          />
-        )}
+          authorId !== currentUid() && (
+            <FollowButton
+              targetId={authorId}
+              following={following}
+            />
+          )}
 
       </div>
 
-
       {menu && (
-        <div style={{
-          display:"flex",
-          gap:7,
-          flexWrap:"wrap",
-          marginTop:10,
-          paddingTop:10,
-          borderTop:
-            "1px solid var(--line)"
-        }}>
 
-          {authorId===currentUid() && (
+        <div
+          style={{
+            display: "flex",
+            gap: 7,
+            flexWrap: "wrap",
+            marginTop: 10,
+            paddingTop: 10,
+            borderTop: "1px solid var(--line)"
+          }}
+        >
+
+          {authorId === currentUid() && (
             <>
-
               <button
                 className="btn"
                 onClick={pin}
               >
-                {post.pinned
-                  ?"Unpin"
-                  :"Pin"}
+                {post.pinned ? "Unpin" : "Pin"}
               </button>
 
               <button
@@ -2572,12 +1781,10 @@ function Post({
               >
                 Delete
               </button>
-
             </>
           )}
 
-
-          {authorId!==currentUid() && (
+          {authorId !== currentUid() && (
             <button
               className="btn danger"
               onClick={report}
@@ -2588,7 +1795,6 @@ function Post({
 
         </div>
       )}
-
 
       {commentsOpen && (
         <Comments
@@ -2601,89 +1807,72 @@ function Post({
   );
 }
 
-
-/* =========================================================
+/* -------------------------------------------------------
    FEED
-========================================================= */
+------------------------------------------------------- */
 
-function Feed({
-  mode,
-  data,
-  profile
-}){
+function Feed({ mode, data, profile }) {
 
-  const following=new Set(
-    data.follows.map(
-      x=>x.followingId
-    )
+  const following = new Set(
+    data.follows.map(x => x.followingId)
   );
 
-  const liked=new Set(
-    data.likes.map(
-      x=>x.postId
-    )
+  const liked = new Set(
+    data.likes.map(x => x.postId)
   );
 
-  const saved=new Set(
-    data.bookmarks.map(
-      x=>x.postId
-    )
+  const saved = new Set(
+    data.bookmarks.map(x => x.postId)
   );
 
-  const reposted=new Set(
-    data.reposts.map(
-      x=>x.postId
-    )
+  const reposted = new Set(
+    data.reposts.map(x => x.postId)
   );
 
-  let posts=[...data.posts];
+  let posts = [...data.posts];
 
-  if(mode==="following"){
+  if (mode === "following") {
 
-    posts=posts.filter(p=>{
+    posts = posts.filter(p => {
 
-      const authorId=
-        p.authorId||
-        p.authorUid||
+      const authorId =
+        p.authorId ||
+        p.authorUid ||
         p.uid;
 
       return (
-        following.has(authorId)||
-        authorId===currentUid()
+        following.has(authorId) ||
+        authorId === currentUid()
       );
     });
   }
 
-  if(mode==="saved"){
-
-    posts=posts.filter(
-      p=>saved.has(p.id)
+  if (mode === "saved") {
+    posts = posts.filter(p =>
+      saved.has(p.id)
     );
   }
 
-  if(posts.length===0){
+  if (posts.length === 0) {
 
     return (
       <div className="card empty">
-
-        {mode==="saved"
-          ?"No saved posts yet."
-          :mode==="following"
-            ?"Follow people to see their posts here."
-            :"No posts yet. Create the first post!"
-        }
-
+        {mode === "saved"
+          ? "No saved posts yet."
+          : mode === "following"
+          ? "Follow people to see their posts here."
+          : "No posts yet. Create the first post!"}
       </div>
     );
   }
 
   return (
     <>
-      {posts.map(post=>{
+      {posts.map(post => {
 
-        const authorId=
-          post.authorId||
-          post.authorUid||
+        const authorId =
+          post.authorId ||
+          post.authorUid ||
           post.uid;
 
         return (
@@ -2694,9 +1883,7 @@ function Feed({
             liked={liked.has(post.id)}
             saved={saved.has(post.id)}
             reposted={reposted.has(post.id)}
-            following={
-              following.has(authorId)
-            }
+            following={following.has(authorId)}
           />
         );
       })}
@@ -2704,32 +1891,30 @@ function Feed({
   );
 }
 
-
-/* =========================================================
+/* -------------------------------------------------------
    STORIES
-========================================================= */
+------------------------------------------------------- */
 
-function Stories({
-  stories,
-  users
-}){
+function Stories({ stories, users }) {
 
-  const active=stories.filter(s=>{
+  const [viewStory, setViewStory] = useState(null);
 
-    if(!s.expiresAt)return true;
+  const active = stories.filter(s => {
 
-    const d=s.expiresAt.toDate
-      ?s.expiresAt.toDate()
-      :new Date(s.expiresAt);
+    if (!s.expiresAt) return true;
 
-    return d.getTime()>Date.now();
+    const d = s.expiresAt.toDate
+      ? s.expiresAt.toDate()
+      : new Date(s.expiresAt);
+
+    return d.getTime() > Date.now();
   });
 
-  const unique=[
+  const unique = [
     ...new Map(
-      active.map(s=>[
-        s.authorId||
-        s.authorUid||
+      active.map(s => [
+        s.authorId ||
+        s.authorUid ||
         s.uid,
         s
       ])
@@ -2739,76 +1924,71 @@ function Stories({
   return (
     <div className="card story-box">
 
-      <div style={{
-        display:"flex",
-        justifyContent:"space-between",
-        marginBottom:10
-      }}>
-
-        <strong>
-          Stories
-        </strong>
-
-        <span className="muted">
-          24 hours
-        </span>
-
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          marginBottom: 10
+        }}
+      >
+        <strong>Stories</strong>
+        <span className="muted">24 hours</span>
       </div>
 
       <div className="story-strip">
 
-        {unique.length===0 && (
+        {unique.length === 0 && (
           <span className="muted">
             No active stories.
           </span>
         )}
 
-        {unique.map(s=>{
+        {unique.map(s => {
 
-          const author=users.find(
-            u=>u.uid===(
-              s.authorId||
-              s.authorUid||
-              s.uid
-            )
+          const author = users.find(
+            u =>
+              u.uid ===
+              (
+                s.authorId ||
+                s.authorUid ||
+                s.uid
+              )
           );
 
-          const storyName=
-            author?.username||
-            s.authorUsername||
-            s.username||
+          const storyName =
+            author?.username ||
+            s.authorUsername ||
+            s.username ||
             "user";
 
           return (
             <button
               key={s.id}
               className="story"
-              onClick={()=>{
-
-                alert(
-                  "@"+
-                  storyName+
-                  "\n\n"+
-                  s.text
-                );
-              }}
+              onClick={() =>
+                setViewStory({
+                  story: s,
+                  name: storyName
+                })
+              }
             >
 
               <Avatar
                 profile={
-                  author||{
+                  author || {
                     displayName:
-                      s.authorName||
-                      "User"
+                      s.authorName || "User"
                   }
                 }
                 size="small"
               />
 
-              <div style={{
-                fontSize:12,
-                marginTop:5
-              }}>
+              <div
+                style={{
+                  fontSize: 12,
+                  marginTop: 5
+                }}
+              >
                 @{storyName}
               </div>
 
@@ -2821,52 +2001,101 @@ function Stories({
         })}
 
       </div>
+
+      {viewStory && (
+
+        <div
+          className="modal-bg"
+          onClick={() => setViewStory(null)}
+        >
+
+          <div
+            className="modal"
+            onClick={e => e.stopPropagation()}
+          >
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 15
+              }}
+            >
+
+              <h3>
+                @{viewStory.name}
+              </h3>
+
+              <button
+                className="btn"
+                onClick={() =>
+                  setViewStory(null)
+                }
+              >
+                Close
+              </button>
+
+            </div>
+
+            <div
+              style={{
+                fontSize: 18,
+                whiteSpace: "pre-wrap"
+              }}
+            >
+              {viewStory.story.text}
+            </div>
+
+          </div>
+
+        </div>
+      )}
+
     </div>
   );
 }
 
-
-/* =========================================================
+/* -------------------------------------------------------
    STORY CREATOR
-========================================================= */
+------------------------------------------------------- */
 
-function StoryCreator(){
+function StoryCreator() {
 
-  const [open,setOpen]=useState(false);
-  const [value,setValue]=useState("");
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
 
-  async function publish(){
+  async function publish() {
 
-    if(!text(value))return;
+    if (!text(value)) return;
 
-    try{
+    try {
 
       await C("stories").add({
-        authorId:currentUid(),
-        text:text(value),
-        createdAt:serverTime(),
-        expiresAt:new Date(
-          Date.now()+
-          24*60*60*1000
-        )
+        authorId: currentUid(),
+        text: text(value),
+        createdAt: serverTime(),
+        expiresAt:
+          new Date(
+            Date.now() +
+            24 * 60 * 60 * 1000
+          )
       });
 
       setValue("");
       setOpen(false);
 
-    }catch(e){
-      alert(e.message);
+    } catch(e) {
+      console.error(e.message);
     }
   }
 
-  if(!open){
+  if (!open) {
 
     return (
       <button
         className="btn"
-        onClick={()=>
-          setOpen(true)
-        }
+        onClick={() => setOpen(true)}
       >
         + Story
       </button>
@@ -2878,30 +2107,28 @@ function StoryCreator(){
 
       <div className="modal">
 
-        <h3>
-          Create Story
-        </h3>
+        <h3>Create Story</h3>
 
         <textarea
           value={value}
-          onChange={e=>
+          onChange={e =>
             setValue(e.target.value)
           }
           placeholder="Share something..."
         />
 
-        <div style={{
-          display:"flex",
-          gap:8,
-          justifyContent:"flex-end",
-          marginTop:10
-        }}>
+        <div
+          style={{
+            display: "flex",
+            gap: 8,
+            justifyContent: "flex-end",
+            marginTop: 10
+          }}
+        >
 
           <button
             className="btn"
-            onClick={()=>
-              setOpen(false)
-            }
+            onClick={() => setOpen(false)}
           >
             Cancel
           </button>
@@ -2916,51 +2143,47 @@ function StoryCreator(){
         </div>
 
       </div>
+
     </div>
   );
 }
 
-
-/* =========================================================
+/* -------------------------------------------------------
    HOME
-========================================================= */
+------------------------------------------------------- */
 
-function Home({
-  profile,
-  data
-}){
+function Home({ profile, data }) {
 
-  const [mode,setMode]=useState("home");
+  const [mode, setMode] = useState("home");
 
   return (
     <>
-
       <Stories
         stories={data.stories}
         users={data.users}
       />
 
-      <div style={{
-        display:"flex",
-        justifyContent:"flex-end",
-        marginBottom:10
-      }}>
-        <StoryCreator/>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          marginBottom: 10
+        }}
+      >
+        <StoryCreator />
       </div>
 
-      <Composer
-        profile={profile}
-      />
+      <Composer profile={profile} />
 
       <div className="feed-tabs">
 
         <button
           className={
-            mode==="home"
-              ?"active"
-              :""
+            mode === "home"
+              ? "active"
+              : ""
           }
-          onClick={()=>
+          onClick={() =>
             setMode("home")
           }
         >
@@ -2969,11 +2192,11 @@ function Home({
 
         <button
           className={
-            mode==="following"
-              ?"active"
-              :""
+            mode === "following"
+              ? "active"
+              : ""
           }
-          onClick={()=>
+          onClick={() =>
             setMode("following")
           }
         >
@@ -2982,11 +2205,11 @@ function Home({
 
         <button
           className={
-            mode==="saved"
-              ?"active"
-              :""
+            mode === "saved"
+              ? "active"
+              : ""
           }
-          onClick={()=>
+          onClick={() =>
             setMode("saved")
           }
         >
@@ -3000,190 +2223,130 @@ function Home({
         data={data}
         profile={profile}
       />
-
     </>
   );
 }
 
-
-/* =========================================================
+/* -------------------------------------------------------
    EXPLORE
-========================================================= */
+------------------------------------------------------- */
 
-function Explore({
-  data,
-  onProfile
-}){
+function Explore({ data, onProfile }) {
 
-  const [
-    query,
-    setQuery
-  ]=useState("");
+  const [query, setQuery] = useState("");
+  const [tab, setTab] = useState("users");
 
-  const [
-    tab,
-    setTab
-  ]=useState("users");
+  const q = query.toLowerCase().trim();
 
-  const q=query
-    .toLowerCase()
-    .trim();
-
-  const users=data.users.filter(u=>
-    !q||
-    String(u.displayName||"")
+  const users = data.users.filter(u =>
+    !q ||
+    String(u.displayName || "")
       .toLowerCase()
-      .includes(q)||
-    String(u.username||"")
+      .includes(q) ||
+    String(u.username || "")
       .toLowerCase()
       .includes(q)
   );
 
-  const posts=data.posts.filter(p=>{
-
-    const postText=
-      String(p.text||"")
-        .toLowerCase();
-
-    const postHashtags=
-      p.hashtags||[];
-
-    return (
-      !q||
-      postText.includes(q)||
-      postHashtags.some(
-        h=>h.includes(
-          q.replace(/^#/,"")
-        )
-      )
-    );
-  });
-
-  const trend={};
-
-  data.posts.forEach(p=>{
-
-    (p.hashtags||[])
-      .forEach(h=>{
-        trend[h]=(trend[h]||0)+1;
-      });
-  });
-
-  const trends=Object.entries(trend)
-    .sort((a,b)=>b[1]-a[1])
-    .slice(0,30);
+  const posts = data.posts.filter(p =>
+    !q ||
+    (p.text || "")
+      .toLowerCase()
+      .includes(q) ||
+    (p.hashtags || [])
+      .some(h => h.includes(q))
+  );
 
   return (
-    <div>
-
+    <>
       <div className="section-title">
         Explore
       </div>
 
-      <div className="card pad">
+      <div className="searchbox card pad">
 
-        <div className="searchbox">
-
-          <input
-            value={query}
-            onChange={e=>
-              setQuery(e.target.value)
-            }
-            placeholder="Search users, posts, hashtags..."
-          />
-
-          <button className="btn primary">
-            Search
-          </button>
-
-        </div>
-
-        <div
-          className="feed-tabs"
-          style={{
-            marginTop:12,
-            marginBottom:0
-          }}
-        >
-
-          {[
-            ["users","Users"],
-            ["posts","Posts"],
-            ["hashtags","Hashtags"]
-          ].map(x=>(
-            <button
-              key={x[0]}
-              className={
-                tab===x[0]
-                  ?"active"
-                  :""
-              }
-              onClick={()=>
-                setTab(x[0])
-              }
-            >
-              {x[1]}
-            </button>
-          ))}
-
-        </div>
+        <input
+          value={query}
+          onChange={e =>
+            setQuery(e.target.value)
+          }
+          placeholder="Search users, hashtags, posts..."
+        />
 
       </div>
 
+      <div
+        className="feed-tabs"
+        style={{ marginTop: 15 }}
+      >
 
-      {tab==="users" && (
-        <div
-          className="card pad"
-          style={{marginTop:12}}
+        <button
+          className={
+            tab === "users"
+              ? "active"
+              : ""
+          }
+          onClick={() =>
+            setTab("users")
+          }
         >
+          Users
+        </button>
 
-          {users.length===0 && (
+        <button
+          className={
+            tab === "posts"
+              ? "active"
+              : ""
+          }
+          onClick={() =>
+            setTab("posts")
+          }
+        >
+          Posts
+        </button>
+
+      </div>
+
+      {tab === "users" && (
+
+        <div className="card pad">
+
+          {users.length === 0 ? (
+
             <div className="empty">
               No users found.
             </div>
-          )}
 
-          {users.map(u=>(
+          ) : users.map(u => (
+
             <div
               className="user-row"
               key={u.uid}
             >
 
-              <Avatar
-                profile={u}
-              />
+              <Avatar profile={u} />
 
-              <div className="user-row-main">
+              <div
+                className="user-row-main"
+                onClick={() =>
+                  onProfile(u.uid)
+                }
+              >
 
-                <strong>
-                  {u.displayName}
-                </strong>
-
-                <div className="muted">
-                  @{u.username}
+                <div className="name">
+                  {u.displayName || "User"}
                 </div>
 
-                {u.bio && (
-                  <div className="muted">
-                    {u.bio}
-                  </div>
-                )}
+                <div className="username">
+                  @{u.username || "user"}
+                </div>
 
               </div>
 
-              {u.uid!==currentUid() && (
-                <FollowButton
-                  targetId={u.uid}
-                  following={data.follows.some(
-                    x=>
-                      x.followingId===u.uid
-                  )}
-                />
-              )}
-
               <button
                 className="btn"
-                onClick={()=>
+                onClick={() =>
                   onProfile(u.uid)
                 }
               >
@@ -3191,105 +2354,29 @@ function Explore({
               </button>
 
             </div>
+
           ))}
 
         </div>
       )}
 
-
-      {tab==="posts" && (
-        <div style={{
-          marginTop:12
-        }}>
-
-          {posts.length===0 && (
-            <div className="card empty">
-              No posts found.
-            </div>
-          )}
-
-          {posts.map(p=>{
-
-            const authorId=
-              p.authorId||
-              p.authorUid||
-              p.uid;
-
-            return (
-              <Post
-                key={p.id}
-                post={p}
-                users={data.users}
-                liked={data.likes.some(
-                  x=>x.postId===p.id
-                )}
-                saved={data.bookmarks.some(
-                  x=>x.postId===p.id
-                )}
-                reposted={data.reposts.some(
-                  x=>x.postId===p.id
-                )}
-                following={
-                  data.follows.some(
-                    x=>
-                      x.followingId===
-                      authorId
-                  )
-                }
-              />
-            );
-          })}
-
-        </div>
+      {tab === "posts" && (
+        <Feed
+          mode="home"
+          data={{
+            ...data,
+            posts
+          }}
+        />
       )}
 
-
-      {tab==="hashtags" && (
-        <div
-          className="card pad"
-          style={{marginTop:12}}
-        >
-
-          <h3>
-            Trending hashtags
-          </h3>
-
-          {trends.length===0 && (
-            <div className="empty">
-              No hashtags yet.
-            </div>
-          )}
-
-          {trends.map(
-            ([h,count])=>(
-              <div
-                className="trend"
-                key={h}
-              >
-
-                <strong>
-                  #{h}
-                </strong>
-
-                <div className="muted">
-                  {count} posts
-                </div>
-
-              </div>
-            )
-          )}
-
-        </div>
-      )}
-
-    </div>
+    </>
   );
 }
 
-
-/* =========================================================
+/* -------------------------------------------------------
    PROFILE
-========================================================= */
+------------------------------------------------------- */
 
 function Profile({
   profile,
@@ -3298,1149 +2385,1485 @@ function Profile({
   follows,
   viewedId,
   onEdit
-}){
+}) {
 
-  const target=
-    users.find(
-      x=>x.uid===viewedId
-    )||
-    profile;
+  const viewed =
+    viewedId === profile.uid
+      ? profile
+      : (
+          users.find(
+            u => u.uid === viewedId
+          ) || profile
+        );
 
-  const mine=
-    target.uid===currentUid();
+  const myPosts = posts.filter(
+    p =>
+      (
+        p.authorId ||
+        p.authorUid ||
+        p.uid
+      ) === viewed.uid
+  );
 
-  const userPosts=posts.filter(p=>{
+  const pinned = myPosts.filter(
+    p => p.pinned
+  );
 
-    const authorId=
-      p.authorId||
-      p.authorUid||
-      p.uid;
+  const normal = myPosts.filter(
+    p => !p.pinned
+  );
 
-    return authorId===target.uid;
-  });
+  const following = follows.some(
+    x => x.followingId === viewed.uid
+  );
 
   return (
-    <div>
-
+    <>
       <div className="card profile-head">
 
         <div className="profile-top">
 
           <Avatar
-            profile={target}
+            profile={viewed}
             size="large"
           />
 
           <div className="profile-info">
 
             <div className="profile-name">
-              {target.displayName}
+              {viewed.displayName ||
+                "Nexus User"}
             </div>
 
-            <div className="muted">
-              @{target.username}
+            <div
+              className="username"
+              style={{ fontSize: 16 }}
+            >
+              @{viewed.username || "user"}
             </div>
 
-            {target.bio && (
+            {viewed.bio && (
               <div className="profile-bio">
-                {target.bio}
+                {viewed.bio}
               </div>
             )}
 
             <div className="stats">
 
               <div className="stat">
-
                 <strong>
-                  {target.postsCount||0}
+                  {myPosts.length}
                 </strong>
-
-                <span>
-                  Posts
-                </span>
-
+                <span>Posts</span>
               </div>
 
               <div className="stat">
-
                 <strong>
-                  {target.followersCount||0}
+                  {viewed.followersCount || 0}
                 </strong>
-
-                <span>
-                  Followers
-                </span>
-
+                <span>Followers</span>
               </div>
 
               <div className="stat">
-
                 <strong>
-                  {target.followingCount||0}
+                  {viewed.followingCount || 0}
                 </strong>
-
-                <span>
-                  Following
-                </span>
-
+                <span>Following</span>
               </div>
+
+            </div>
+
+            <div style={{ marginTop: 18 }}>
+
+              {viewed.uid === profile.uid
+                ? (
+                  <button
+                    className="btn primary"
+                    onClick={onEdit}
+                  >
+                    Edit Profile
+                  </button>
+                )
+                : (
+                  <FollowButton
+                    targetId={viewed.uid}
+                    following={following}
+                  />
+                )}
 
             </div>
 
           </div>
 
-          {mine ? (
-
-            <button
-              className="btn"
-              onClick={onEdit}
-            >
-              Edit
-            </button>
-
-          ):(
-            <FollowButton
-              targetId={target.uid}
-              following={follows.some(
-                x=>
-                  x.followingId===
-                  target.uid
-              )}
-            />
-          )}
-
         </div>
 
       </div>
 
-
-      <div style={{
-        marginTop:15
-      }}>
-
-        <div className="section-title">
-          Posts
-        </div>
-
-        {userPosts.length===0 && (
-          <div className="card empty">
-            No posts yet.
+      {pinned.length > 0 && (
+        <>
+          <div
+            className="section-title"
+            style={{ marginTop: 20 }}
+          >
+            Pinned
           </div>
-        )}
 
-        {userPosts.map(p=>(
-          <Post
-            key={p.id}
-            post={p}
-            users={users}
-            liked={false}
-            saved={false}
-            reposted={false}
-            following={follows.some(
-              x=>
-                x.followingId===
-                (
-                  p.authorId||
-                  p.authorUid||
-                  p.uid
-                )
-            )}
+          <Feed
+            mode="home"
+            data={{
+              posts: pinned,
+              users,
+              follows,
+              likes: [],
+              bookmarks: [],
+              reposts: []
+            }}
+            profile={profile}
           />
-        ))}
+        </>
+      )}
 
+      <div
+        className="section-title"
+        style={{ marginTop: 20 }}
+      >
+        Posts
       </div>
 
-    </div>
+      <Feed
+        mode="home"
+        data={{
+          posts: normal,
+          users,
+          follows,
+          likes: [],
+          bookmarks: [],
+          reposts: []
+        }}
+        profile={profile}
+      />
+
+    </>
   );
 }
 
-
-/* =========================================================
+/* -------------------------------------------------------
    NOTIFICATIONS
-========================================================= */
+------------------------------------------------------- */
 
 function Notifications({
   notifications,
   users
-}){
+}) {
 
-  async function mark(id){
+  if (notifications.length === 0) {
 
-    await C("notifications")
-      .doc(id)
-      .set({
-        read:true
-      },{merge:true});
-  }
-
-  async function all(){
-
-    const batch=db.batch();
-
-    notifications
-      .filter(x=>!x.read)
-      .forEach(x=>{
-
-        batch.set(
-          C("notifications")
-            .doc(x.id),
-          {read:true},
-          {merge:true}
-        );
-      });
-
-    await batch.commit();
+    return (
+      <div className="card empty">
+        No notifications yet.
+      </div>
+    );
   }
 
   return (
-    <div>
+    <div className="card pad">
 
-      <div style={{
-        display:"flex",
-        justifyContent:"space-between",
-        alignItems:"center"
-      }}>
-
-        <div className="section-title">
-          Notifications
-        </div>
-
-        <button
-          className="btn"
-          onClick={all}
-        >
-          Mark all read
-        </button>
-
+      <div className="section-title">
+        Notifications
       </div>
 
+      <button
+        className="btn"
+        style={{ marginBottom: 15 }}
+        onClick={() => {
 
-      <div className="card pad">
+          const batch = db.batch();
 
-        {notifications.length===0 && (
-          <div className="empty">
-            No notifications yet.
-          </div>
-        )}
+          notifications
+            .filter(n => !n.read)
+            .forEach(n =>
+              batch.update(
+                C("notifications").doc(n.id),
+                { read: true }
+              )
+            );
 
-        {notifications.map(n=>{
+          batch.commit().catch(() => {});
+        }}
+      >
+        Mark all read
+      </button>
 
-          const actor=users.find(
-            u=>u.uid===n.actorId
-          );
+      {notifications.map(n => {
 
-          return (
-            <button
-              key={n.id}
-              onClick={()=>
-                mark(n.id)
-              }
-              style={{
-                width:"100%",
-                background:"transparent",
-                color:"#fff",
-                border:0,
-                textAlign:"left"
-              }}
-            >
+        const actor = users.find(
+          u => u.uid === n.actorId
+        );
 
-              <div className="notification">
+        return (
+          <div
+            className="notification"
+            key={n.id}
+          >
 
-                {!n.read
-                  ?<div className="dot"/>
-                  :<div style={{
-                    width:8
-                  }}/>
-                }
+            {!n.read && (
+              <div className="dot" />
+            )}
 
-                <Avatar
-                  profile={
-                    actor||{
-                      displayName:
-                        "User"
-                    }
-                  }
-                  size="small"
-                />
+            <Avatar
+              profile={actor}
+              size="small"
+            />
 
-                <div>
+            <div style={{ flex: 1 }}>
 
-                  <strong>
-                    {actor?.displayName||
-                     n.actorName||
-                     "Someone"}
-                  </strong>{" "}
+              <strong>
+                {actor?.displayName ||
+                  "Someone"}
+              </strong>{" "}
 
-                  <span>
-                    {n.message}
-                  </span>
+              {n.message}
 
-                  <div className="muted">
-                    {timeAgo(
-                      n.createdAt
-                    )}
-                  </div>
-
-                </div>
-
+              <div
+                className="muted"
+                style={{ fontSize: 12 }}
+              >
+                {timeAgo(n.createdAt)}
               </div>
 
-            </button>
-          );
-        })}
+            </div>
 
-      </div>
+          </div>
+        );
+      })}
+
     </div>
   );
 }
 
-
-/* =========================================================
+/* =======================================================
    MESSAGES
-========================================================= */
+   UPDATED CHAT AREA
+======================================================= */
 
-function Messages({users}){
+function Messages({ users }) {
 
-  const [chats,setChats]=useState([]);
-  const [selected,setSelected]=useState(null);
-  const [messages,setMessages]=useState([]);
-  const [value,setValue]=useState("");
+  const [chats, setChats] = useState([]);
+  const [activeChat, setActiveChat] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [textVal, setTextVal] = useState("");
 
-  useEffect(()=>{
+  /* Search */
+  const [chatSearch, setChatSearch] = useState("");
 
-    const unsub=C("chats")
+  /* Typing */
+  const [typingUsers, setTypingUsers] = useState([]);
+  const typingTimer = useRef(null);
+
+  /* -----------------------------------------------------
+     REAL-TIME CHAT LIST
+  ----------------------------------------------------- */
+
+  useEffect(() => {
+
+    const uid = currentUid();
+
+    if (!uid) return;
+
+    const unsub = C("chats")
       .where(
-        "members",
+        "participants",
         "array-contains",
-        currentUid()
+        uid
       )
-      .limit(100)
-      .onSnapshot(
-        snap=>{
+      .onSnapshot(snap => {
 
-          const arr=snap.docs.map(
-            d=>({
-              id:d.id,
-              ...d.data()
-            })
+        const list = snap.docs.map(d => ({
+          id: d.id,
+          ...d.data()
+        }));
+
+        list.sort((a, b) => {
+
+          function getTime(v) {
+
+            if (!v) return 0;
+
+            if (v.toDate) {
+              return v.toDate().getTime();
+            }
+
+            if (v.seconds) {
+              return v.seconds * 1000;
+            }
+
+            const d = new Date(v);
+
+            return isNaN(d.getTime())
+              ? 0
+              : d.getTime();
+          }
+
+          return (
+            getTime(b.updatedAt) -
+            getTime(a.updatedAt)
           );
-
-          arr.sort((a,b)=>{
-
-            const at=
-              a.updatedAt?.seconds||0;
-
-            const bt=
-              b.updatedAt?.seconds||0;
-
-            return bt-at;
-          });
-
-          setChats(arr);
-        },
-        e=>console.error(e)
-      );
-
-    return unsub;
-
-  },[]);
-
-
-  useEffect(()=>{
-
-    if(!selected){
-
-      setMessages([]);
-
-      return;
-    }
-
-    const unsub=C("messages")
-      .where(
-        "chatId",
-        "==",
-        selected.id
-      )
-      .limit(500)
-      .onSnapshot(
-        snap=>{
-
-          const arr=snap.docs.map(
-            d=>({
-              id:d.id,
-              ...d.data()
-            })
-          );
-
-          arr.sort((a,b)=>{
-
-            const at=
-              a.createdAt?.seconds||0;
-
-            const bt=
-              b.createdAt?.seconds||0;
-
-            return at-bt;
-          });
-
-          setMessages(arr);
-        },
-        e=>console.error(e)
-      );
-
-    return unsub;
-
-  },[selected?.id]);
-
-
-  async function newChat(){
-
-    const value=prompt(
-      "Enter username:"
-    );
-
-    if(!value)return;
-
-    const name=username(value);
-
-    const snap=await C("users")
-      .where(
-        "username",
-        "==",
-        name
-      )
-      .limit(1)
-      .get();
-
-    if(snap.empty){
-
-      alert(
-        "User not found."
-      );
-
-      return;
-    }
-
-    const target=snap.docs[0];
-
-    if(target.id===currentUid()){
-
-      alert(
-        "You cannot message yourself."
-      );
-
-      return;
-    }
-
-    const existing=await C("chats")
-      .where(
-        "members",
-        "array-contains",
-        currentUid()
-      )
-      .limit(100)
-      .get();
-
-    for(
-      const d of existing.docs
-    ){
-
-      const x=d.data();
-
-      if(
-        !x.group &&
-        x.members?.includes(
-          target.id
-        )
-      ){
-
-        setSelected({
-          id:d.id,
-          ...x
         });
+
+        setChats(list);
+
+      }, e => {
+        console.error(
+          "Chat list error:",
+          e
+        );
+      });
+
+    return unsub;
+
+  }, []);
+
+  /* -----------------------------------------------------
+     REAL-TIME MESSAGES
+  ----------------------------------------------------- */
+
+  useEffect(() => {
+
+    if (!activeChat) {
+      setMessages([]);
+      return;
+    }
+
+    const unsub = C("chats")
+      .doc(activeChat.id)
+      .collection("messages")
+      .orderBy("createdAt", "asc")
+      .onSnapshot(snap => {
+
+        setMessages(
+          snap.docs.map(d => ({
+            id: d.id,
+            ...d.data()
+          }))
+        );
+
+      }, e => {
+        console.error(
+          "Messages error:",
+          e
+        );
+      });
+
+    return unsub;
+
+  }, [activeChat]);
+
+  /* -----------------------------------------------------
+     REAL-TIME TYPING LISTENER
+  ----------------------------------------------------- */
+
+  useEffect(() => {
+
+    if (!activeChat) {
+      setTypingUsers([]);
+      return;
+    }
+
+    const unsub = C("chats")
+      .doc(activeChat.id)
+      .collection("typing")
+      .onSnapshot(snap => {
+
+        const now = Date.now();
+
+        const active = snap.docs
+          .map(d => ({
+            id: d.id,
+            ...d.data()
+          }))
+          .filter(item => {
+
+            if (item.uid === currentUid()) {
+              return false;
+            }
+
+            if (!item.typing) {
+              return false;
+            }
+
+            if (!item.updatedAt) {
+              return false;
+            }
+
+            let updated;
+
+            try {
+
+              if (item.updatedAt.toDate) {
+                updated =
+                  item.updatedAt.toDate().getTime();
+              } else if (item.updatedAt.seconds) {
+                updated =
+                  item.updatedAt.seconds * 1000;
+              } else {
+                updated =
+                  new Date(
+                    item.updatedAt
+                  ).getTime();
+              }
+
+            } catch(e) {
+              return false;
+            }
+
+            /*
+             * Typing status expires after 5 seconds.
+             */
+            return (
+              !isNaN(updated) &&
+              now - updated < 5000
+            );
+          });
+
+        setTypingUsers(active);
+
+      }, e => {
+
+        console.error(
+          "Typing listener error:",
+          e
+        );
+
+        setTypingUsers([]);
+
+      });
+
+    return unsub;
+
+  }, [activeChat]);
+
+  /* -----------------------------------------------------
+     STOP TYPING
+  ----------------------------------------------------- */
+
+  async function stopTyping(chatId) {
+
+    if (!chatId || !currentUid()) return;
+
+    try {
+
+      await C("chats")
+        .doc(chatId)
+        .collection("typing")
+        .doc(currentUid())
+        .delete();
+
+    } catch(e) {
+
+      /*
+       * Do not break the chat if typing cleanup
+       * is rejected by Firestore rules.
+       */
+      console.error(
+        "Stop typing:",
+        e
+      );
+    }
+  }
+
+  /* -----------------------------------------------------
+     SET TYPING
+  ----------------------------------------------------- */
+
+  async function updateTyping(value) {
+
+    if (!activeChat || !currentUid()) {
+      return;
+    }
+
+    const typingRef = C("chats")
+      .doc(activeChat.id)
+      .collection("typing")
+      .doc(currentUid());
+
+    try {
+
+      if (!text(value)) {
+
+        await typingRef.delete();
 
         return;
       }
-    }
 
-    const ref=await C("chats").add({
-      members:[
-        currentUid(),
-        target.id
-      ],
-      group:false,
-      name:
-        target.data().displayName,
-      lastMessage:"",
-      createdAt:serverTime(),
-      updatedAt:serverTime()
-    });
+      await typingRef.set({
+        uid: currentUid(),
+        typing: true,
+        updatedAt: serverTime()
+      }, { merge: true });
 
-    setSelected({
-      id:ref.id,
-      members:[
-        currentUid(),
-        target.id
-      ],
-      group:false,
-      name:
-        target.data().displayName
-    });
-  }
-
-
-  async function send(){
-
-    if(
-      !selected||
-      !text(value)
-    ){
-      return;
-    }
-
-    try{
-
-      await C("messages").add({
-        chatId:selected.id,
-        senderId:currentUid(),
-        text:text(value),
-        createdAt:serverTime(),
-        readBy:[
-          currentUid()
-        ],
-        reactions:{}
-      });
-
-      await C("chats")
-        .doc(selected.id)
-        .set({
-          lastMessage:text(value),
-          updatedAt:serverTime()
-        },{merge:true});
-
-      for(
-        const member of
-        selected.members||[]
-      ){
-
-        if(
-          member!==currentUid()
-        ){
-
-          await notify(
-            member,
-            "sent you a message",
-            "message",
-            {
-              chatId:
-                selected.id
-            }
-          );
-        }
+      if (typingTimer.current) {
+        clearTimeout(typingTimer.current);
       }
 
-      setValue("");
+      typingTimer.current = setTimeout(() => {
 
-    }catch(e){
-      alert(e.message);
+        stopTyping(activeChat.id);
+
+      }, 2000);
+
+    } catch(e) {
+
+      console.error(
+        "Typing update:",
+        e
+      );
     }
   }
 
+  /* -----------------------------------------------------
+     CLEANUP TYPING WHEN CHAT CHANGES / LEAVES
+  ----------------------------------------------------- */
 
-  async function deleteMessage(m){
+  useEffect(() => {
 
-    if(
-      m.senderId!==currentUid()
-    ){
+    return () => {
+
+      if (typingTimer.current) {
+        clearTimeout(typingTimer.current);
+      }
+
+      if (activeChat?.id) {
+        stopTyping(activeChat.id);
+      }
+
+    };
+
+  }, [activeChat?.id]);
+
+  /* -----------------------------------------------------
+     SEARCH USERS
+  ----------------------------------------------------- */
+
+  const search = chatSearch
+    .trim()
+    .toLowerCase();
+
+  const searchResults = search
+    ? users
+        .filter(u => u.uid !== currentUid())
+        .filter(u =>
+          String(u.displayName || "")
+            .toLowerCase()
+            .includes(search) ||
+          String(u.username || "")
+            .toLowerCase()
+            .includes(search)
+        )
+        .slice(0, 20)
+    : [];
+
+  /* -----------------------------------------------------
+     OPEN / CREATE CHAT
+  ----------------------------------------------------- */
+
+  async function startChat(user) {
+
+    if (!user || user.uid === currentUid()) {
       return;
     }
 
-    await C("messages")
-      .doc(m.id)
-      .delete();
-  }
+    try {
 
+      const participants = [
+        currentUid(),
+        user.uid
+      ].sort();
 
-  async function react(
-    m,
-    emoji
-  ){
-
-    const reactions={
-      ...(m.reactions||{})
-    };
-
-    const list=
-      Array.isArray(
-        reactions[emoji]
-      )
-        ?reactions[emoji]
-        :[];
-
-    reactions[emoji]=
-      list.includes(
-        currentUid()
-      )
-        ?list.filter(
-          x=>x!==currentUid()
+      const snap = await C("chats")
+        .where(
+          "participants",
+          "==",
+          participants
         )
-        :[
-          ...list,
-          currentUid()
-        ];
+        .limit(1)
+        .get();
 
-    await C("messages")
-      .doc(m.id)
-      .set(
-        {reactions},
-        {merge:true}
+      if (!snap.empty) {
+
+        setActiveChat({
+          id: snap.docs[0].id,
+          ...snap.docs[0].data()
+        });
+
+      } else {
+
+        const ref = await C("chats").add({
+          participants,
+          updatedAt: serverTime(),
+          lastMessage: ""
+        });
+
+        setActiveChat({
+          id: ref.id,
+          participants,
+          updatedAt: null,
+          lastMessage: ""
+        });
+      }
+
+      setChatSearch("");
+
+    } catch(e) {
+
+      console.error(
+        "Start chat:",
+        e
       );
+    }
   }
 
+  /* -----------------------------------------------------
+     OLD NEW CHAT SUPPORT
+     Kept so existing behavior remains available.
+  ----------------------------------------------------- */
+
+  async function newChat() {
+
+    if (!text(chatSearch)) return;
+
+    const target = username(chatSearch);
+
+    const user = users.find(
+      u => u.username === target
+    );
+
+    if (!user) {
+      console.error("User not found.");
+      return;
+    }
+
+    await startChat(user);
+  }
+
+  /* -----------------------------------------------------
+     SEND MESSAGE
+  ----------------------------------------------------- */
+
+  async function send() {
+
+    if (!text(textVal) || !activeChat) {
+      return;
+    }
+
+    const messageText = text(textVal);
+
+    try {
+
+      await stopTyping(activeChat.id);
+
+      if (typingTimer.current) {
+        clearTimeout(typingTimer.current);
+      }
+
+      await C("chats")
+        .doc(activeChat.id)
+        .collection("messages")
+        .add({
+          text: messageText,
+          senderId: currentUid(),
+          createdAt: serverTime()
+        });
+
+      await C("chats")
+        .doc(activeChat.id)
+        .set({
+          lastMessage: messageText,
+          updatedAt: serverTime()
+        }, { merge: true });
+
+      const otherId =
+        activeChat.participants.find(
+          p => p !== currentUid()
+        );
+
+      if (otherId) {
+
+        await notify(
+          otherId,
+          "sent you a message",
+          "message"
+        );
+      }
+
+      setTextVal("");
+
+    } catch(e) {
+
+      console.error(
+        "Send message:",
+        e.message
+      );
+    }
+  }
+
+  /* -----------------------------------------------------
+     CURRENT CHAT USER
+  ----------------------------------------------------- */
+
+  const activeOtherId =
+    activeChat?.participants?.find(
+      p => p !== currentUid()
+    );
+
+  const activeOther =
+    users.find(
+      u => u.uid === activeOtherId
+    );
+
+  /* -----------------------------------------------------
+     RENDER
+  ----------------------------------------------------- */
 
   return (
-    <div>
 
-      <div className="section-title">
-        Messages
-      </div>
+    <div className="card message-layout">
 
-      <div className="card message-layout">
+      {/* =================================================
+          CHAT LIST
+      ================================================= */}
 
-        <div className="chat-list">
+      <div className="chat-list">
 
-          <button
-            className="btn primary"
-            style={{
-              width:"100%",
-              marginBottom:10
-            }}
-            onClick={newChat}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: 10,
+            alignItems: "center"
+          }}
+        >
+
+          <strong>Chats</strong>
+
+          <span
+            className="muted"
+            style={{ fontSize: 11 }}
           >
-            + New chat
-          </button>
-
-          {chats.map(chat=>{
-
-            const otherId=
-              chat.members?.find(
-                x=>x!==currentUid()
-              );
-
-            const other=users.find(
-              u=>u.uid===otherId
-            );
-
-            return (
-              <div
-                key={chat.id}
-                className={
-                  "chat-item "+
-                  (
-                    selected?.id===
-                    chat.id
-                      ?"active"
-                      :""
-                  )
-                }
-                onClick={()=>
-                  setSelected(chat)
-                }
-              >
-
-                <Avatar
-                  profile={
-                    other||{
-                      displayName:
-                        chat.name||
-                        "Chat"
-                    }
-                  }
-                  size="small"
-                />
-
-                <div className="chat-main">
-
-                  <strong>
-                    {other?.displayName||
-                     chat.name||
-                     "Chat"}
-                  </strong>
-
-                  <div
-                    className="muted"
-                    style={{
-                      whiteSpace:
-                        "nowrap",
-                      overflow:
-                        "hidden",
-                      textOverflow:
-                        "ellipsis"
-                    }}
-                  >
-                    {chat.lastMessage||
-                     "No messages"}
-                  </div>
-
-                </div>
-
-              </div>
-            );
-          })}
-
-          {chats.length===0 && (
-            <div className="empty">
-              No chats yet.
-            </div>
-          )}
+            {chats.length}
+          </span>
 
         </div>
 
+        {/* SEARCH */}
 
-        <div className="chat-window">
+        <div className="chat-search">
 
-          {!selected ? (
+          <input
+            value={chatSearch}
+            onChange={e =>
+              setChatSearch(e.target.value)
+            }
+            placeholder="Search people..."
+            onKeyDown={e => {
 
-            <div className="empty">
-              Select a conversation.
-            </div>
+              if (
+                e.key === "Enter" &&
+                searchResults.length > 0
+              ) {
+                e.preventDefault();
+                startChat(searchResults[0]);
+              }
 
-          ):(
-            <>
+            }}
+          />
 
-              <div className="chat-head">
+          {search && (
 
-                <strong>
-                  {selected.name||
-                   "Chat"}
-                </strong>
+            <div className="chat-search-results">
 
-              </div>
+              {searchResults.length === 0 ? (
 
+                <div className="chat-search-empty">
+                  No users found
+                </div>
 
-              <div className="messages">
+              ) : (
 
-                {messages.length===0 && (
-                  <div className="empty">
-                    Start the conversation.
-                  </div>
-                )}
+                searchResults.map(person => {
 
-                {messages.map(m=>{
-
-                  const mine=
-                    m.senderId===
-                    currentUid();
+                  const online =
+                    isUserOnline(person);
 
                   return (
-                    <div
-                      className={
-                        "msg "+
-                        (
-                          mine
-                            ?"mine"
-                            :""
-                        )
+
+                    <button
+                      key={person.uid}
+                      className="chat-search-user"
+                      onClick={() =>
+                        startChat(person)
                       }
-                      key={m.id}
                     >
 
-                      <div>
+                      <Avatar
+                        profile={person}
+                        size="small"
+                      />
 
-                        <div className="bubble">
+                      <div className="chat-search-info">
 
-                          <div style={{
-                            whiteSpace:
-                              "pre-wrap",
-                            wordBreak:
-                              "break-word"
-                          }}>
-                            {m.text}
-                          </div>
-
-                          <div className="msg-meta">
-
-                            {timeAgo(
-                              m.createdAt
-                            )}
-
-                            {" "}
-
-                            {mine
-                              ?"✓"
-                              :" "
-                            }
-
-                          </div>
-
+                        <div className="chat-search-name">
+                          {person.displayName ||
+                            "User"}
                         </div>
 
-
-                        <div style={{
-                          display:"flex",
-                          gap:4,
-                          marginTop:3
-                        }}>
-
-                          {[
-                            "❤️",
-                            "👍",
-                            "😂"
-                          ].map(
-                            emoji=>(
-                              <button
-                                key={emoji}
-                                className="btn"
-                                style={{
-                                  padding:
-                                    "3px 6px"
-                                }}
-                                onClick={()=>
-                                  react(
-                                    m,
-                                    emoji
-                                  )
-                                }
-                              >
-                                {emoji}
-                              </button>
-                            )
-                          )}
-
-
-                          {mine && (
-                            <button
-                              className="btn danger"
-                              style={{
-                                padding:
-                                  "3px 6px"
-                              }}
-                              onClick={()=>
-                                deleteMessage(m)
-                              }
-                            >
-                              Delete
-                            </button>
-                          )}
-
+                        <div className="chat-search-username">
+                          @{person.username ||
+                            "user"}
                         </div>
 
                       </div>
 
-                    </div>
+                      <span
+                        className={
+                          "online-dot " +
+                          (online
+                            ? "online"
+                            : "")
+                        }
+                      />
+
+                    </button>
+
                   );
-                })}
+                })
 
-              </div>
+              )}
 
-
-              <div className="chat-compose">
-
-                <input
-                  value={value}
-                  onChange={e=>
-                    setValue(
-                      e.target.value
-                    )
-                  }
-                  placeholder="Write a message..."
-                  onKeyDown={e=>{
-
-                    if(
-                      e.key==="Enter"
-                    ){
-
-                      e.preventDefault();
-
-                      send();
-                    }
-                  }}
-                />
-
-                <button
-                  className="btn primary"
-                  onClick={send}
-                >
-                  Send
-                </button>
-
-              </div>
-
-            </>
+            </div>
           )}
 
         </div>
 
+        {/* CHAT LIST */}
+
+        {chats.length === 0 ? (
+
+          <div
+            className="empty"
+            style={{
+              padding: "25px 5px",
+              fontSize: 12
+            }}
+          >
+            Search for someone above to start
+            a conversation.
+          </div>
+
+        ) : (
+
+          chats.map(c => {
+
+            const otherId =
+              c.participants.find(
+                p => p !== currentUid()
+              );
+
+            const other =
+              users.find(
+                u => u.uid === otherId
+              );
+
+            const online =
+              isUserOnline(other);
+
+            const isTyping =
+              typingUsers.some(
+                t => t.uid === otherId
+              );
+
+            return (
+
+              <button
+                key={c.id}
+                className={
+                  "chat-item " +
+                  (
+                    activeChat?.id === c.id
+                      ? "active"
+                      : ""
+                  )
+                }
+                style={{
+                  width: "100%",
+                  border: 0,
+                  background:
+                    activeChat?.id === c.id
+                      ? undefined
+                      : "transparent",
+                  color: "var(--text)",
+                  textAlign: "left",
+                  cursor: "pointer"
+                }}
+                onClick={() => {
+
+                  if (activeChat?.id !== c.id) {
+                    setActiveChat(c);
+                    setTextVal("");
+                  }
+
+                }}
+              >
+
+                <div style={{ position: "relative" }}>
+
+                  <Avatar
+                    profile={other}
+                    size="small"
+                  />
+
+                  <span
+                    className={
+                      "online-dot " +
+                      (
+                        online
+                          ? "online"
+                          : ""
+                      )
+                    }
+                    style={{
+                      position: "absolute",
+                      right: -1,
+                      bottom: 1,
+                      border: "2px solid var(--panel)",
+                      width: 10,
+                      height: 10
+                    }}
+                  />
+
+                </div>
+
+                <div
+                  style={{
+                    flex: 1,
+                    minWidth: 0
+                  }}
+                >
+
+                  <div
+                    style={{
+                      fontWeight: 800,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis"
+                    }}
+                  >
+                    {other?.displayName ||
+                      "User"}
+                  </div>
+
+                  <div
+                    style={{
+                      fontSize: 12,
+                      color:
+                        isTyping
+                          ? "var(--accent2)"
+                          : "var(--muted)",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis"
+                    }}
+                  >
+
+                    {isTyping
+                      ? "typing…"
+                      : (
+                        c.lastMessage ||
+                        "Start chatting"
+                      )}
+
+                  </div>
+
+                </div>
+
+              </button>
+            );
+          })
+        )}
+
       </div>
+
+      {/* =================================================
+          CHAT WINDOW
+      ================================================= */}
+
+      <div className="chat-window">
+
+        {activeChat ? (
+
+          <>
+
+            {/* CHAT HEADER */}
+
+            <div className="chat-head">
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10
+                }}
+              >
+
+                <div style={{ position: "relative" }}>
+
+                  <Avatar
+                    profile={activeOther}
+                    size="small"
+                  />
+
+                  <span
+                    className={
+                      "online-dot " +
+                      (
+                        isUserOnline(activeOther)
+                          ? "online"
+                          : ""
+                      )
+                    }
+                    style={{
+                      position: "absolute",
+                      right: -1,
+                      bottom: 0,
+                      border:
+                        "2px solid var(--panel)",
+                      width: 10,
+                      height: 10
+                    }}
+                  />
+
+                </div>
+
+                <div>
+
+                  <div
+                    style={{
+                      fontWeight: 900
+                    }}
+                  >
+                    {activeOther?.displayName ||
+                      "Chat"}
+                  </div>
+
+                  <div className="online-wrap">
+
+                    <span
+                      className={
+                        "online-dot " +
+                        (
+                          isUserOnline(activeOther)
+                            ? "online"
+                            : ""
+                        )
+                      }
+                    />
+
+                    {isUserOnline(activeOther)
+                      ? "Online"
+                      : "Offline"}
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* MESSAGES */}
+
+            <div className="messages">
+
+              {messages.length === 0 && (
+
+                <div
+                  className="empty"
+                  style={{
+                    padding: 25
+                  }}
+                >
+                  No messages yet. Say hello!
+                </div>
+              )}
+
+              {messages.map(m => {
+
+                const mine =
+                  m.senderId === currentUid();
+
+                return (
+
+                  <div
+                    key={m.id}
+                    className={
+                      "msg " +
+                      (
+                        mine
+                          ? "mine"
+                          : ""
+                      )
+                    }
+                  >
+
+                    <div className="bubble">
+
+                      <div>
+                        {m.text}
+                      </div>
+
+                      <div
+                        className="msg-meta"
+                        style={{
+                          textAlign:
+                            mine
+                              ? "right"
+                              : "left"
+                        }}
+                      >
+                        {timeAgo(m.createdAt)}
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                );
+              })}
+
+            </div>
+
+            {/* TYPING INDICATOR */}
+
+            <div className="typing-indicator">
+
+              {typingUsers.length > 0 ? (
+
+                <>
+
+                  <div className="typing-dots">
+
+                    <span></span>
+                    <span></span>
+                    <span></span>
+
+                  </div>
+
+                  <span>
+                    {typingUsers.length === 1
+                      ? (
+                        (activeOther?.displayName ||
+                          "Someone") +
+                        " is typing…"
+                      )
+                      : (
+                        typingUsers.length +
+                        " people are typing…"
+                      )}
+                  </span>
+
+                </>
+
+              ) : (
+                <span>&nbsp;</span>
+              )}
+
+            </div>
+
+            {/* COMPOSER */}
+
+            <div className="chat-compose">
+
+              <input
+                value={textVal}
+                onChange={e => {
+
+                  const value =
+                    e.target.value;
+
+                  setTextVal(value);
+
+                  updateTyping(value);
+
+                }}
+                onBlur={() => {
+                  stopTyping(
+                    activeChat.id
+                  );
+
+                  if (typingTimer.current) {
+                    clearTimeout(
+                      typingTimer.current
+                    );
+                  }
+                }}
+                placeholder="Type a message..."
+                onKeyDown={e => {
+
+                  if (e.key === "Enter") {
+
+                    e.preventDefault();
+
+                    send();
+                  }
+                }}
+              />
+
+              <button
+                className="btn primary"
+                onClick={send}
+              >
+                Send
+              </button>
+
+            </div>
+
+          </>
+
+        ) : (
+
+          <div
+            className="empty"
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+              gap: 8
+            }}
+          >
+
+            <div
+              style={{
+                fontSize: 30
+              }}
+            >
+              💬
+            </div>
+
+            <div>
+              Select a chat or search for
+              someone above.
+            </div>
+
+          </div>
+
+        )}
+
+      </div>
+
     </div>
   );
 }
 
-
-/* =========================================================
+/* -------------------------------------------------------
    SETTINGS
-========================================================= */
+------------------------------------------------------- */
 
 function Settings({
   profile,
   setProfile
-}){
+}) {
 
-  const [name,setName]=useState(
-    profile.displayName||""
-  );
+  const [name, setName] =
+    useState(profile.displayName || "");
 
-  const [
-    userName,
-    setUserName
-  ]=useState(
-    profile.username||""
-  );
+  const [uname, setUname] =
+    useState(profile.username || "");
 
-  const [bio,setBio]=useState(
-    profile.bio||""
-  );
+  const [bio, setBio] =
+    useState(profile.bio || "");
 
-  const [
-    online,
-    setOnline
-  ]=useState(
-    profile.showOnline!==false
-  );
+  const [online, setOnline] =
+    useState(profile.showOnline !== false);
 
+  async function save() {
 
-  async function save(){
-
-    const clean=username(
-      userName
-    );
-
-    if(!clean){
-
-      alert(
+    if (!text(uname)) {
+      console.error(
         "Username cannot be empty."
       );
-
       return;
     }
 
-    try{
+    try {
 
-      const existing=await C("users")
-        .where(
-          "username",
-          "==",
-          clean
-        )
-        .limit(5)
-        .get();
+      if (
+        text(uname) !==
+        profile.username
+      ) {
 
-      const taken=
-        existing.docs.some(
-          d=>d.id!==currentUid()
-        );
+        const snap = await C("users")
+          .where(
+            "username",
+            "==",
+            text(uname)
+          )
+          .limit(1)
+          .get();
 
-      if(taken){
-
-        alert(
-          "Username already taken."
-        );
-
-        return;
+        if (!snap.empty) {
+          console.error(
+            "Username already taken."
+          );
+          return;
+        }
       }
 
-      const update={
-        displayName:
-          text(name)||
-          "Nexus User",
-
-        username:clean,
-
-        bio:text(bio),
-
-        showOnline:online,
-
-        updatedAt:serverTime()
+      const data = {
+        displayName: text(name),
+        username: text(uname).toLowerCase(),
+        bio: text(bio),
+        showOnline: online,
+        updatedAt: serverTime()
       };
 
       await C("users")
-        .doc(currentUid())
-        .set(
-          update,
-          {merge:true}
-        );
+        .doc(profile.uid)
+        .set(data, { merge: true });
 
       setProfile({
         ...profile,
-        ...update
+        ...data,
+        updatedAt: null
       });
 
-      alert(
+      console.log(
         "Profile updated."
       );
 
-    }catch(e){
-      alert(e.message);
+    } catch(e) {
+      console.error(e.message);
     }
   }
-
-
-  async function logout(){
-
-    try{
-
-      await auth.signOut();
-
-    }catch(e){
-
-      alert(e.message);
-    }
-  }
-
 
   return (
-    <div>
+    <div className="card pad">
 
       <div className="section-title">
         Settings
       </div>
 
-      <div className="card pad">
+      <div style={{ marginBottom: 15 }}>
 
-        <h3>
-          Profile
-        </h3>
-
-
-        <label className="muted">
-          Display name
+        <label
+          style={{
+            display: "block",
+            marginBottom: 5
+          }}
+        >
+          Display Name
         </label>
 
         <input
           value={name}
-          onChange={e=>
+          onChange={e =>
             setName(e.target.value)
           }
-          style={{
-            margin:"5px 0 12px"
-          }}
         />
 
+      </div>
 
-        <label className="muted">
+      <div style={{ marginBottom: 15 }}>
+
+        <label
+          style={{
+            display: "block",
+            marginBottom: 5
+          }}
+        >
           Username
         </label>
 
         <input
-          value={userName}
-          onChange={e=>
-            setUserName(
-              e.target.value
-            )
+          value={uname}
+          onChange={e =>
+            setUname(e.target.value)
           }
-          style={{
-            margin:"5px 0 12px"
-          }}
         />
 
+      </div>
 
-        <label className="muted">
+      <div style={{ marginBottom: 15 }}>
+
+        <label
+          style={{
+            display: "block",
+            marginBottom: 5
+          }}
+        >
           Bio
         </label>
 
         <textarea
           value={bio}
-          onChange={e=>
+          onChange={e =>
             setBio(e.target.value)
           }
-          style={{
-            marginTop:5
-          }}
         />
 
+      </div>
 
-        <div style={{
-          display:"flex",
-          justifyContent:
-            "space-between",
-          padding:"15px 0",
-          borderBottom:
-            "1px solid var(--line)"
-        }}>
+      <div style={{ marginBottom: 15 }}>
 
-          <div>
-
-            <strong>
-              Show online status
-            </strong>
-
-            <div className="muted">
-              Let others see your status.
-            </div>
-
-          </div>
+        <label
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10
+          }}
+        >
 
           <input
             type="checkbox"
             checked={online}
-            onChange={e=>
-              setOnline(
-                e.target.checked
-              )
+            onChange={e =>
+              setOnline(e.target.checked)
             }
             style={{
-              width:20
+              width: "auto"
             }}
           />
 
-        </div>
+          Show online status
 
-
-        <div style={{
-          display:"flex",
-          gap:8,
-          marginTop:15
-        }}>
-
-          <button
-            className="btn primary"
-            onClick={save}
-          >
-            Save
-          </button>
-
-          <button
-            className="btn danger"
-            onClick={logout}
-          >
-            Sign out
-          </button>
-
-        </div>
+        </label>
 
       </div>
 
+      <button
+        className="btn primary"
+        onClick={save}
+      >
+        Save Profile
+      </button>
 
       <div
-        className="card pad"
         style={{
-          marginTop:12
+          marginTop: 40,
+          paddingTop: 20,
+          borderTop:
+            "1px solid var(--line)"
         }}
       >
 
-        <strong>
-          Made by YASH KISHORE Michalite
-        </strong>
-
-        <div
-          className="muted"
-          style={{
-            marginTop:6,
-            wordBreak:"break-all"
-          }}
+        <button
+          className="btn danger"
+          onClick={() =>
+            auth.signOut()
+          }
         >
-          Nexus Social Platform
-        </div>
+          Log Out
+        </button>
 
       </div>
 
@@ -4448,311 +3871,229 @@ function Settings({
   );
 }
 
-
-/* =========================================================
+/* -------------------------------------------------------
    RIGHT SIDEBAR
-========================================================= */
+------------------------------------------------------- */
 
 function RightSidebar({
   data,
   onProfile
-}){
+}) {
 
-  const trends={};
+  const hashtags = {};
 
-  data.posts.forEach(p=>{
+  data.posts.forEach(p => {
 
-    (p.hashtags||[])
-      .forEach(h=>{
+    (p.hashtags || []).forEach(h => {
 
-        trends[h]=
-          (trends[h]||0)+1;
-      });
+      hashtags[h] =
+        (hashtags[h] || 0) + 1;
+
+    });
   });
 
-  const top=
-    Object.entries(trends)
-      .sort((a,b)=>b[1]-a[1])
-      .slice(0,6);
-
-  const people=
-    data.users
-      .filter(
-        u=>u.uid!==currentUid()
-      )
-      .slice(0,5);
+  const trends =
+    Object.entries(hashtags)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
 
   return (
     <aside className="right">
 
       <div className="card right-card">
 
-        <strong>
+        <strong style={{ fontSize: 18 }}>
           Trending
         </strong>
 
-        {top.length===0 && (
-          <div
-            className="muted"
-            style={{
-              marginTop:10
-            }}
-          >
-            No trends yet.
-          </div>
-        )}
+        <div style={{ marginTop: 10 }}>
 
-        {top.map(
-          ([h,count])=>(
+          {trends.length === 0 ? (
+
+            <div className="muted">
+              No trends yet.
+            </div>
+
+          ) : trends.map(t => (
+
             <div
               className="trend"
-              key={h}
+              key={t[0]}
             >
 
-              <strong>
-                #{h}
-              </strong>
+              <div
+                style={{
+                  fontWeight: 800
+                }}
+              >
+                #{t[0]}
+              </div>
 
-              <div className="muted">
-                {count} posts
+              <div
+                className="muted"
+                style={{
+                  fontSize: 12
+                }}
+              >
+                {t[1]} posts
               </div>
 
             </div>
-          )
-        )}
+          ))}
+
+        </div>
 
       </div>
 
-
       <div className="card right-card">
 
-        <strong>
-          Discover people
+        <strong style={{ fontSize: 18 }}>
+          Suggested Users
         </strong>
 
-        {people.map(u=>(
-          <button
-            key={u.uid}
-            onClick={()=>
-              onProfile(u.uid)
-            }
-            style={{
-              width:"100%",
-              display:"flex",
-              gap:8,
-              alignItems:"center",
-              background:"transparent",
-              border:0,
-              color:"#fff",
-              textAlign:"left",
-              padding:"10px 0"
-            }}
-          >
+        <div style={{ marginTop: 10 }}>
 
-            <Avatar
-              profile={u}
-              size="small"
-            />
+          {data.users
+            .slice(0, 5)
+            .map(u => (
 
-            <div>
+              <div
+                className="user-row"
+                key={u.uid}
+                style={{
+                  cursor: "pointer"
+                }}
+                onClick={() =>
+                  onProfile(u.uid)
+                }
+              >
 
-              <strong>
-                {u.displayName}
-              </strong>
+                <Avatar
+                  profile={u}
+                  size="small"
+                />
 
-              <div className="muted">
-                @{u.username}
+                <div
+                  className="user-row-main"
+                >
+
+                  <div
+                    className="name"
+                    style={{
+                      fontSize: 14
+                    }}
+                  >
+                    {u.displayName ||
+                      "User"}
+                  </div>
+
+                  <div
+                    className="username"
+                    style={{
+                      fontSize: 12
+                    }}
+                  >
+                    @{u.username ||
+                      "user"}
+                  </div>
+
+                </div>
+
               </div>
 
-            </div>
+            ))}
 
-          </button>
-        ))}
+        </div>
 
+      </div>
+
+      <div
+        style={{
+          fontSize: 12,
+          color: "var(--muted)",
+          padding: "0 15px"
+        }}
+      >
+        © 2026 Nexus Social
+        <br />
+        Made by YASH KISHORE Michalite
       </div>
 
     </aside>
   );
 }
 
-
-/* =========================================================
-   PRESENCE
-========================================================= */
-
-function usePresence(profile){
-
-  useEffect(()=>{
-
-    if(!profile?.uid)return;
-
-    async function online(){
-
-      try{
-
-        await C("presence")
-          .doc(profile.uid)
-          .set({
-            uid:profile.uid,
-            online:true,
-            lastSeen:serverTime()
-          },{merge:true});
-
-      }catch(e){
-
-        console.error(e);
-      }
-    }
-
-    online();
-
-    const timer=setInterval(
-      online,
-      30000
-    );
-
-    return ()=>{
-      clearInterval(timer);
-    };
-
-  },[profile?.uid]);
-}
-
-
-/* =========================================================
+/* -------------------------------------------------------
    APP
-========================================================= */
+------------------------------------------------------- */
 
-function App(){
+function App() {
 
   const {
+    user,
     profile,
     setProfile,
     ready,
     error
-  }=useAuth();
+  } = useAuth();
 
-  const data=useData(profile);
-
-  const [
-    page,
-    setPage
-  ]=useState("home");
-
-  const [
-    profileId,
-    setProfileId
-  ]=useState(null);
-
+  /*
+   * Starts the real-time presence heartbeat.
+   */
   usePresence(profile);
 
+  const [page, setPage] =
+    useState("home");
 
-  if(!ready){
+  const [profileId, setProfileId] =
+    useState(null);
 
-    return (
-      <div className="loading-screen">
+  const data = useData(profile);
 
-        <div className="boot-box">
-
-          <h1>
-            Nex<span style={{
-              color:"#7c5cff"
-            }}>
-              us
-            </span>
-          </h1>
-
-          <p>
-            Connecting to Nexus…
-          </p>
-
-          <div className="muted">
-            Starting your account.
-          </div>
-
-          <div style={{
-            marginTop:28,
-            paddingTop:18,
-            borderTop:
-              "1px solid #292f38",
-            fontSize:13,
-            color:"#9099a7"
-          }}>
-
-            Made by{" "}
-
-            <strong style={{
-              color:"#fff"
-            }}>
-              YASH KISHORE Michalite
-            </strong>
-
-          </div>
-
-        </div>
-
-      </div>
-    );
-  }
-
-
-  if(error){
+  if (error) {
 
     return (
       <div className="error-screen">
 
         <div className="boot-box">
 
-          <h1>
-            Nexus couldn't start
-          </h1>
+          <h1>Nexus Error</h1>
 
           <div className="boot-error">
-
-            {error.code
-              ?error.code+": "
-              :""
-            }
-
-            {error.message||
-             String(error)}
-
-          </div>
-
-          <div
-            className="muted"
-            style={{
-              textAlign:"left",
-              lineHeight:1.6
-            }}
-          >
-
-            <p>
-              Make sure Anonymous Authentication
-              is enabled in Firebase.
-            </p>
-
-            <p>
-              If running locally, use
-              <b> http://localhost</b>
-              rather than opening the file directly.
-            </p>
-
-            <p>
-              Firebase project:
-              <b> nexus-37600</b>
-            </p>
-
+            {error.message ||
+              String(error)}
           </div>
 
           <button
             className="btn primary"
-            onClick={()=>
+            onClick={() =>
               location.reload()
             }
           >
-            Try again
+            Reload App
           </button>
+
+          <div
+            style={{
+              marginTop: 20,
+              color: "var(--muted)",
+              fontSize: 12
+            }}
+          >
+
+            <p>
+              If you see a Firestore
+              permissions error, you need
+              to configure your database
+              rules or run in local emulator.
+            </p>
+
+            <p>
+              If running locally, use a
+              local server instead of file://.
+            </p>
+
+          </div>
 
         </div>
 
@@ -4760,8 +4101,7 @@ function App(){
     );
   }
 
-
-  if(!profile){
+  if (!ready || !profile) {
 
     return (
       <div className="loading-screen">
@@ -4769,7 +4109,8 @@ function App(){
         <div className="boot-box">
 
           <h1>
-            Nex<span style={{
+            Nex
+            <span style={{
               color:"#7c5cff"
             }}>
               us
@@ -4777,20 +4118,8 @@ function App(){
           </h1>
 
           <p>
-            Preparing your account…
+            Authenticating...
           </p>
-
-          <div className="muted">
-
-            Made by{" "}
-
-            <strong style={{
-              color:"#fff"
-            }}>
-              YASH KISHORE Michalite
-            </strong>
-
-          </div>
 
         </div>
 
@@ -4798,245 +4127,178 @@ function App(){
     );
   }
 
-
-  function navigate(p){
-
-    setPage(p);
-
-    if(p!=="profile"){
-      setProfileId(null);
-    }
-
-    window.scrollTo({
-      top:0,
-      behavior:"smooth"
-    });
-  }
-
-
-  function openProfile(id){
-
-    setProfileId(id);
-    setPage("profile");
-
-    window.scrollTo({
-      top:0,
-      behavior:"smooth"
-    });
-  }
-
-
-  const unread=
+  const unreadCount =
     data.notifications.filter(
-      x=>!x.read
+      n => !n.read
     ).length;
 
+  function nav(target) {
+
+    setPage(target);
+    setProfileId(null);
+
+    window.scrollTo(0, 0);
+  }
 
   return (
+
     <div className="app">
 
       <div className="topbar">
 
-        <div
-          className="logo"
-          style={{
-            padding:0
-          }}
-        >
+        <div className="logo">
           Nex<span>us</span>
         </div>
 
-        <button
-          className="btn"
-          onClick={()=>
-            navigate(
-              "notifications"
-            )
+        <div
+          onClick={() =>
+            nav("profile")
           }
+          style={{
+            cursor: "pointer"
+          }}
         >
-          🔔 {unread||""}
-        </button>
+          <Avatar
+            profile={profile}
+            size="small"
+          />
+        </div>
 
       </div>
-
 
       <div className="layout">
 
         <aside className="left">
 
-          <div className="logo">
+          <div
+            className="logo"
+            style={{
+              display:
+                window.innerWidth <= 760
+                  ? "none"
+                  : "block"
+            }}
+          >
             Nex<span>us</span>
           </div>
-
 
           <nav className="nav">
 
             <button
               className={
-                page==="home"
-                  ?"active"
-                  :""
+                page === "home"
+                  ? "active"
+                  : ""
               }
-              onClick={()=>
-                navigate("home")
+              onClick={() =>
+                nav("home")
               }
             >
               🏠 Home
             </button>
 
-
             <button
               className={
-                page==="explore"
-                  ?"active"
-                  :""
+                page === "explore"
+                  ? "active"
+                  : ""
               }
-              onClick={()=>
-                navigate("explore")
+              onClick={() =>
+                nav("explore")
               }
             >
-              🔎 Explore
+              🔍 Explore
             </button>
-
 
             <button
               className={
-                page==="notifications"
-                  ?"active"
-                  :""
+                page === "notifications"
+                  ? "active"
+                  : ""
               }
-              onClick={()=>
-                navigate(
-                  "notifications"
-                )
+              onClick={() =>
+                nav("notifications")
               }
             >
               🔔 Notifications
 
-              {unread>0 && (
-                <span style={{
-                  marginLeft:7,
-                  color:
-                    "var(--accent)"
-                }}>
-                  {unread}
+              {unreadCount > 0 && (
+                <span
+                  style={{
+                    color:
+                      "var(--accent)",
+                    marginLeft: 5
+                  }}
+                >
+                  ({unreadCount})
                 </span>
               )}
 
             </button>
 
-
             <button
               className={
-                page==="messages"
-                  ?"active"
-                  :""
+                page === "messages"
+                  ? "active"
+                  : ""
               }
-              onClick={()=>
-                navigate(
-                  "messages"
-                )
+              onClick={() =>
+                nav("messages")
               }
             >
-              💬 Messages
+              ✉️ Messages
             </button>
-
 
             <button
               className={
-                page==="profile"
-                  ?"active"
-                  :""
+                page === "profile"
+                  ? "active"
+                  : ""
               }
-              onClick={()=>{
-
-                setProfileId(
-                  profile.uid
-                );
-
-                navigate(
-                  "profile"
-                );
-              }}
+              onClick={() =>
+                nav("profile")
+              }
             >
               👤 Profile
             </button>
 
-
             <button
               className={
-                page==="settings"
-                  ?"active"
-                  :""
+                page === "settings"
+                  ? "active"
+                  : ""
               }
-              onClick={()=>
-                navigate(
-                  "settings"
-                )
+              onClick={() =>
+                nav("settings")
               }
             >
-              ⚙ Settings
+              ⚙️ Settings
             </button>
 
           </nav>
 
-
-          <div
-            className="card pad"
-            style={{
-              marginTop:20
-            }}
-          >
-
-            <div style={{
-              display:"flex",
-              gap:9,
-              alignItems:"center"
-            }}>
-
-              <Avatar
-                profile={profile}
-                size="small"
-              />
-
-              <div>
-
-                <strong>
-                  {profile.displayName}
-                </strong>
-
-                <div className="muted">
-                  @{profile.username}
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-
         </aside>
-
 
         <main className="main">
 
-          {page==="home" && (
+          {page === "home" && (
             <Home
               profile={profile}
               data={data}
             />
           )}
 
-
-          {page==="explore" && (
+          {page === "explore" && (
             <Explore
               data={data}
-              onProfile={openProfile}
+              onProfile={id => {
+                setProfileId(id);
+                setPage("profile");
+              }}
             />
           )}
 
-
-          {page==="notifications" && (
+          {page === "notifications" && (
             <Notifications
               notifications={
                 data.notifications
@@ -5045,32 +4307,29 @@ function App(){
             />
           )}
 
-
-          {page==="messages" && (
+          {page === "messages" && (
             <Messages
               users={data.users}
             />
           )}
 
-
-          {page==="profile" && (
+          {page === "profile" && (
             <Profile
               profile={profile}
               users={data.users}
               posts={data.posts}
               follows={data.follows}
               viewedId={
-                profileId||
+                profileId ||
                 profile.uid
               }
-              onEdit={()=>
-                navigate("settings")
+              onEdit={() =>
+                nav("settings")
               }
             />
           )}
 
-
-          {page==="settings" && (
+          {page === "settings" && (
             <Settings
               profile={profile}
               setProfile={setProfile}
@@ -5079,100 +4338,85 @@ function App(){
 
         </main>
 
+        {page !== "messages" && (
 
-        <RightSidebar
-          data={data}
-          onProfile={openProfile}
-        />
+          <RightSidebar
+            data={data}
+            onProfile={id => {
+              setProfileId(id);
+              setPage("profile");
+            }}
+          />
+
+        )}
 
       </div>
-
 
       <div className="mobile-nav">
 
         <button
           className={
-            page==="home"
-              ?"active"
-              :""
+            page === "home"
+              ? "active"
+              : ""
           }
-          onClick={()=>
-            navigate("home")
+          onClick={() =>
+            nav("home")
           }
         >
-          🏠<br/>
-          Home
+          🏠
         </button>
-
 
         <button
           className={
-            page==="explore"
-              ?"active"
-              :""
+            page === "explore"
+              ? "active"
+              : ""
           }
-          onClick={()=>
-            navigate("explore")
+          onClick={() =>
+            nav("explore")
           }
         >
-          🔎<br/>
-          Explore
+          🔍
         </button>
-
 
         <button
           className={
-            page==="notifications"
-              ?"active"
-              :""
+            page === "notifications"
+              ? "active"
+              : ""
           }
-          onClick={()=>
-            navigate(
-              "notifications"
-            )
+          onClick={() =>
+            nav("notifications")
           }
         >
-          🔔<br/>
-          Alerts
+          🔔
         </button>
-
 
         <button
           className={
-            page==="messages"
-              ?"active"
-              :""
+            page === "messages"
+              ? "active"
+              : ""
           }
-          onClick={()=>
-            navigate(
-              "messages"
-            )
+          onClick={() =>
+            nav("messages")
           }
         >
-          💬<br/>
-          Chat
+          ✉️
         </button>
-
 
         <button
           className={
-            page==="profile"
-              ?"active"
-              :""
+            page === "profile"
+              ? "active"
+              : ""
           }
-          onClick={()=>{
-
-            setProfileId(
-              profile.uid
-            );
-
-            navigate(
-              "profile"
-            );
-          }}
+          onClick={() =>
+            nav("profile")
+          }
         >
-          👤<br/>
-          Me
+          👤
         </button>
 
       </div>
@@ -5181,73 +4425,18 @@ function App(){
   );
 }
 
+/* -------------------------------------------------------
+   START APP
+------------------------------------------------------- */
 
-/* =========================================================
-   START
-========================================================= */
+const rootElement =
+  document.getElementById("root");
 
-try{
+const root =
+  ReactDOM.createRoot(rootElement);
 
-  const root=ReactDOM.createRoot(
-    document.getElementById("root")
-  );
-
-  root.render(
-    <App/>
-  );
-
-}catch(e){
-
-  console.error(
-    "Nexus render error:",
-    e
-  );
-
-  document.getElementById(
-    "root"
-  ).innerHTML=`
-
-    <div class="error-screen">
-
-      <div class="boot-box">
-
-        <h1>
-          Nexus Error
-        </h1>
-
-        <div class="boot-error">
-          ${String(
-            e.message||e
-          ).replace(/</g,"&lt;")}
-        </div>
-
-        <button
-          class="btn primary"
-          onclick="location.reload()"
-        >
-          Reload Nexus
-        </button>
-
-        <div style="
-          margin-top:25px;
-          color:#9099a7;
-          font-size:13px;
-        ">
-          Made by
-
-          <strong style="color:#fff">
-            YASH KISHORE Michalite
-          </strong>
-
-        </div>
-
-      </div>
-
-    </div>
-  `;
-}
+root.render(<App />);
 
 </script>
-
 </body>
 </html>
