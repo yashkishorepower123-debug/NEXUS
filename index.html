@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>Nexus — Social Platform</title>
+  <title>NEXUS — Social Platform</title>
 
   <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -79,15 +79,17 @@
     }
 
     .boot-logo {
-      width: 78px;
+      min-width: 120px;
       height: 78px;
+      padding: 0 16px;
       margin: auto auto 18px;
       border-radius: 22px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 42px;
+      font-size: 28px;
       font-weight: 900;
+      letter-spacing: 2px;
       background: linear-gradient(135deg,#fff,#888);
       color: #000;
     }
@@ -95,12 +97,14 @@
     .boot-title {
       font-size: 32px;
       font-weight: 900;
+      letter-spacing: 1px;
     }
 
     .boot-made {
       color: #aaa;
       margin-top: 6px;
       font-size: 14px;
+      letter-spacing: 1px;
     }
 
     .boot-spinner {
@@ -152,6 +156,7 @@
       gap: 10px;
       font-size: 20px;
       font-weight: 900;
+      letter-spacing: 1px;
     }
 
     .brand-logo {
@@ -581,6 +586,260 @@
       margin-top: 18px;
     }
 
+    /* =====================================================
+       CHAT
+    ===================================================== */
+
+    .chat-app {
+      height: calc(100vh - 112px);
+      min-height: 560px;
+      display: grid;
+      grid-template-columns: 230px minmax(0,1fr);
+      background: #0c0c0c;
+      border: 1px solid #252525;
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .chat-list {
+      border-right: 1px solid #252525;
+      background: #0e0e0e;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .chat-list-header {
+      padding: 15px;
+      border-bottom: 1px solid #252525;
+    }
+
+    .chat-list-title {
+      font-size: 19px;
+      font-weight: 900;
+      margin-bottom: 12px;
+    }
+
+    .chat-search {
+      width: 100%;
+      background: #181818;
+      border: 1px solid #292929;
+      color: #fff;
+      border-radius: 11px;
+      padding: 10px 11px;
+      outline: none;
+    }
+
+    .chat-users {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .chat-item {
+      width: 100%;
+      border: 0;
+      border-bottom: 1px solid #1c1c1c;
+      background: transparent;
+      color: #fff;
+      padding: 11px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-align: left;
+    }
+
+    .chat-item:hover,
+    .chat-item.active {
+      background: #1a1a1a;
+    }
+
+    .chat-item-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .chat-item-name {
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-item-last {
+      color: #666;
+      font-size: 11px;
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-window {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background:
+        radial-gradient(circle at 50% 0%,#171717,#0a0a0a 65%);
+    }
+
+    .chat-header {
+      height: 67px;
+      flex-shrink: 0;
+      padding: 10px 14px;
+      border-bottom: 1px solid #252525;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chat-header-info {
+      min-width: 0;
+    }
+
+    .chat-header-name {
+      font-weight: 900;
+    }
+
+    .chat-status {
+      color: #777;
+      font-size: 11px;
+      margin-top: 3px;
+    }
+
+    .chat-status.online {
+      color: #72d572;
+    }
+
+    .chat-back {
+      display: none;
+      border: 0;
+      background: transparent;
+      color: #aaa;
+      font-size: 21px;
+      padding: 5px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .chat-empty {
+      margin: auto;
+      text-align: center;
+      color: #555;
+      padding: 30px;
+    }
+
+    .chat-bubble-row {
+      display: flex;
+      width: 100%;
+    }
+
+    .chat-bubble-row.mine {
+      justify-content: flex-end;
+    }
+
+    .chat-bubble {
+      max-width: min(75%,420px);
+      padding: 9px 12px;
+      border-radius: 15px;
+      background: #202020;
+      color: #eee;
+      word-break: break-word;
+      line-height: 1.4;
+      font-size: 14px;
+    }
+
+    .chat-bubble.mine {
+      background: #fff;
+      color: #000;
+      border-bottom-right-radius: 5px;
+    }
+
+    .chat-bubble:not(.mine) {
+      border-bottom-left-radius: 5px;
+    }
+
+    .chat-time {
+      font-size: 9px;
+      opacity: .5;
+      margin-top: 4px;
+      text-align: right;
+    }
+
+    .typing-indicator {
+      color: #777;
+      font-size: 11px;
+      min-height: 17px;
+      padding: 0 15px 5px;
+    }
+
+    .chat-composer {
+      border-top: 1px solid #252525;
+      padding: 10px;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      background: #0d0d0d;
+    }
+
+    .chat-composer textarea {
+      flex: 1;
+      min-height: 42px;
+      max-height: 120px;
+      resize: none;
+      background: #181818;
+      border: 1px solid #292929;
+      border-radius: 13px;
+      padding: 11px 12px;
+      color: #fff;
+      outline: none;
+    }
+
+    .chat-send {
+      width: 45px;
+      height: 42px;
+      border: 0;
+      border-radius: 12px;
+      background: #fff;
+      color: #000;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .presence-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #444;
+      border: 2px solid #111;
+      position: absolute;
+      right: -1px;
+      bottom: -1px;
+    }
+
+    .presence-dot.online {
+      background: #55d66a;
+    }
+
+    .avatar-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .chat-start-hint {
+      margin: auto;
+      text-align: center;
+      padding: 30px;
+      color: #555;
+    }
+
     /* ERROR */
 
     .error-page {
@@ -638,6 +897,10 @@
       .right-sidebar {
         display: none;
       }
+
+      .chat-app {
+        grid-template-columns: 210px minmax(0,1fr);
+      }
     }
 
     @media(max-width:700px) {
@@ -680,6 +943,40 @@
       .profile-card {
         border-radius: 14px;
       }
+
+      .chat-app {
+        height: calc(100vh - 133px);
+        min-height: 500px;
+        display: block;
+        position: relative;
+      }
+
+      .chat-list {
+        height: 100%;
+        border-right: 0;
+      }
+
+      .chat-window {
+        position: absolute;
+        inset: 0;
+        display: none;
+      }
+
+      .chat-app.chat-open .chat-list {
+        display: none;
+      }
+
+      .chat-app.chat-open .chat-window {
+        display: flex;
+      }
+
+      .chat-back {
+        display: block;
+      }
+
+      .chat-bubble {
+        max-width: 82%;
+      }
     }
   </style>
 </head>
@@ -688,9 +985,9 @@
 
 <div id="boot-screen">
   <div class="boot-box">
-    <div class="boot-logo">N</div>
-    <div class="boot-title">Nexus</div>
-    <div class="boot-made">Made by Yash</div>
+    <div class="boot-logo">NEXUS</div>
+    <div class="boot-title">NEXUS</div>
+    <div class="boot-made">MADE BY YASH KISHORE</div>
     <div class="boot-spinner"></div>
     <div class="boot-loading">Connecting to Firebase...</div>
   </div>
@@ -912,6 +1209,10 @@ function useAuth() {
               bio: "Welcome to Nexus 👋",
               followers: 0,
               following: 0,
+              online: true,
+              lastSeen:
+                firebase.firestore.FieldValue
+                  .serverTimestamp(),
               createdAt:
                 firebase.firestore.FieldValue
                   .serverTimestamp()
@@ -992,6 +1293,84 @@ function useAuth() {
 
 
 /* =========================================================
+   PRESENCE
+========================================================= */
+
+function usePresence(user) {
+
+  useEffect(() => {
+
+    if (!user || !db) return;
+
+    const userRef =
+      collectionPath("users")
+        .doc(user.uid);
+
+    const setOnline = () => {
+
+      userRef.update({
+        online: true,
+        lastSeen:
+          firebase.firestore.FieldValue
+            .serverTimestamp()
+      }).catch(error => {
+        console.warn("Presence update failed:", error);
+      });
+
+    };
+
+    setOnline();
+
+    const interval =
+      setInterval(setOnline,15000);
+
+    const handleVisibility = () => {
+
+      if (document.visibilityState === "visible") {
+        setOnline();
+      }
+
+    };
+
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibility
+    );
+
+    window.addEventListener(
+      "focus",
+      setOnline
+    );
+
+    return () => {
+
+      clearInterval(interval);
+
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibility
+      );
+
+      window.removeEventListener(
+        "focus",
+        setOnline
+      );
+
+      userRef.update({
+        online: false,
+        lastSeen:
+          firebase.firestore.FieldValue
+            .serverTimestamp()
+      }).catch(() => {});
+
+    };
+
+  },[user?.uid]);
+
+}
+
+
+/* =========================================================
    REALTIME DATA
 ========================================================= */
 
@@ -1002,7 +1381,8 @@ const COLLECTIONS = [
   "likes",
   "follows",
   "notifications",
-  "messages"
+  "messages",
+  "chats"
 ];
 
 
@@ -1015,7 +1395,8 @@ function useRealtimeData(uid) {
     likes: [],
     follows: [],
     notifications: [],
-    messages: []
+    messages: [],
+    chats: []
   });
 
   const [ready,setReady] = useState(false);
@@ -1069,12 +1450,6 @@ function useRealtimeData(uid) {
                 `Firestore ${name} error:`,
                 error
               );
-
-              /*
-                IMPORTANT:
-                We no longer silently hide Firestore
-                permission/read errors.
-              */
 
               setFirestoreError({
                 collection: name,
@@ -1169,7 +1544,7 @@ function FirebaseErrorScreen({error,retry}) {
 
           <li>
             Firestore rules must allow the
-            Nexus path to be read.
+            Nexus path to be read and written.
           </li>
 
           <li>
@@ -2469,7 +2844,48 @@ function NotificationsView({user,data}) {
 
 
 /* =========================================================
-   MESSAGES
+   CHAT HELPERS
+========================================================= */
+
+function makeChatId(uid1,uid2) {
+
+  return [uid1,uid2]
+    .sort()
+    .join("_");
+
+}
+
+
+function isUserOnline(person) {
+
+  if (!person?.online) {
+    return false;
+  }
+
+  const lastSeen =
+    timestampMillis(person.lastSeen);
+
+  if (!lastSeen) {
+    return true;
+  }
+
+  return Date.now() - lastSeen < 30000;
+}
+
+
+function getOtherParticipant(chat,userId) {
+
+  if (!chat?.participants) return null;
+
+  return chat.participants.find(
+    id => id !== userId
+  ) || null;
+
+}
+
+
+/* =========================================================
+   MESSAGING
 ========================================================= */
 
 function MessagingView({
@@ -2478,37 +2894,414 @@ function MessagingView({
   data
 }) {
 
-  const [recipient,setRecipient] = useState("");
-  const [text,setText] = useState("");
+  const [activeChat,setActiveChat] = useState(null);
+  const [search,setSearch] = useState("");
+  const [messageText,setMessageText] = useState("");
+  const [messages,setMessages] = useState([]);
+  const [typingUsers,setTypingUsers] = useState([]);
   const [sending,setSending] = useState(false);
+  const [chatOpen,setChatOpen] = useState(false);
 
-  async function sendMessage() {
+  const typingTimeout =
+    React.useRef(null);
 
-    if (
-      !recipient.trim() ||
-      !text.trim() ||
-      sending
-    ) {
+
+  /*
+    Keep active chat synced with updated user/chat data.
+  */
+
+  useEffect(() => {
+
+    if (!activeChat) return;
+
+    const latest =
+      data.chats.find(
+        chat => chat.id === activeChat.id
+      );
+
+    if (latest) {
+      setActiveChat(latest);
+    }
+
+  },[data.chats]);
+
+
+  /*
+    Real-time messages listener.
+  */
+
+  useEffect(() => {
+
+    if (!activeChat || !db) {
+
+      setMessages([]);
       return;
     }
 
-    const username =
-      recipient
-        .trim()
-        .replace(/^@/,"")
-        .toLowerCase();
+    const unsubscribe =
+      collectionPath("chats")
+        .doc(activeChat.id)
+        .collection("messages")
+        .orderBy("createdAt","asc")
+        .onSnapshot(
 
-    const target =
-      data.users.find(
-        x =>
-          String(x.username || "")
-            .toLowerCase() === username
+          snapshot => {
+
+            const items =
+              snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+              }));
+
+            setMessages(items);
+
+            setTimeout(() => {
+
+              const box =
+                document.getElementById(
+                  "nexus-chat-messages"
+                );
+
+              if (box) {
+                box.scrollTop =
+                  box.scrollHeight;
+              }
+
+            },50);
+
+          },
+
+          error => {
+
+            console.error(
+              "Chat messages listener failed:",
+              error
+            );
+
+          }
+
+        );
+
+    return () => unsubscribe();
+
+  },[activeChat?.id]);
+
+
+  /*
+    Real-time typing listener.
+  */
+
+  useEffect(() => {
+
+    if (!activeChat || !db) {
+
+      setTypingUsers([]);
+      return;
+    }
+
+    const unsubscribe =
+      collectionPath("chats")
+        .doc(activeChat.id)
+        .collection("typing")
+        .onSnapshot(
+
+          snapshot => {
+
+            const now = Date.now();
+
+            const users =
+              snapshot.docs
+                .map(doc => ({
+                  id: doc.id,
+                  ...doc.data()
+                }))
+                .filter(person =>
+                  person.uid !== user.uid &&
+                  person.typing === true &&
+                  (
+                    !person.updatedAt ||
+                    now -
+                    timestampMillis(person.updatedAt)
+                    < 5000
+                  )
+                );
+
+            setTypingUsers(users);
+
+          },
+
+          error => {
+            console.warn(
+              "Typing listener failed:",
+              error
+            );
+          }
+
+        );
+
+    return () => unsubscribe();
+
+  },[activeChat?.id,user.uid]);
+
+
+  /*
+    Search users.
+  */
+
+  const searchResults =
+    useMemo(() => {
+
+      const q =
+        search
+          .trim()
+          .replace(/^@/,"")
+          .toLowerCase();
+
+      if (!q) return [];
+
+      return data.users
+        .filter(person =>
+          person.uid !== user.uid &&
+          (
+            String(person.displayName || "")
+              .toLowerCase()
+              .includes(q) ||
+            String(person.username || "")
+              .toLowerCase()
+              .includes(q)
+          )
+        )
+        .slice(0,10);
+
+    },[search,data.users,user.uid]);
+
+
+  /*
+    Existing chats for the current user.
+  */
+
+  const myChats =
+    useMemo(() => {
+
+      return data.chats
+        .filter(chat =>
+          Array.isArray(chat.participants) &&
+          chat.participants.includes(user.uid)
+        )
+        .sort(
+          (a,b) =>
+            timestampMillis(b.updatedAt) -
+            timestampMillis(a.updatedAt)
+        );
+
+    },[data.chats,user.uid]);
+
+
+  /*
+    Get user profile from participant ID.
+  */
+
+  function getPerson(uid) {
+
+    if (!uid) return null;
+
+    return data.users.find(
+      person => person.uid === uid
+    ) || null;
+
+  }
+
+
+  /*
+    Start or open a dedicated chat.
+  */
+
+  async function startChat(person) {
+
+    if (!person || !user) return;
+
+    const chatId =
+      makeChatId(
+        user.uid,
+        person.uid
       );
 
-    if (!target) {
+    let chat =
+      data.chats.find(
+        item => item.id === chatId
+      );
 
-      alert("User not found.");
+    try {
 
+      if (!chat) {
+
+        const participants =
+          [user.uid,person.uid].sort();
+
+        const participantNames = {
+          [user.uid]:
+            profile?.displayName || "Yash",
+
+          [person.uid]:
+            person.displayName || "User"
+        };
+
+        const chatData = {
+
+          participants,
+
+          participantNames,
+
+          lastMessage: "",
+
+          lastMessageSenderId: "",
+
+          createdAt:
+            firebase.firestore.FieldValue
+              .serverTimestamp(),
+
+          updatedAt:
+            firebase.firestore.FieldValue
+              .serverTimestamp()
+
+        };
+
+        await collectionPath("chats")
+          .doc(chatId)
+          .set(chatData);
+
+        chat = {
+          id: chatId,
+          ...chatData,
+          participants,
+          participantNames
+        };
+
+      }
+
+      setActiveChat(chat);
+      setSearch("");
+      setMessageText("");
+      setChatOpen(true);
+
+    } catch(error) {
+
+      console.error(error);
+
+      alert(
+        "Could not open chat:\n\n" +
+        error.message
+      );
+
+    }
+
+  }
+
+
+  /*
+    Open existing chat.
+  */
+
+  function openExistingChat(chat) {
+
+    setActiveChat(chat);
+    setSearch("");
+    setMessageText("");
+    setChatOpen(true);
+
+  }
+
+
+  /*
+    Update typing state.
+  */
+
+  async function updateTyping(value) {
+
+    if (!activeChat || !user) return;
+
+    const typingRef =
+      collectionPath("chats")
+        .doc(activeChat.id)
+        .collection("typing")
+        .doc(user.uid);
+
+    try {
+
+      if (value.trim()) {
+
+        await typingRef.set({
+
+          uid: user.uid,
+
+          displayName:
+            profile?.displayName || "Yash",
+
+          typing: true,
+
+          updatedAt:
+            firebase.firestore.FieldValue
+              .serverTimestamp()
+
+        });
+
+      } else {
+
+        await typingRef.delete();
+
+      }
+
+    } catch(error) {
+
+      console.warn(
+        "Typing update failed:",
+        error
+      );
+
+    }
+
+  }
+
+
+  /*
+    Handle typing with a small debounce.
+  */
+
+  function handleMessageChange(value) {
+
+    setMessageText(value);
+
+    updateTyping(value);
+
+    clearTimeout(
+      typingTimeout.current
+    );
+
+    typingTimeout.current =
+      setTimeout(() => {
+
+        updateTyping("");
+
+      },2000);
+
+  }
+
+
+  /*
+    Send message.
+  */
+
+  async function sendMessage() {
+
+    const clean =
+      messageText.trim();
+
+    if (
+      !clean ||
+      !activeChat ||
+      !user ||
+      sending
+    ) {
       return;
     }
 
@@ -2516,19 +3309,19 @@ function MessagingView({
 
     try {
 
-      await collectionPath("messages").add({
+      const messagesRef =
+        collectionPath("chats")
+          .doc(activeChat.id)
+          .collection("messages");
+
+      await messagesRef.add({
+
+        text: clean,
 
         senderId: user.uid,
 
         senderName:
           profile?.displayName || "Yash",
-
-        receiverId: target.uid,
-
-        receiverName:
-          target.displayName,
-
-        text: text.trim(),
 
         createdAt:
           firebase.firestore.FieldValue
@@ -2536,9 +3329,40 @@ function MessagingView({
 
       });
 
-      setText("");
+      await collectionPath("chats")
+        .doc(activeChat.id)
+        .set({
+
+          participants:
+            activeChat.participants,
+
+          participantNames:
+            activeChat.participantNames || {},
+
+          lastMessage: clean,
+
+          lastMessageSenderId:
+            user.uid,
+
+          updatedAt:
+            firebase.firestore.FieldValue
+              .serverTimestamp()
+
+        },{
+          merge:true
+        });
+
+      setMessageText("");
+
+      clearTimeout(
+        typingTimeout.current
+      );
+
+      await updateTyping("");
 
     } catch(error) {
+
+      console.error(error);
 
       alert(
         "Message failed:\n\n" +
@@ -2550,114 +3374,555 @@ function MessagingView({
       setSending(false);
 
     }
+
   }
 
-  const messages =
-    data.messages
-      .filter(
-        message =>
-          message.senderId === user.uid ||
-          message.receiverId === user.uid
-      )
-      .sort(
-        (a,b) =>
-          timestampMillis(a.createdAt) -
-          timestampMillis(b.createdAt)
+
+  /*
+    Enter = send.
+  */
+
+  function handleKeyDown(event) {
+
+    if (
+      event.key === "Enter" &&
+      !event.shiftKey
+    ) {
+
+      event.preventDefault();
+      sendMessage();
+
+    }
+
+  }
+
+
+  /*
+    Cleanup typing on unmount.
+  */
+
+  useEffect(() => {
+
+    return () => {
+
+      clearTimeout(
+        typingTimeout.current
       );
 
+    };
+
+  },[]);
+
+
+  const activePerson =
+    activeChat
+      ? getPerson(
+          getOtherParticipant(
+            activeChat,
+            user.uid
+          )
+        )
+      : null;
+
+
+  const activeOnline =
+    activePerson
+      ? isUserOnline(activePerson)
+      : false;
+
+
   return (
-    <div className="feed">
+    <div
+      className={
+        "chat-app " +
+        (chatOpen ? "chat-open" : "")
+      }
+    >
 
-      <div className="side-card">
+      {/* CHAT LIST */}
 
-        <h2>Messages</h2>
+      <div className="chat-list">
 
-        <div className="field">
+        <div className="chat-list-header">
 
-          <label>Username</label>
+          <div className="chat-list-title">
+            Messages
+          </div>
 
           <input
-            value={recipient}
+            className="chat-search"
+            value={search}
             onChange={e =>
-              setRecipient(e.target.value)
+              setSearch(e.target.value)
             }
-            placeholder="@username"
+            placeholder="Search users..."
           />
 
         </div>
 
-        <div className="field">
 
-          <textarea
-            value={text}
-            onChange={e => setText(e.target.value)}
-            placeholder="Write a message..."
-          />
+        <div className="chat-users">
+
+          {/* SEARCH RESULTS */}
+
+          {search.trim() && searchResults.length > 0 && (
+
+            <>
+
+              <div
+                style={{
+                  padding:"10px 12px 6px",
+                  color:"#555",
+                  fontSize:10,
+                  textTransform:"uppercase",
+                  letterSpacing:1,
+                  fontWeight:800
+                }}
+              >
+                Users
+              </div>
+
+              {searchResults.map(person => (
+
+                <button
+                  className="chat-item"
+                  key={person.uid}
+                  onClick={() =>
+                    startChat(person)
+                  }
+                >
+
+                  <div className="avatar-wrap">
+
+                    <div className="avatar small">
+                      {getInitials(
+                        person.displayName
+                      )}
+                    </div>
+
+                    <div
+                      className={
+                        "presence-dot " +
+                        (
+                          isUserOnline(person)
+                            ? "online"
+                            : ""
+                        )
+                      }
+                    />
+
+                  </div>
+
+                  <div className="chat-item-info">
+
+                    <div className="chat-item-name">
+                      {person.displayName || "User"}
+                    </div>
+
+                    <div className="chat-item-last">
+                      @{person.username || "user"}
+                    </div>
+
+                  </div>
+
+                </button>
+
+              ))}
+
+            </>
+
+          )}
+
+
+          {/* NO SEARCH RESULTS */}
+
+          {search.trim() &&
+            searchResults.length === 0 && (
+
+              <div
+                style={{
+                  padding:25,
+                  color:"#555",
+                  textAlign:"center",
+                  fontSize:13
+                }}
+              >
+                No users found.
+              </div>
+
+            )}
+
+
+          {/* EXISTING CHATS */}
+
+          {!search.trim() && myChats.length > 0 && (
+
+            <>
+
+              <div
+                style={{
+                  padding:"10px 12px 6px",
+                  color:"#555",
+                  fontSize:10,
+                  textTransform:"uppercase",
+                  letterSpacing:1,
+                  fontWeight:800
+                }}
+              >
+                Chats
+              </div>
+
+              {myChats.map(chat => {
+
+                const otherId =
+                  getOtherParticipant(
+                    chat,
+                    user.uid
+                  );
+
+                const person =
+                  getPerson(otherId);
+
+                const name =
+                  person?.displayName ||
+                  chat.participantNames?.[otherId] ||
+                  "User";
+
+                const online =
+                  person
+                    ? isUserOnline(person)
+                    : false;
+
+                return (
+
+                  <button
+                    className={
+                      "chat-item " +
+                      (
+                        activeChat?.id === chat.id
+                          ? "active"
+                          : ""
+                      )
+                    }
+                    key={chat.id}
+                    onClick={() =>
+                      openExistingChat(chat)
+                    }
+                  >
+
+                    <div className="avatar-wrap">
+
+                      <div className="avatar small">
+                        {getInitials(name)}
+                      </div>
+
+                      <div
+                        className={
+                          "presence-dot " +
+                          (
+                            online
+                              ? "online"
+                              : ""
+                          )
+                        }
+                      />
+
+                    </div>
+
+                    <div className="chat-item-info">
+
+                      <div className="chat-item-name">
+                        {name}
+                      </div>
+
+                      <div className="chat-item-last">
+                        {chat.lastMessage ||
+                          "Start chatting"}
+                      </div>
+
+                    </div>
+
+                  </button>
+
+                );
+
+              })}
+
+            </>
+
+          )}
+
+
+          {/* EMPTY */}
+
+          {!search.trim() &&
+            myChats.length === 0 && (
+
+              <div className="chat-start-hint">
+
+                <div style={{
+                  fontSize:30,
+                  marginBottom:10
+                }}>
+                  💬
+                </div>
+
+                Search a username above
+                to start a chat.
+
+              </div>
+
+            )}
 
         </div>
-
-        <button
-          className="primary"
-          disabled={sending}
-          onClick={sendMessage}
-        >
-          {sending ? "Sending..." : "Send message"}
-        </button>
 
       </div>
 
 
-      <div
-        className="side-card"
-        style={{marginTop:15}}
-      >
+      {/* CHAT WINDOW */}
 
-        {messages.length === 0 ? (
+      <div className="chat-window">
 
-          <div className="empty">
-            No messages yet.
+        {!activeChat ? (
+
+          <div className="chat-start-hint">
+
+            <div style={{
+              fontSize:45,
+              marginBottom:12
+            }}>
+              💬
+            </div>
+
+            <div style={{
+              fontSize:18,
+              fontWeight:800,
+              color:"#aaa"
+            }}>
+              Your messages
+            </div>
+
+            <div style={{
+              marginTop:7,
+              lineHeight:1.5
+            }}>
+              Search for another Nexus user
+              and start chatting.
+
+            </div>
+
           </div>
 
         ) : (
 
-          messages.map(message => (
+          <>
 
-            <div
-              key={message.id}
-              style={{
-                padding:"12px 0",
-                borderBottom:"1px solid #222"
-              }}
-            >
+            {/* HEADER */}
 
-              <strong>
-                {message.senderId === user.uid
-                  ? "You"
-                  : message.senderName}
-              </strong>
+            <div className="chat-header">
 
-              <div
-                style={{
-                  color:"#ccc",
-                  marginTop:5
+              <button
+                className="chat-back"
+                onClick={() => {
+                  setChatOpen(false);
                 }}
               >
-                {message.text}
+                ‹
+              </button>
+
+              <div className="avatar-wrap">
+
+                <div className="avatar small">
+                  {getInitials(
+                    activePerson?.displayName ||
+                    activeChat
+                      .participantNames?.[
+                        getOtherParticipant(
+                          activeChat,
+                          user.uid
+                        )
+                      ] ||
+                    "User"
+                  )}
+                </div>
+
+                <div
+                  className={
+                    "presence-dot " +
+                    (
+                      activeOnline
+                        ? "online"
+                        : ""
+                    )
+                  }
+                />
+
               </div>
 
-              <div
-                style={{
-                  color:"#555",
-                  fontSize:11,
-                  marginTop:5
-                }}
-              >
-                {formatTime(message.createdAt)}
+              <div className="chat-header-info">
+
+                <div className="chat-header-name">
+
+                  {activePerson?.displayName ||
+                    activeChat
+                      .participantNames?.[
+                        getOtherParticipant(
+                          activeChat,
+                          user.uid
+                        )
+                      ] ||
+                    "User"}
+
+                </div>
+
+                <div
+                  className={
+                    "chat-status " +
+                    (
+                      activeOnline
+                        ? "online"
+                        : ""
+                    )
+                  }
+                >
+
+                  {activeOnline
+                    ? "online"
+                    : activePerson?.lastSeen
+                    ? "last seen " +
+                      formatTime(
+                        activePerson.lastSeen
+                      ) +
+                      " ago"
+                    : "offline"}
+
+                </div>
+
               </div>
 
             </div>
 
-          ))
+
+            {/* MESSAGES */}
+
+            <div
+              id="nexus-chat-messages"
+              className="chat-messages"
+            >
+
+              {messages.length === 0 ? (
+
+                <div className="chat-empty">
+
+                  <div style={{
+                    fontSize:30,
+                    marginBottom:8
+                  }}>
+                    👋
+                  </div>
+
+                  No messages yet.
+                  Say hello!
+
+                </div>
+
+              ) : (
+
+                messages.map(message => {
+
+                  const mine =
+                    message.senderId === user.uid;
+
+                  return (
+
+                    <div
+                      className={
+                        "chat-bubble-row " +
+                        (mine ? "mine" : "")
+                      }
+                      key={message.id}
+                    >
+
+                      <div
+                        className={
+                          "chat-bubble " +
+                          (mine ? "mine" : "")
+                        }
+                      >
+
+                        <div>
+                          {message.text}
+                        </div>
+
+                        <div className="chat-time">
+                          {formatTime(
+                            message.createdAt
+                          )}
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  );
+
+                })
+
+              )}
+
+            </div>
+
+
+            {/* TYPING */}
+
+            <div className="typing-indicator">
+
+              {typingUsers.length > 0
+                ? (
+                  typingUsers.length === 1
+                    ? (
+                      <>
+                        {typingUsers[0].displayName ||
+                          "Someone"} is typing...
+                      </>
+                    )
+                    : "Several people are typing..."
+                )
+                : ""}
+
+            </div>
+
+
+            {/* COMPOSER */}
+
+            <div className="chat-composer">
+
+              <textarea
+                value={messageText}
+                onChange={e =>
+                  handleMessageChange(
+                    e.target.value
+                  )
+                }
+                onKeyDown={handleKeyDown}
+                placeholder="Type a message..."
+                maxLength={2000}
+              />
+
+              <button
+                className="chat-send"
+                disabled={
+                  sending ||
+                  !messageText.trim()
+                }
+                onClick={sendMessage}
+              >
+                {sending ? "…" : "➤"}
+              </button>
+
+            </div>
+
+          </>
 
         )}
 
@@ -2681,6 +3946,8 @@ function Nexus() {
     loading,
     error
   } = useAuth();
+
+  usePresence(user);
 
   const {
     data,
@@ -2776,7 +4043,7 @@ function Nexus() {
           color:"#777"
         }}
       >
-        Loading Nexus data...
+        Loading NEXUS data...
       </div>
     );
   }
@@ -2853,7 +4120,7 @@ function Nexus() {
             N
           </div>
 
-          Nexus
+          NEXUS
 
         </div>
 
@@ -3040,7 +4307,7 @@ function Nexus() {
               textAlign:"center"
             }}
           >
-            Nexus • Made by Yash
+            NEXUS • MADE BY YASH KISHORE
           </div>
 
         </aside>
