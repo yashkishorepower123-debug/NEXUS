@@ -1,3249 +1,4192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Nexus — Social Platform</title>
-
-<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
-
-<style>
-*{box-sizing:border-box}
-
-html,body,#root{
-margin:0;
-width:100%;
-min-height:100%;
-font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-background:#050505;
-color:#fff
-}
-
-body{min-height:100vh}
-button,input,textarea{font:inherit}
-button{cursor:pointer}
-button:disabled{opacity:.5;cursor:not-allowed}
-
-/* BOOT */
-
-#boot-screen{
-position:fixed;
-inset:0;
-z-index:99999;
-background:radial-gradient(circle at top,#1c1c1c,#090909 40%,#000);
-display:flex;
-align-items:center;
-justify-content:center;
-transition:opacity .4s ease,visibility .4s ease
-}
-
-#boot-screen.hide{
-opacity:0;
-visibility:hidden;
-pointer-events:none
-}
-
-.boot-box{text-align:center}
-.boot-logo{
-width:78px;
-height:78px;
-margin:auto auto 18px;
-border-radius:22px;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:42px;
-font-weight:900;
-background:linear-gradient(135deg,#fff,#888);
-color:#000
-}
-.boot-title{font-size:32px;font-weight:900}
-.boot-made{color:#aaa;margin-top:6px;font-size:14px}
-.boot-spinner{
-width:26px;
-height:26px;
-border:3px solid #333;
-border-top-color:#fff;
-border-radius:50%;
-animation:spin .8s linear infinite;
-margin:25px auto 12px
-}
-.boot-loading{color:#777;font-size:13px}
-
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* APP */
-
-.app{
-min-height:100vh;
-background:radial-gradient(circle at 50% -10%,#1c1c1c,#080808 35%,#050505 70%)
-}
-
-.topbar{
-position:sticky;
-top:0;
-z-index:100;
-height:64px;
-border-bottom:1px solid #222;
-background:rgba(5,5,5,.9);
-backdrop-filter:blur(18px);
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 18px
-}
-
-.brand{
-display:flex;
-align-items:center;
-gap:10px;
-font-size:20px;
-font-weight:900
-}
-
-.brand-logo{
-width:36px;
-height:36px;
-border-radius:11px;
-background:#fff;
-color:#000;
-display:flex;
-align-items:center;
-justify-content:center;
-font-weight:900
-}
-
-.icon-btn{
-width:40px;
-height:40px;
-border:1px solid #292929;
-background:#111;
-color:#fff;
-border-radius:12px
-}
-
-.layout{
-width:min(1180px,100%);
-margin:auto;
-display:grid;
-grid-template-columns:230px minmax(0,650px) 260px;
-gap:22px;
-padding:24px 16px
-}
-
-.sidebar{
-position:sticky;
-top:88px;
-height:fit-content
-}
-
-.nav-card,.side-card{
-background:rgba(15,15,15,.85);
-border:1px solid #242424;
-border-radius:18px;
-padding:10px
-}
-
-.nav-item{
-width:100%;
-border:0;
-background:transparent;
-color:#aaa;
-padding:12px;
-border-radius:12px;
-text-align:left;
-font-weight:700;
-margin-bottom:3px
-}
-
-.nav-item:hover,.nav-item.active{
-background:#1b1b1b;
-color:#fff
-}
-
-main,.feed{min-width:0}
-
-/* COMPOSER */
-
-.composer{
-background:#101010;
-border:1px solid #252525;
-border-radius:18px;
-padding:16px;
-margin-bottom:18px
-}
-
-.composer textarea{
-width:100%;
-min-height:90px;
-resize:vertical;
-border:0;
-outline:0;
-background:transparent;
-color:#fff;
-font-size:16px
-}
-
-.composer-bottom{
-display:flex;
-align-items:center;
-gap:8px;
-margin-top:10px
-}
-
-.primary{
-border:0;
-background:#fff;
-color:#000;
-padding:10px 17px;
-border-radius:11px;
-font-weight:800
-}
-
-.primary:hover{background:#ddd}
-
-.secondary{
-border:1px solid #303030;
-background:#151515;
-color:#fff;
-padding:9px 15px;
-border-radius:11px
-}
-
-/* SEARCH */
-
-.search-box{margin-bottom:17px}
-
-.search-box input{
-width:100%;
-background:#111;
-color:#fff;
-border:1px solid #282828;
-border-radius:13px;
-padding:12px 14px;
-outline:none
-}
-
-/* POSTS */
-
-.post{
-background:#101010;
-border:1px solid #252525;
-border-radius:18px;
-padding:17px;
-margin-bottom:15px
-}
-
-.post-header{
-display:flex;
-align-items:center;
-gap:11px
-}
-
-.avatar{
-width:42px;
-height:42px;
-border-radius:50%;
-background:linear-gradient(135deg,#fff,#777);
-color:#000;
-display:flex;
-align-items:center;
-justify-content:center;
-font-weight:900;
-flex-shrink:0
-}
-
-.avatar.small{
-width:34px;
-height:34px;
-font-size:13px
-}
-
-.post-author{font-weight:800}
-.post-time{
-color:#666;
-font-size:12px;
-margin-top:2px
-}
-
-.post-content{
-white-space:pre-wrap;
-word-break:break-word;
-margin:15px 0;
-line-height:1.55;
-color:#eee
-}
-
-.hashtag{color:#8ab4ff}
-
-.post-actions{
-display:flex;
-gap:5px;
-border-top:1px solid #202020;
-padding-top:11px
-}
-
-.action-btn{
-border:0;
-background:transparent;
-color:#888;
-padding:8px 10px;
-border-radius:9px
-}
-
-.action-btn:hover{
-background:#1b1b1b;
-color:#fff
-}
-
-.action-btn.liked{color:#ff6b8a}
-
-.post-menu{
-border:0;
-background:transparent;
-color:#777;
-font-size:19px
-}
-
-/* COMMENTS */
-
-.comments{
-margin-top:12px;
-border-top:1px solid #202020;
-padding-top:12px
-}
-
-.comment{
-display:flex;
-gap:9px;
-margin-bottom:10px
-}
-
-.comment-body{
-background:#181818;
-border-radius:12px;
-padding:8px 11px;
-flex:1
-}
-
-.comment-name{
-font-size:12px;
-font-weight:800;
-color:#aaa
-}
-
-.comment-text{
-font-size:14px;
-margin-top:3px;
-line-height:1.4
-}
-
-.comment-input{
-width:100%;
-background:#181818;
-border:1px solid #292929;
-border-radius:11px;
-padding:10px;
-color:#fff;
-outline:none;
-margin-top:7px
-}
-
-/* PROFILE */
-
-.profile-card{
-background:#101010;
-border:1px solid #252525;
-border-radius:18px;
-overflow:hidden;
-margin-bottom:18px
-}
-
-.profile-cover{
-height:150px;
-background:
-radial-gradient(circle at 20% 20%,#555,transparent 35%),
-linear-gradient(135deg,#292929,#050505)
-}
-
-.profile-main{padding:0 20px 20px}
-
-.profile-avatar{
-width:86px;
-height:86px;
-margin-top:-43px;
-border:5px solid #101010;
-border-radius:50%;
-background:linear-gradient(135deg,#fff,#777);
-color:#000;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:30px;
-font-weight:900
-}
-
-.profile-name{
-font-size:24px;
-font-weight:900;
-margin-top:12px
-}
-
-.profile-username{
-color:#777;
-margin-top:3px
-}
-
-.profile-bio{
-color:#ccc;
-margin-top:13px;
-line-height:1.5
-}
-
-.profile-stats{
-display:flex;
-gap:25px;
-margin-top:18px
-}
-
-.stat strong{
-display:block;
-font-size:18px
-}
-
-.stat span{
-color:#777;
-font-size:12px
-}
-
-/* SIDE */
-
-.side-title{
-font-weight:800;
-margin-bottom:13px
-}
-
-.person{
-display:flex;
-align-items:center;
-gap:9px;
-margin-bottom:12px
-}
-
-.person-info{
-min-width:0;
-flex:1
-}
-
-.person-name{
-font-weight:700;
-font-size:14px
-}
-
-.person-user{
-color:#666;
-font-size:12px
-}
-
-.follow-btn{
-border:1px solid #333;
-background:#fff;
-color:#000;
-padding:6px 10px;
-border-radius:9px;
-font-size:12px;
-font-weight:800
-}
-
-/* MODAL */
-
-.modal-backdrop{
-position:fixed;
-inset:0;
-z-index:500;
-background:rgba(0,0,0,.75);
-display:flex;
-align-items:center;
-justify-content:center;
-padding:18px
-}
-
-.modal{
-width:min(500px,100%);
-background:#111;
-border:1px solid #303030;
-border-radius:20px;
-padding:20px
-}
-
-.field{margin-bottom:13px}
-
-.field label{
-display:block;
-color:#888;
-font-size:12px;
-margin-bottom:6px
-}
-
-.field input,.field textarea{
-width:100%;
-background:#181818;
-border:1px solid #303030;
-border-radius:11px;
-padding:11px;
-color:#fff;
-outline:none
-}
-
-.field textarea{
-min-height:90px;
-resize:vertical
-}
-
-.modal-actions{
-display:flex;
-justify-content:flex-end;
-gap:8px;
-margin-top:18px
-}
-
-/* ERROR */
-
-.error-page{
-min-height:100vh;
-display:flex;
-align-items:center;
-justify-content:center;
-padding:20px;
-background:#050505
-}
-
-.error-card{
-width:min(650px,100%);
-background:#111;
-border:1px solid #3b2222;
-border-radius:20px;
-padding:25px
-}
-
-.error-message{
-background:#190d0d;
-border:1px solid #3c1d1d;
-border-radius:12px;
-padding:12px;
-color:#ffb5b5;
-font-family:monospace;
-word-break:break-word;
-margin:15px 0
-}
-
-.setup-list{
-color:#bbb;
-line-height:1.7
-}
-
-.empty{
-text-align:center;
-padding:50px 20px;
-color:#666
-}
-
-.status{
-font-size:12px;
-color:#555;
-margin:-8px 0 15px
-}
-
-/* =========================================================
-   WHATSAPP STYLE CHAT
-========================================================= */
-
-.chat-app{
-height:calc(100vh - 112px);
-min-height:560px;
-display:grid;
-grid-template-columns:250px minmax(0,1fr);
-background:#0b0b0b;
-border:1px solid #252525;
-border-radius:18px;
-overflow:hidden
-}
-
-.chat-list{
-background:#101010;
-border-right:1px solid #252525;
-display:flex;
-flex-direction:column;
-min-width:0
-}
-
-.chat-list-header{
-padding:16px;
-font-size:21px;
-font-weight:900;
-border-bottom:1px solid #222
-}
-
-.chat-search{
-padding:10px;
-border-bottom:1px solid #222
-}
-
-.chat-search input{
-width:100%;
-background:#181818;
-border:1px solid #292929;
-color:#fff;
-outline:none;
-border-radius:10px;
-padding:9px 11px
-}
-
-.chat-user{
-display:flex;
-align-items:center;
-gap:10px;
-padding:12px;
-cursor:pointer;
-border-bottom:1px solid #1c1c1c;
-transition:.15s
-}
-
-.chat-user:hover,
-.chat-user.active{
-background:#1b1b1b
-}
-
-.chat-user-info{
-min-width:0;
-flex:1
-}
-
-.chat-user-name{
-font-weight:800;
-white-space:nowrap;
-overflow:hidden;
-text-overflow:ellipsis
-}
-
-.chat-user-last{
-color:#777;
-font-size:12px;
-margin-top:3px;
-white-space:nowrap;
-overflow:hidden;
-text-overflow:ellipsis
-}
-
-.chat-time{
-color:#666;
-font-size:10px;
-white-space:nowrap
-}
-
-.chat-empty-list{
-color:#666;
-font-size:13px;
-padding:25px 15px;
-text-align:center
-}
-
-.chat-window{
-display:flex;
-flex-direction:column;
-min-width:0;
-background:
-radial-gradient(circle at 20% 10%,rgba(255,255,255,.025),transparent 25%),
-#080808
-}
-
-.chat-header{
-height:64px;
-display:flex;
-align-items:center;
-gap:11px;
-padding:10px 15px;
-background:#111;
-border-bottom:1px solid #242424;
-flex-shrink:0
-}
-
-.chat-header-info{flex:1;min-width:0}
-
-.chat-header-name{
-font-weight:900;
-font-size:15px
-}
-
-.chat-header-status{
-font-size:11px;
-color:#777;
-margin-top:2px
-}
-
-.chat-messages{
-flex:1;
-overflow-y:auto;
-padding:18px 15px;
-display:flex;
-flex-direction:column;
-gap:5px
-}
-
-.chat-date{
-align-self:center;
-background:#191919;
-border:1px solid #292929;
-color:#777;
-padding:5px 10px;
-border-radius:10px;
-font-size:10px;
-margin:5px 0 10px
-}
-
-.message-row{
-display:flex;
-width:100%
-}
-
-.message-row.sent{justify-content:flex-end}
-.message-row.received{justify-content:flex-start}
-
-.message-bubble{
-max-width:min(72%,430px);
-padding:8px 10px 5px;
-border-radius:9px;
-font-size:14px;
-line-height:1.4;
-word-break:break-word;
-box-shadow:0 1px 2px rgba(0,0,0,.25)
-}
-
-.message-row.sent .message-bubble{
-background:#1f1f1f;
-border-bottom-right-radius:3px
-}
-
-.message-row.received .message-bubble{
-background:#151515;
-border:1px solid #242424;
-border-bottom-left-radius:3px
-}
-
-.message-meta{
-display:flex;
-align-items:center;
-justify-content:flex-end;
-gap:5px;
-font-size:9px;
-color:#666;
-margin-top:3px
-}
-
-.message-check{
-color:#8ab4ff;
-font-size:11px
-}
-
-.chat-input-area{
-padding:10px;
-background:#111;
-border-top:1px solid #242424;
-display:flex;
-align-items:flex-end;
-gap:8px;
-flex-shrink:0
-}
-
-.chat-input{
-flex:1;
-resize:none;
-max-height:110px;
-min-height:42px;
-background:#191919;
-border:1px solid #2b2b2b;
-border-radius:21px;
-padding:11px 15px;
-color:#fff;
-outline:none
-}
-
-.chat-send{
-width:42px;
-height:42px;
-border:0;
-border-radius:50%;
-background:#fff;
-color:#000;
-font-size:17px;
-font-weight:900;
-flex-shrink:0
-}
-
-.chat-start{
-flex:1;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-color:#555;
-text-align:center;
-padding:30px
-}
-
-.chat-start-icon{
-font-size:48px;
-margin-bottom:10px
-}
-
-.chat-start-title{
-font-size:18px;
-font-weight:800;
-color:#777
-}
-
-.chat-start-text{
-font-size:13px;
-margin-top:5px;
-color:#555
-}
-
-.chat-new-user{
-padding:10px;
-border-top:1px solid #222;
-margin-top:auto
-}
-
-.chat-new-user input{
-width:100%;
-background:#181818;
-border:1px solid #292929;
-border-radius:10px;
-padding:9px;
-color:#fff;
-outline:none;
-margin-bottom:7px
-}
-
-.chat-new-user button{
-width:100%;
-padding:8px;
-border:0;
-border-radius:9px;
-background:#fff;
-color:#000;
-font-weight:800
-}
-
-/* MOBILE */
-
-@media(max-width:950px){
-.layout{
-grid-template-columns:190px minmax(0,1fr)
-}
-
-.right-sidebar{display:none}
-}
-
-@media(max-width:700px){
-.layout{
-display:block;
-padding:15px 10px 80px
-}
-
-.sidebar{
-position:fixed;
-left:0;
-right:0;
-bottom:0;
-top:auto;
-z-index:200;
-padding:7px;
-background:rgba(5,5,5,.94);
-border-top:1px solid #222
-}
-
-.nav-card{
-display:flex;
-justify-content:space-around;
-padding:3px
-}
-
-.nav-item{
-width:auto;
-margin:0;
-text-align:center;
-font-size:12px
-}
-
-.topbar{height:58px}
-
-.post,.composer,.profile-card{
-border-radius:14px
-}
-
-.chat-app{
-height:calc(100vh - 138px);
-min-height:500px;
-grid-template-columns:1fr
-}
-
-.chat-list{
-display:none
-}
-
-.chat-window{
-height:100%
-}
-
-.message-bubble{
-max-width:82%
-}
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#050807" />
+  <title>NEXUS // Social Network</title>
+
+  <!-- React -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
+
+  <style>
+    :root {
+      --bg: #030504;
+      --bg-2: #07100b;
+      --panel: rgba(7, 16, 11, 0.86);
+      --panel-2: rgba(10, 22, 15, 0.95);
+
+      --green: #00ff9d;
+      --green-2: #00c878;
+      --cyan: #00e5ff;
+      --blue: #4da6ff;
+      --red: #ff4567;
+      --yellow: #ffd166;
+
+      --text: #e7fff3;
+      --muted: #789b89;
+      --border: rgba(0, 255, 157, 0.18);
+      --border-bright: rgba(0, 255, 157, 0.42);
+
+      --shadow:
+        0 0 0 1px rgba(0, 255, 157, 0.04),
+        0 15px 45px rgba(0, 0, 0, 0.45);
+
+      --radius: 16px;
+      --font: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(0, 255, 157, 0.08), transparent 28%),
+        radial-gradient(circle at 90% 20%, rgba(0, 229, 255, 0.05), transparent 25%),
+        linear-gradient(135deg, #020403, #050807 50%, #020504);
+      color: var(--text);
+      font-family: var(--font);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.035;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 3px,
+          rgba(0, 255, 157, 0.35) 4px
+        );
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      width: 550px;
+      height: 550px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: -1;
+      background: radial-gradient(
+        circle,
+        rgba(0, 255, 157, 0.045),
+        transparent 68%
+      );
+      filter: blur(10px);
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    ::selection {
+      background: rgba(0, 255, 157, 0.25);
+      color: white;
+    }
+
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #020403;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #124b35;
+      border-radius: 99px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--green-2);
+    }
+
+    /* ---------- BOOT ---------- */
+
+    .boot-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at center, rgba(0, 255, 157, 0.08), transparent 45%),
+        #020403;
+    }
+
+    .boot-terminal {
+      width: min(680px, 100%);
+      border: 1px solid var(--border-bright);
+      border-radius: 14px;
+      background: rgba(2, 7, 4, 0.95);
+      box-shadow:
+        0 0 35px rgba(0, 255, 157, 0.09),
+        inset 0 0 40px rgba(0, 255, 157, 0.025);
+      overflow: hidden;
+      font-family: var(--mono);
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 15px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 255, 157, 0.025);
+    }
+
+    .terminal-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #204b38;
+    }
+
+    .terminal-dot.active {
+      background: var(--green);
+      box-shadow: 0 0 10px var(--green);
+    }
+
+    .terminal-title {
+      margin-left: 7px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .boot-content {
+      padding: 28px;
+    }
+
+    .boot-logo {
+      color: var(--green);
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: 5px;
+      text-shadow: 0 0 18px rgba(0, 255, 157, 0.55);
+      margin-bottom: 22px;
+    }
+
+    .boot-line {
+      color: #a8d9bd;
+      font-size: 13px;
+      margin: 8px 0;
+    }
+
+    .boot-line span {
+      color: var(--green);
+    }
+
+    .loading-bar {
+      height: 4px;
+      margin-top: 25px;
+      overflow: hidden;
+      background: #0b2016;
+      border-radius: 99px;
+    }
+
+    .loading-bar::after {
+      content: "";
+      display: block;
+      width: 40%;
+      height: 100%;
+      background: var(--green);
+      box-shadow: 0 0 15px var(--green);
+      animation: loading 1.2s infinite ease-in-out;
+    }
+
+    @keyframes loading {
+      0% {
+        transform: translateX(-110%);
+      }
+      100% {
+        transform: translateX(350%);
+      }
+    }
+
+    /* ---------- ERROR ---------- */
+
+    .error-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .error-card {
+      max-width: 650px;
+      width: 100%;
+      padding: 30px;
+      border: 1px solid rgba(255, 69, 103, 0.4);
+      border-radius: 16px;
+      background: rgba(20, 4, 8, 0.9);
+      box-shadow: 0 0 40px rgba(255, 69, 103, 0.08);
+    }
+
+    .error-card h2 {
+      margin-top: 0;
+      color: var(--red);
+    }
+
+    .error-card code {
+      display: block;
+      margin-top: 18px;
+      padding: 14px;
+      overflow-x: auto;
+      color: #ff9aaa;
+      background: rgba(255, 69, 103, 0.06);
+      border-radius: 9px;
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    /* ---------- APP ---------- */
+
+    .app {
+      min-height: 100vh;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      height: 66px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(2, 6, 4, 0.88);
+      backdrop-filter: blur(18px);
+    }
+
+    .topbar-inner {
+      width: min(1450px, calc(100% - 32px));
+      height: 100%;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 205px;
+      cursor: pointer;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--green);
+      border-radius: 9px;
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 900;
+      box-shadow:
+        0 0 14px rgba(0, 255, 157, 0.18),
+        inset 0 0 12px rgba(0, 255, 157, 0.06);
+    }
+
+    .brand-name {
+      color: white;
+      font-family: var(--mono);
+      font-weight: 900;
+      letter-spacing: 3px;
+    }
+
+    .brand-name span {
+      color: var(--green);
+    }
+
+    .brand-status {
+      color: #4c7763;
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+
+    .search-wrap {
+      position: relative;
+      flex: 1;
+      max-width: 620px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 12px;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 39px;
+      padding: 0 15px 0 37px;
+      border: 1px solid var(--border);
+      outline: none;
+      border-radius: 10px;
+      background: rgba(0, 255, 157, 0.025);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+      transition: 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--border-bright);
+      box-shadow: 0 0 18px rgba(0, 255, 157, 0.08);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-left: auto;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      background: rgba(0, 255, 157, 0.025);
+      transition: 0.2s;
+      position: relative;
+    }
+
+    .icon-btn:hover,
+    .icon-btn.active {
+      color: var(--green);
+      border-color: var(--border-bright);
+      background: rgba(0, 255, 157, 0.07);
+      box-shadow: 0 0 15px rgba(0, 255, 157, 0.08);
+    }
+
+    .notification-dot {
+      position: absolute;
+      right: 7px;
+      top: 6px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 7px var(--green);
+    }
+
+    .avatar {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid var(--border-bright);
+      border-radius: 10px;
+      color: var(--green);
+      background:
+        linear-gradient(135deg, rgba(0, 255, 157, 0.13), rgba(0, 229, 255, 0.04));
+      font-family: var(--mono);
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ---------- LAYOUT ---------- */
+
+    .main-layout {
+      width: min(1450px, calc(100% - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 230px minmax(0, 680px) 310px;
+      gap: 22px;
+      padding: 24px 0 90px;
+      align-items: start;
+    }
+
+    .left-sidebar,
+    .right-sidebar {
+      position: sticky;
+      top: 90px;
+    }
+
+    .side-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .side-label {
+      padding: 12px 15px;
+      color: #527b66;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .nav-list {
+      padding: 8px;
+    }
+
+    .nav-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 12px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      color: #89a896;
+      background: transparent;
+      text-align: left;
+      transition: 0.18s;
+    }
+
+    .nav-item:hover {
+      color: var(--text);
+      border-color: var(--border);
+      background: rgba(0, 255, 157, 0.04);
+    }
+
+    .nav-item.active {
+      color: var(--green);
+      border-color: rgba(0, 255, 157, 0.16);
+      background: rgba(0, 255, 157, 0.065);
+      box-shadow: inset 2px 0 var(--green);
+    }
+
+    .nav-icon {
+      width: 22px;
+      text-align: center;
+      font-family: var(--mono);
+    }
+
+    .nav-text {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .side-profile {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .side-profile-main {
+      display: flex;
+      gap: 11px;
+      align-items: center;
+    }
+
+    .side-profile-name {
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .side-profile-username {
+      margin-top: 3px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 10px;
+    }
+
+    .side-footer {
+      padding: 14px 16px;
+      color: #466855;
+      font-family: var(--mono);
+      font-size: 9px;
+      line-height: 1.7;
+    }
+
+    /* ---------- CENTER ---------- */
+
+    .page-header {
+      margin-bottom: 16px;
+    }
+
+    .page-kicker {
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 2px;
+      margin-bottom: 5px;
+    }
+
+    .page-title {
+      margin: 0;
+      font-size: 23px;
+      letter-spacing: -0.5px;
+    }
+
+    .page-subtitle {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .composer {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(
+          135deg,
+          rgba(0, 255, 157, 0.045),
+          rgba(0, 229, 255, 0.012)
+        ),
+        var(--panel);
+      box-shadow: var(--shadow);
+      padding: 17px;
+      margin-bottom: 16px;
+    }
+
+    .composer-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .composer textarea {
+      width: 100%;
+      min-height: 72px;
+      resize: vertical;
+      border: 0;
+      outline: none;
+      color: var(--text);
+      background: transparent;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .composer textarea::placeholder {
+      color: #476653;
+    }
+
+    .composer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      margin-top: 9px;
+    }
+
+    .composer-hint {
+      color: #456653;
+      font-family: var(--mono);
+      font-size: 9px;
+    }
+
+    .primary-btn {
+      border: 1px solid rgba(0, 255, 157, 0.5);
+      border-radius: 9px;
+      padding: 9px 15px;
+      color: #00170e;
+      background: var(--green);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 900;
+      transition: 0.18s;
+    }
+
+    .primary-btn:hover {
+      box-shadow: 0 0 20px rgba(0, 255, 157, 0.22);
+      transform: translateY(-1px);
+    }
+
+    .primary-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .ghost-btn {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 11px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 11px;
+      transition: 0.18s;
+    }
+
+    .ghost-btn:hover {
+      color: var(--green);
+      border-color: var(--border-bright);
+      background: rgba(0, 255, 157, 0.045);
+    }
+
+    .danger-btn {
+      color: var(--red);
+      border-color: rgba(255, 69, 103, 0.2);
+    }
+
+    .danger-btn:hover {
+      border-color: rgba(255, 69, 103, 0.45);
+      background: rgba(255, 69, 103, 0.05);
+    }
+
+    /* ---------- POST ---------- */
+
+    .post {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+      overflow: hidden;
+      transition: 0.18s;
+    }
+
+    .post:hover {
+      border-color: rgba(0, 255, 157, 0.25);
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 16px 16px 10px;
+    }
+
+    .post-user {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .post-user-name {
+      color: white;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .post-user-name:hover {
+      color: var(--green);
+    }
+
+    .post-username {
+      margin-top: 2px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 10px;
+    }
+
+    .post-time {
+      color: #42634f;
+      font-family: var(--mono);
+      font-size: 9px;
+    }
+
+    .post-menu {
+      color: #4d705c;
+      background: transparent;
+      border: 0;
+      padding: 4px;
+    }
+
+    .post-menu:hover {
+      color: var(--green);
+    }
+
+    .post-content {
+      padding: 5px 16px 15px 65px;
+      color: #c5dfd0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .hashtag {
+      color: var(--cyan);
+    }
+
+    .post-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 10px 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .post-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 7px 9px;
+      color: #547966;
+      background: transparent;
+      font-size: 11px;
+    }
+
+    .post-action:hover {
+      color: var(--text);
+      background: rgba(0, 255, 157, 0.04);
+      border-color: var(--border);
+    }
+
+    .post-action.liked {
+      color: var(--red);
+    }
+
+    .post-action.liked:hover {
+      color: #ff6c87;
+    }
+
+    .comment-section {
+      border-top: 1px solid var(--border);
+      padding: 12px 16px;
+    }
+
+    .comment {
+      display: flex;
+      gap: 9px;
+      margin-bottom: 10px;
+    }
+
+    .comment:last-child {
+      margin-bottom: 0;
+    }
+
+    .comment-body {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 9px;
+      background: rgba(0, 255, 157, 0.025);
+    }
+
+    .comment-name {
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .comment-text {
+      margin-top: 3px;
+      color: #9bb9a8;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .comment-input-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .small-input {
+      min-width: 0;
+      flex: 1;
+      height: 35px;
+      padding: 0 11px;
+      outline: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      background: rgba(0, 0, 0, 0.18);
+      font-size: 12px;
+    }
+
+    .small-input:focus {
+      border-color: var(--border-bright);
+    }
+
+    /* ---------- RIGHT SIDEBAR ---------- */
+
+    .right-section {
+      margin-bottom: 16px;
+    }
+
+    .follow-card,
+    .trend-card,
+    .status-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .section-title {
+      padding: 13px 15px;
+      color: #6b947d;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+    }
+
+    .follow-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(0, 255, 157, 0.07);
+    }
+
+    .follow-user:last-child {
+      border-bottom: 0;
+    }
+
+    .follow-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .follow-name {
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .follow-username {
+      color: #527662;
+      font-family: var(--mono);
+      font-size: 9px;
+      margin-top: 2px;
+    }
+
+    .follow-btn {
+      border: 1px solid rgba(0, 255, 157, 0.32);
+      border-radius: 7px;
+      padding: 6px 9px;
+      color: var(--green);
+      background: rgba(0, 255, 157, 0.035);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    .follow-btn:hover {
+      background: rgba(0, 255, 157, 0.1);
+    }
+
+    .follow-btn.following {
+      color: #6d907d;
+      border-color: var(--border);
+    }
+
+    .trend {
+      display: block;
+      width: 100%;
+      padding: 12px 15px;
+      border: 0;
+      border-bottom: 1px solid rgba(0, 255, 157, 0.07);
+      background: transparent;
+      color: inherit;
+      text-align: left;
+    }
+
+    .trend:last-child {
+      border-bottom: 0;
+    }
+
+    .trend:hover {
+      background: rgba(0, 255, 157, 0.04);
+    }
+
+    .trend-tag {
+      color: var(--cyan);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .trend-count {
+      margin-top: 4px;
+      color: #456653;
+      font-size: 10px;
+    }
+
+    .status-card {
+      padding: 14px;
+    }
+
+    .status-line {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #6c937d;
+      font-family: var(--mono);
+      font-size: 9px;
+      margin-bottom: 7px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    .status-value {
+      margin-left: auto;
+      color: var(--green);
+    }
+
+    /* ---------- PROFILE ---------- */
+
+    .profile-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .profile-cover {
+      height: 145px;
+      position: relative;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(0, 255, 157, 0.13),
+          rgba(0, 229, 255, 0.035)
+        ),
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 16px,
+          rgba(0, 255, 157, 0.025) 17px,
+          rgba(0, 255, 157, 0.025) 18px
+        ),
+        #06100a;
+    }
+
+    .profile-cover::before {
+      content: "NEXUS://PROFILE";
+      position: absolute;
+      right: 20px;
+      top: 18px;
+      color: rgba(0, 255, 157, 0.35);
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 2px;
+    }
+
+    .profile-info {
+      padding: 0 22px 20px;
+    }
+
+    .profile-avatar-wrap {
+      margin-top: -48px;
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+    }
+
+    .profile-avatar {
+      width: 94px;
+      height: 94px;
+      border: 3px solid #06100a;
+      border-radius: 20px;
+      background: #07120c;
+      box-shadow: 0 0 0 1px var(--green), 0 0 25px rgba(0, 255, 157, 0.14);
+    }
+
+    .profile-avatar .avatar {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      border-radius: 16px;
+      font-size: 24px;
+    }
+
+    .profile-edit {
+      margin-bottom: 4px;
+    }
+
+    .profile-name {
+      margin: 13px 0 3px;
+      font-size: 23px;
+    }
+
+    .profile-handle {
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 11px;
+    }
+
+    .profile-bio {
+      max-width: 570px;
+      margin-top: 12px;
+      color: #8fac9b;
+      line-height: 1.55;
+      font-size: 13px;
+      white-space: pre-wrap;
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 26px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      border: 0;
+      padding: 0;
+      background: transparent;
+      text-align: left;
+      color: inherit;
+    }
+
+    .stat:hover .stat-number {
+      color: var(--green);
+    }
+
+    .stat-number {
+      color: white;
+      font-family: var(--mono);
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .stat-label {
+      color: #537561;
+      font-family: var(--mono);
+      font-size: 9px;
+      margin-top: 3px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ---------- FOLLOWERS MODAL ---------- */
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 3000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.72);
+      backdrop-filter: blur(8px);
+    }
+
+    .modal {
+      width: min(520px, 100%);
+      max-height: min(700px, 90vh);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border-bright);
+      border-radius: 16px;
+      background: #050b07;
+      box-shadow:
+        0 0 60px rgba(0, 255, 157, 0.1),
+        0 25px 70px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 17px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title {
+      color: white;
+      font-family: var(--mono);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .modal-title span {
+      color: var(--green);
+    }
+
+    .modal-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-tab {
+      flex: 1;
+      padding: 12px;
+      border: 0;
+      border-bottom: 2px solid transparent;
+      color: #587866;
+      background: transparent;
+      font-family: var(--mono);
+      font-size: 10px;
+    }
+
+    .modal-tab.active {
+      color: var(--green);
+      border-bottom-color: var(--green);
+      background: rgba(0, 255, 157, 0.035);
+    }
+
+    .user-list {
+      overflow-y: auto;
+      padding: 7px;
+    }
+
+    .user-list-item {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 11px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      transition: 0.15s;
+    }
+
+    .user-list-item:hover {
+      border-color: var(--border);
+      background: rgba(0, 255, 157, 0.035);
+    }
+
+    .user-list-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .user-list-name {
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .user-list-handle {
+      color: #527762;
+      margin-top: 3px;
+      font-family: var(--mono);
+      font-size: 9px;
+    }
+
+    .empty {
+      padding: 35px 20px;
+      text-align: center;
+      color: #4e6f5c;
+      font-family: var(--mono);
+      font-size: 11px;
+    }
+
+    /* ---------- EDIT PROFILE ---------- */
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 6px;
+      color: #60836f;
+      font-family: var(--mono);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      outline: none;
+      color: var(--text);
+      background: rgba(0, 255, 157, 0.025);
+      padding: 10px 12px;
+      font-size: 12px;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      border-color: var(--border-bright);
+      box-shadow: 0 0 14px rgba(0, 255, 157, 0.06);
+    }
+
+    .form-textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .modal-body {
+      padding: 18px;
+      overflow-y: auto;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 13px 17px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ---------- NOTIFICATIONS ---------- */
+
+    .notification-list {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      overflow: hidden;
+    }
+
+    .notification {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px;
+      border-bottom: 1px solid rgba(0, 255, 157, 0.08);
+    }
+
+    .notification:last-child {
+      border-bottom: 0;
+    }
+
+    .notification.unread {
+      background: rgba(0, 255, 157, 0.035);
+    }
+
+    .notification-text {
+      flex: 1;
+      color: #9eb9a9;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .notification-text strong {
+      color: white;
+    }
+
+    .notification-time {
+      color: #466855;
+      font-family: var(--mono);
+      font-size: 8px;
+    }
+
+    /* ---------- MESSAGES ---------- */
+
+    .messages-shell {
+      height: calc(100vh - 114px);
+      min-height: 550px;
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .chat-list {
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+    }
+
+    .chat-search {
+      padding: 11px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chat-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 11px;
+      border: 0;
+      border-bottom: 1px solid rgba(0, 255, 157, 0.06);
+      color: inherit;
+      background: transparent;
+      text-align: left;
+    }
+
+    .chat-item:hover,
+    .chat-item.active {
+      background: rgba(0, 255, 157, 0.05);
+    }
+
+    .chat-item.active {
+      box-shadow: inset 2px 0 var(--green);
+    }
+
+    .chat-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .chat-name {
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .chat-preview {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #4e715c;
+      font-size: 9px;
+      margin-top: 3px;
+    }
+
+    .chat-window {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 15px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chat-header-info {
+      flex: 1;
+    }
+
+    .chat-header-name {
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .chat-header-status {
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 8px;
+      margin-top: 3px;
+    }
+
+    .messages {
+      flex: 1;
+      padding: 18px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .message {
+      max-width: 75%;
+      padding: 9px 11px;
+      border-radius: 10px;
+      color: #b9d4c5;
+      background: #0b1710;
+      border: 1px solid rgba(0, 255, 157, 0.08);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .message.mine {
+      align-self: flex-end;
+      color: #d5fff0;
+      background: rgba(0, 255, 157, 0.09);
+      border-color: rgba(0, 255, 157, 0.2);
+    }
+
+    .message-time {
+      display: block;
+      margin-top: 4px;
+      color: #466855;
+      font-family: var(--mono);
+      font-size: 7px;
+      text-align: right;
+    }
+
+    .message-input {
+      display: flex;
+      gap: 8px;
+      padding: 11px;
+      border-top: 1px solid var(--border);
+    }
+
+    .message-input input {
+      flex: 1;
+      min-width: 0;
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      outline: none;
+      border-radius: 9px;
+      color: var(--text);
+      background: rgba(0, 0, 0, 0.15);
+      font-size: 12px;
+    }
+
+    /* ---------- NEW CHAT ---------- */
+
+    .new-chat {
+      padding: 17px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .new-chat-title {
+      color: var(--green);
+      font-family: var(--mono);
+      font-size: 10px;
+      margin-bottom: 9px;
+    }
+
+    .new-chat-row {
+      display: flex;
+      gap: 7px;
+    }
+
+    /* ---------- MOBILE ---------- */
+
+    .mobile-nav {
+      display: none;
+    }
+
+    @media (max-width: 1150px) {
+      .main-layout {
+        grid-template-columns: 205px minmax(0, 1fr);
+      }
+
+      .right-sidebar {
+        display: none;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .topbar {
+        height: 60px;
+      }
+
+      .topbar-inner {
+        width: calc(100% - 20px);
+        gap: 8px;
+      }
+
+      .brand {
+        min-width: auto;
+      }
+
+      .brand-name {
+        display: none;
+      }
+
+      .brand-status {
+        display: none;
+      }
+
+      .search-wrap {
+        max-width: none;
+      }
+
+      .main-layout {
+        width: calc(100% - 18px);
+        display: block;
+        padding-top: 15px;
+        padding-bottom: 78px;
+      }
+
+      .left-sidebar {
+        display: none;
+      }
+
+      .mobile-nav {
+        position: fixed;
+        z-index: 2000;
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+        height: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        border: 1px solid var(--border-bright);
+        border-radius: 14px;
+        background: rgba(3, 9, 6, 0.93);
+        backdrop-filter: blur(18px);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      }
+
+      .mobile-nav button {
+        width: 48px;
+        height: 45px;
+        border: 0;
+        border-radius: 9px;
+        color: #577a66;
+        background: transparent;
+        font-size: 17px;
+      }
+
+      .mobile-nav button.active {
+        color: var(--green);
+        background: rgba(0, 255, 157, 0.07);
+      }
+
+      .messages-shell {
+        height: calc(100vh - 92px);
+        min-height: 500px;
+        grid-template-columns: 1fr;
+      }
+
+      .chat-list {
+        display: none;
+      }
+
+      .profile-cover {
+        height: 120px;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .top-actions .hide-mobile {
+        display: none;
+      }
+
+      .topbar-inner {
+        gap: 6px;
+      }
+
+      .search-input {
+        height: 36px;
+      }
+
+      .page-title {
+        font-size: 20px;
+      }
+
+      .post-content {
+        padding-left: 16px;
+      }
+
+      .post-header {
+        padding-bottom: 6px;
+      }
+
+      .profile-info {
+        padding-left: 15px;
+        padding-right: 15px;
+      }
+
+      .profile-avatar {
+        width: 80px;
+        height: 80px;
+      }
+
+      .profile-stats {
+        gap: 18px;
+      }
+
+      .messages {
+        padding: 12px;
+      }
+
+      .message {
+        max-width: 88%;
+      }
+    }
+  </style>
 </head>
 
 <body>
-
-<div id="boot-screen">
-<div class="boot-box">
-<div class="boot-logo">N</div>
-<div class="boot-title">Nexus</div>
-<div class="boot-made">Made by Yash</div>
-<div class="boot-spinner"></div>
-<div class="boot-loading">Connecting to Firebase...</div>
-</div>
-</div>
-
-<div id="root"></div>
-
-<script type="text/babel">
-
-const {
-useState,
-useEffect,
-useMemo,
-useRef
-}=React;
-
-/* =========================================================
-   FIREBASE
-========================================================= */
-
-const firebaseConfig={
-apiKey:"AIzaSyDTrvD7c1TUtPUUOSX7_-0VV9itC28LOg0",
-authDomain:"nexus-37600.firebaseapp.com",
-projectId:"nexus-37600",
-storageBucket:"nexus-37600.firebasestorage.app",
-messagingSenderId:"61496309341",
-appId:"1:61496309341:web:fdb3711264df47f318bfb4",
-measurementId:"G-41S50YF5RF"
-};
-
-const APP_ID="nexus-37600";
-
-let auth=null;
-let db=null;
-
-try{
-if(!firebase.apps.length){
-firebase.initializeApp(firebaseConfig);
-}
-
-auth=firebase.auth();
-db=firebase.firestore();
-
-}catch(error){
-console.error("Firebase initialization failed:",error);
-}
-
-function collectionPath(name){
-
-if(!db){
-throw new Error("Firestore is not initialized.");
-}
-
-return db
-.collection("artifacts")
-.doc(APP_ID)
-.collection("public")
-.doc("data")
-.collection(name);
-}
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function timestampMillis(value){
-
-if(!value)return 0;
-
-try{
-
-if(typeof value.toMillis==="function"){
-return value.toMillis();
-}
-
-if(typeof value.seconds==="number"){
-return value.seconds*1000;
-}
-
-if(value instanceof Date){
-return value.getTime();
-}
-
-const date=new Date(value);
-
-return Number.isFinite(date.getTime())
-?date.getTime()
-:0;
-
-}catch{
-return 0;
-}
-}
-
-function formatTime(timestamp){
-
-const time=timestampMillis(timestamp);
-
-if(!time)return"now";
-
-const diff=Math.max(0,Date.now()-time);
-const seconds=Math.floor(diff/1000);
-
-if(seconds<60)return`${seconds}s`;
-
-const minutes=Math.floor(seconds/60);
-
-if(minutes<60)return`${minutes}m`;
-
-const hours=Math.floor(minutes/60);
-
-if(hours<24)return`${hours}h`;
-
-const days=Math.floor(hours/24);
-
-if(days<30)return`${days}d`;
-
-return new Date(time).toLocaleDateString();
-}
-
-function formatChatTime(timestamp){
-
-const time=timestampMillis(timestamp);
-
-if(!time)return"now";
-
-return new Date(time).toLocaleTimeString([],{
-hour:"2-digit",
-minute:"2-digit"
-});
-}
-
-function getInitials(name){
-
-if(!name)return"N";
-
-return name
-.trim()
-.split(/\s+/)
-.filter(Boolean)
-.slice(0,2)
-.map(x=>x[0])
-.join("")
-.toUpperCase()||"N";
-}
-
-function makeHashtags(text){
-
-if(!text)return[];
-
-return[
-...new Set(
-(text.match(/#[a-zA-Z0-9_]+/g)||[])
-.map(x=>x.toLowerCase())
-)
-];
-}
-
-/* =========================================================
-   AUTH
-========================================================= */
-
-function useAuth(){
-
-const[user,setUser]=useState(null);
-const[profile,setProfile]=useState(null);
-const[loading,setLoading]=useState(true);
-const[error,setError]=useState(null);
-
-useEffect(()=>{
-
-if(!auth||!db){
-
-setError({
-code:"firebase/init-failed",
-message:"Firebase could not initialize."
-});
-
-setLoading(false);
-return;
-}
-
-let cancelled=false;
-
-const unsubscribe=
-auth.onAuthStateChanged(async currentUser=>{
-
-if(cancelled)return;
-
-try{
-
-if(!currentUser){
-
-await auth.signInAnonymously();
-return;
-}
-
-setUser(currentUser);
-
-const userRef=
-collectionPath("users")
-.doc(currentUser.uid);
-
-const snapshot=
-await userRef.get();
-
-if(!snapshot.exists){
-
-const newProfile={
-uid:currentUser.uid,
-displayName:"Yash",
-username:"yash_"+currentUser.uid.slice(0,6),
-bio:"Welcome to Nexus 👋",
-followers:0,
-following:0,
-createdAt:
-firebase.firestore.FieldValue.serverTimestamp()
-};
-
-await userRef.set(newProfile);
-
-setProfile({
-...newProfile,
-uid:currentUser.uid
-});
-
-}else{
-
-setProfile({
-uid:currentUser.uid,
-...snapshot.data()
-});
-
-}
-
-setError(null);
-setLoading(false);
-
-setTimeout(()=>{
-
-const screen=
-document.getElementById("boot-screen");
-
-if(screen)screen.classList.add("hide");
-
-},300);
-
-}catch(error){
-
-console.error(error);
-
-setError({
-code:error.code||"firebase/error",
-message:error.message||"Could not connect to Firebase."
-});
-
-setLoading(false);
-
-const screen=
-document.getElementById("boot-screen");
-
-if(screen)screen.classList.add("hide");
-
-}
-
-});
-
-return()=>{
-cancelled=true;
-
-if(unsubscribe){
-unsubscribe();
-}
-
-};
-
-},[]);
-
-return{
-user,
-profile,
-setProfile,
-loading,
-error
-};
-
-}
-
-/* =========================================================
-   REALTIME DATA
-========================================================= */
-
-const COLLECTIONS=[
-"users",
-"posts",
-"comments",
-"likes",
-"follows",
-"notifications",
-"messages"
-];
-
-function useRealtimeData(uid){
-
-const[data,setData]=useState({
-users:[],
-posts:[],
-comments:[],
-likes:[],
-follows:[],
-notifications:[],
-messages:[]
-});
-
-const[ready,setReady]=useState(false);
-const[firestoreError,setFirestoreError]=useState(null);
-
-useEffect(()=>{
-
-if(!uid||!db)return;
-
-setReady(false);
-setFirestoreError(null);
-
-const loaded=new Set();
-const unsubscribers=[];
-
-COLLECTIONS.forEach(name=>{
-
-const unsubscribe=
-collectionPath(name)
-.onSnapshot(
-
-snapshot=>{
-
-const items=
-snapshot.docs.map(doc=>({
-id:doc.id,
-...doc.data()
-}));
-
-setData(previous=>({
-...previous,
-[name]:items
-}));
-
-loaded.add(name);
-
-if(loaded.size===COLLECTIONS.length){
-setReady(true);
-}
-
-},
-
-error=>{
-
-console.error(`Firestore ${name} error:`,error);
-
-setFirestoreError({
-collection:name,
-code:error.code,
-message:error.message
-});
-
-loaded.add(name);
-
-if(loaded.size===COLLECTIONS.length){
-setReady(true);
-}
-
-});
-
-unsubscribers.push(unsubscribe);
-
-});
-
-return()=>{
-unsubscribers.forEach(unsubscribe=>unsubscribe());
-};
-
-},[uid]);
-
-return{
-data,
-ready,
-firestoreError
-};
-
-}
-
-/* =========================================================
-   ERROR SCREEN
-========================================================= */
-
-function FirebaseErrorScreen({error,retry}){
-
-return(
-<div className="error-page">
-
-<div className="error-card">
-
-<div style={{fontSize:40}}>⚠️</div>
-
-<h1>Firebase Error</h1>
-
-<p style={{color:"#aaa"}}>
-Nexus could not access Firebase correctly.
-</p>
-
-<div className="error-message">
-
-<strong>{error?.code||"unknown-error"}</strong>
-
-<br/><br/>
-
-{error?.message||"Unknown Firebase error."}
-
-</div>
-
-<h3>Check these settings</h3>
-
-<ol className="setup-list">
-
-<li>
-Firebase project:
-<strong> nexus-37600</strong>
-</li>
-
-<li>
-Authentication →
-<strong> Sign-in method → Anonymous → Enabled</strong>
-</li>
-
-<li>
-Firestore Database must exist.
-</li>
-
-<li>
-Firestore rules must allow the Nexus path to be read.
-</li>
-
-<li>
-Reload Nexus after changing Firebase.
-</li>
-
-</ol>
-
-<button className="primary" onClick={retry}>
-Retry
-</button>
-
-</div>
-</div>
-);
-}
-
-/* =========================================================
-   FIRESTORE ERROR BANNER
-========================================================= */
-
-function FirestoreErrorBanner({error}){
-
-if(!error)return null;
-
-return(
-<div
-style={{
-background:"#190d0d",
-border:"1px solid #4a2222",
-color:"#ffbaba",
-borderRadius:12,
-padding:12,
-marginBottom:15,
-fontSize:13
-}}
->
-
-<strong>Firestore warning</strong>
-
-<div style={{marginTop:5}}>
-Collection: {error.collection}
-</div>
-
-<div style={{marginTop:3}}>
-{error.message}
-</div>
-
-<div
-style={{
-marginTop:7,
-color:"#aaa"
-}}
->
-Check your Firestore security rules.
-</div>
-
-</div>
-);
-}
-
-/* =========================================================
-   COMPOSER
-========================================================= */
-
-function Composer({user,profile}){
-
-const[text,setText]=useState("");
-const[saving,setSaving]=useState(false);
-
-async function createPost(){
-
-const clean=text.trim();
-
-if(!clean||!user||saving)return;
-
-setSaving(true);
-
-try{
-
-await collectionPath("posts").add({
-authorId:user.uid,
-authorName:profile?.displayName||"Yash",
-authorUsername:profile?.username||"yash",
-content:clean,
-hashtags:makeHashtags(clean),
-createdAt:
-firebase.firestore.FieldValue.serverTimestamp()
-});
-
-setText("");
-
-}catch(error){
-
-alert("Could not create post:\n\n"+error.message);
-
-}finally{
-setSaving(false);
-}
-
-}
-
-return(
-<div className="composer">
-
-<textarea
-value={text}
-onChange={e=>setText(e.target.value)}
-placeholder="What's happening on Nexus?"
-maxLength={1000}
-/>
-
-<div className="composer-bottom">
-
-<span
-style={{
-color:"#555",
-fontSize:12,
-marginRight:"auto"
-}}
->
-{text.length}/1000
-</span>
-
-<button
-className="primary"
-disabled={saving||!text.trim()}
-onClick={createPost}
->
-{saving?"Posting...":"Post"}
-</button>
-
-</div>
-
-</div>
-);
-}
-
-/* =========================================================
-   POST CARD
-========================================================= */
-
-function PostCard({
-post,
-currentUser,
-profile,
-comments,
-likes,
-onProfile,
-onEdit
-}){
-
-const[commentText,setCommentText]=useState("");
-const[showComments,setShowComments]=useState(false);
-const[sending,setSending]=useState(false);
-
-const postLikes=
-likes.filter(x=>x.postId===post.id);
-
-const liked=
-postLikes.some(x=>x.userId===currentUser?.uid);
-
-const postComments=
-comments
-.filter(x=>x.postId===post.id)
-.sort(
-(a,b)=>
-timestampMillis(a.createdAt)-
-timestampMillis(b.createdAt)
-);
-
-async function toggleLike(){
-
-if(!currentUser)return;
-
-try{
-
-const existing=
-postLikes.find(x=>x.userId===currentUser.uid);
-
-if(existing){
-
-await collectionPath("likes")
-.doc(existing.id)
-.delete();
-
-}else{
-
-await collectionPath("likes").add({
-postId:post.id,
-userId:currentUser.uid,
-createdAt:
-firebase.firestore.FieldValue.serverTimestamp()
-});
-
-if(post.authorId&&post.authorId!==currentUser.uid){
-
-await collectionPath("notifications").add({
-userId:post.authorId,
-actorId:currentUser.uid,
-actorName:profile?.displayName||"Someone",
-type:"like",
-postId:post.id,
-read:false,
-createdAt:
-firebase.firestore.FieldValue.serverTimestamp()
-});
-
-}
-
-}
-
-}catch(error){
-
-alert("Like failed:\n\n"+error.message);
-
-}
-
-}
-
-async function addComment(){
-
-const clean=commentText.trim();
-
-if(!clean||!currentUser||sending)return;
-
-setSending(true);
-
-try{
-
-await collectionPath("comments").add({
-postId:post.id,
-userId:currentUser.uid,
-userName:profile?.displayName||"Yash",
-text:clean,
-createdAt:
-firebase.firestore.FieldValue.serverTimestamp()
-});
-
-if(post.authorId&&post.authorId!==currentUser.uid){
-
-await collectionPath("notifications").add({
-userId:post.authorId,
-actorId:currentUser.uid,
-actorName:profile?.displayName||"Someone",
-type:"comment",
-postId:post.id,
-read:false,
-createdAt:
-firebase.firestore.FieldValue.serverTimestamp()
-});
-
-}
-
-setCommentText("");
-
-}catch(error){
-
-alert("Comment failed:\n\n"+error.message);
-
-}finally{
-setSending(false);
-}
-
-}
-
-async function deletePost(){
-
-if(!confirm("Delete this post?"))return;
-
-try{
-
-await collectionPath("posts")
-.doc(post.id)
-.delete();
-
-const relatedLikes=
-likes.filter(x=>x.postId===post.id);
-
-const relatedComments=
-comments.filter(x=>x.postId===post.id);
-
-await Promise.all([
-...relatedLikes.map(
-x=>collectionPath("likes").doc(x.id).delete()
-),
-...relatedComments.map(
-x=>collectionPath("comments").doc(x.id).delete()
-)
-]);
-
-}catch(error){
-
-alert("Delete failed:\n\n"+error.message);
-
-}
-
-}
-
-return(
-<article className="post">
-
-<div className="post-header">
-
-<div
-className="avatar"
-onClick={()=>onProfile?.(post.authorId)}
-style={{cursor:"pointer"}}
->
-{getInitials(post.authorName)}
-</div>
-
-<div
-onClick={()=>onProfile?.(post.authorId)}
-style={{cursor:"pointer"}}
->
-
-<div className="post-author">
-{post.authorName||"User"}
-</div>
-
-<div className="post-time">
-@{post.authorUsername||"user"}
-{" · "}
-{formatTime(post.createdAt)}
-{post.editedAt?" · edited":""}
-</div>
-
-</div>
-
-{post.authorId===currentUser?.uid&&(
-
-<div
-style={{
-marginLeft:"auto",
-display:"flex",
-gap:5
-}}
->
-
-<button
-className="post-menu"
-onClick={()=>onEdit?.(post)}
-title="Edit"
->
-✎
-</button>
-
-<button
-className="post-menu"
-onClick={deletePost}
-title="Delete"
->
-🗑
-</button>
-
-</div>
-
-)}
-
-</div>
-
-<div className="post-content">
-
-{(post.content||"")
-.split(/(#[a-zA-Z0-9_]+)/g)
-.map((part,index)=>
-part.startsWith("#")
-?
-<span className="hashtag" key={index}>
-{part}
-</span>
-:
-part
-)}
-
-</div>
-
-<div className="post-actions">
-
-<button
-className={"action-btn "+(liked?"liked":"")}
-onClick={toggleLike}
->
-{liked?"♥":"♡"} {postLikes.length}
-</button>
-
-<button
-className="action-btn"
-onClick={()=>setShowComments(x=>!x)}
->
-💬 {postComments.length}
-</button>
-
-<button
-className="action-btn"
-onClick={()=>{
-if(navigator.clipboard){
-navigator.clipboard
-.writeText(post.content||"")
-.then(()=>alert("Post copied."))
-.catch(()=>{});
-}
-}}
->
-↗ Share
-</button>
-
-</div>
-
-{showComments&&(
-
-<div className="comments">
-
-{postComments.map(comment=>(
-
-<div className="comment" key={comment.id}>
-
-<div className="avatar small">
-{getInitials(comment.userName)}
-</div>
-
-<div className="comment-body">
-
-<div className="comment-name">
-{comment.userName||"User"}
-</div>
-
-<div className="comment-text">
-{comment.text}
-</div>
-
-</div>
-
-</div>
-
-))}
-
-<input
-className="comment-input"
-value={commentText}
-onChange={e=>setCommentText(e.target.value)}
-onKeyDown={e=>{
-
-if(e.key==="Enter"&&!e.shiftKey){
-e.preventDefault();
-addComment();
-}
-
-}}
-placeholder="Write a comment..."
-/>
-
-</div>
-
-)}
-
-</article>
-);
-}
-
-/* =========================================================
-   EDIT POST
-========================================================= */
-
-function EditPostModal({post,onClose}){
-
-const[text,setText]=useState(post.content||"");
-const[saving,setSaving]=useState(false);
-
-async function save(){
-
-const clean=text.trim();
-
-if(!clean||saving)return;
-
-setSaving(true);
-
-try{
-
-await collectionPath("posts")
-.doc(post.id)
-.update({
-content:clean,
-hashtags:makeHashtags(clean),
-editedAt:
-firebase.firestore.FieldValue.serverTimestamp()
-});
-
-onClose();
-
-}catch(error){
-
-alert("Could not edit post:\n\n"+error.message);
-
-}finally{
-setSaving(false);
-}
-
-}
-
-return(
-<div className="modal-backdrop">
-
-<div className="modal">
-
-<h2>Edit post</h2>
-
-<div className="field">
-
-<textarea
-value={text}
-onChange={e=>setText(e.target.value)}
-/>
-
-</div>
-
-<div className="modal-actions">
-
-<button className="secondary" onClick={onClose}>
-Cancel
-</button>
-
-<button
-className="primary"
-disabled={saving||!text.trim()}
-onClick={save}
->
-{saving?"Saving...":"Save"}
-</button>
-
-</div>
-
-</div>
-</div>
-);
-}
-
-/* =========================================================
-   EDIT PROFILE
-========================================================= */
-
-function EditProfileModal({
-user,
-profile,
-onSave,
-onClose
-}){
-
-const[name,setName]=useState(profile?.displayName||"");
-const[username,setUsername]=useState(profile?.username||"");
-const[bio,setBio]=useState(profile?.bio||"");
-const[saving,setSaving]=useState(false);
-
-async function save(){
-
-if(!name.trim()||saving)return;
-
-setSaving(true);
-
-try{
-
-const cleanUsername=
-username
-.trim()
-.replace(/^@/,"")
-.replace(/\s+/g,"_")
-.toLowerCase();
-
-const updated={
-displayName:name.trim(),
-username:
-cleanUsername||
-("yash_"+user.uid.slice(0,6)),
-bio:bio.trim()
-};
-
-await collectionPath("users")
-.doc(user.uid)
-.update(updated);
-
-onSave({
-...profile,
-...updated
-});
-
-onClose();
-
-}catch(error){
-
-alert("Profile update failed:\n\n"+error.message);
-
-}finally{
-setSaving(false);
-}
-
-}
-
-return(
-<div className="modal-backdrop">
-
-<div className="modal">
-
-<h2>Edit profile</h2>
-
-<div className="field">
-
-<label>Display name</label>
-
-<input
-value={name}
-onChange={e=>setName(e.target.value)}
-/>
-
-</div>
-
-<div className="field">
-
-<label>Username</label>
-
-<input
-value={username}
-onChange={e=>setUsername(e.target.value)}
-/>
-
-</div>
-
-<div className="field">
-
-<label>Bio</label>
-
-<textarea
-value={bio}
-onChange={e=>setBio(e.target.value)}
-/>
-
-</div>
-
-<div className="modal-actions">
-
-<button className="secondary" onClick={onClose}>
-Cancel
-</button>
-
-<button
-className="primary"
-disabled={saving}
-onClick={save}
->
-{saving?"Saving...":"Save"}
-</button>
-
-</div>
-
-</div>
-</div>
-);
-}
-
-/* =========================================================
-   WHO TO FOLLOW
-========================================================= */
-
-function WhoToFollow({
-users,
-currentUser,
-follows
-}){
-
-const candidates=
-users
-.filter(x=>x.uid!==currentUser?.uid)
-.slice(0,5);
-
-async function toggleFollow(person){
-
-if(!currentUser)return;
-
-const existing=
-follows.find(
-x=>
-x.followerId===currentUser.uid&&
-x.followingId===person.uid
-);
-
-try{
-
-if(existing){
-
-await collectionPath("follows")
-.doc(existing.id)
-.delete();
-
-}else{
-
-await collectionPath("follows").add({
-followerId:currentUser.uid,
-followingId:person.uid,
-createdAt:
-firebase.firestore.FieldValue.serverTimestamp()
-});
-
-await collectionPath("notifications").add({
-userId:person.uid,
-actorId:currentUser.uid,
-actorName:currentUser.displayName||"Someone",
-type:"follow",
-read:false,
-createdAt:
-firebase.firestore.FieldValue.serverTimestamp()
-});
-
-}
-
-}catch(error){
-
-alert("Follow failed:\n\n"+error.message);
-
-}
-
-}
-
-return(
-<div className="side-card">
-
-<div className="side-title">
-Who to follow
-</div>
-
-{candidates.length===0&&(
-<div style={{color:"#666",fontSize:13}}>
-No suggestions yet.
-</div>
-)}
-
-{candidates.map(person=>{
-
-const following=
-follows.some(
-x=>
-x.followerId===currentUser?.uid&&
-x.followingId===person.uid
-);
-
-return(
-
-<div className="person" key={person.uid}>
-
-<div className="avatar small">
-{getInitials(person.displayName)}
-</div>
-
-<div className="person-info">
-
-<div className="person-name">
-{person.displayName}
-</div>
-
-<div className="person-user">
-@{person.username}
-</div>
-
-</div>
-
-<button
-className="follow-btn"
-onClick={()=>toggleFollow(person)}
->
-{following?"Following":"Follow"}
-</button>
-
-</div>
-
-);
-
-})}
-
-</div>
-);
-}
-
-/* =========================================================
-   FEED
-========================================================= */
-
-function FeedView({
-user,
-profile,
-data,
-onProfile,
-onEdit,
-firestoreError
-}){
-
-const[query,setQuery]=useState("");
-
-const posts=
-useMemo(()=>{
-
-const q=query.trim().toLowerCase();
-
-return[...data.posts]
-.sort(
-(a,b)=>
-timestampMillis(b.createdAt)-
-timestampMillis(a.createdAt)
-)
-.filter(post=>{
-
-if(!q)return true;
-
-return(
-post.content?.toLowerCase().includes(q)||
-post.authorName?.toLowerCase().includes(q)||
-post.authorUsername?.toLowerCase().includes(q)||
-(post.hashtags||[]).some(
-tag=>tag.toLowerCase().includes(q)
-)
-);
-
-});
-
-},[data.posts,query]);
-
-return(
-<div className="feed">
-
-<FirestoreErrorBanner error={firestoreError}/>
-
-<div className="search-box">
-
-<input
-placeholder="Search Nexus..."
-value={query}
-onChange={e=>setQuery(e.target.value)}
-/>
-
-</div>
-
-<Composer user={user} profile={profile}/>
-
-<div className="status">
-{posts.length} post{posts.length===1?"":"s"} loaded
-</div>
-
-{posts.length===0?
-
-<div className="empty">
-
-<div style={{fontSize:35}}>✨</div>
-
-<div>
-{query?"No matching posts.":"No posts yet."}
-</div>
-
-<div style={{fontSize:13,marginTop:5}}>
-{query?"Try another search.":"Be the first person to post."}
-</div>
-
-</div>
-
-:
-
-posts.map(post=>(
-
-<PostCard
-key={post.id}
-post={post}
-currentUser={user}
-profile={profile}
-comments={data.comments}
-likes={data.likes}
-onProfile={onProfile}
-onEdit={onEdit}
-/>
-
-))
-
-}
-
-</div>
-);
-}
-
-/* =========================================================
-   PROFILE
-========================================================= */
-
-function ProfileView({
-profile,
-user,
-data,
-onEditProfile,
-onProfile
-}){
-
-const userPosts=
-data.posts
-.filter(x=>x.authorId===profile?.uid)
-.sort(
-(a,b)=>
-timestampMillis(b.createdAt)-
-timestampMillis(a.createdAt)
-);
-
-const followers=
-data.follows.filter(
-x=>x.followingId===profile?.uid
-).length;
-
-const following=
-data.follows.filter(
-x=>x.followerId===profile?.uid
-).length;
-
-if(!profile){
-
-return(
-<div className="empty">
-Profile not found.
-</div>
-);
-
-}
-
-return(
-<div className="feed">
-
-<div className="profile-card">
-
-<div className="profile-cover"></div>
-
-<div className="profile-main">
-
-<div className="profile-avatar">
-{getInitials(profile.displayName)}
-</div>
-
-<div className="profile-name">
-{profile.displayName}
-</div>
-
-<div className="profile-username">
-@{profile.username}
-</div>
-
-<div className="profile-bio">
-{profile.bio||"No bio yet."}
-</div>
-
-<div className="profile-stats">
-
-<div className="stat">
-<strong>{followers}</strong>
-<span>Followers</span>
-</div>
-
-<div className="stat">
-<strong>{following}</strong>
-<span>Following</span>
-</div>
-
-<div className="stat">
-<strong>{userPosts.length}</strong>
-<span>Posts</span>
-</div>
-
-</div>
-
-{profile.uid===user.uid&&(
-
-<button
-className="secondary"
-style={{marginTop:18}}
-onClick={onEditProfile}
->
-Edit profile
-</button>
-
-)}
-
-</div>
-</div>
-
-{userPosts.map(post=>(
-
-<PostCard
-key={post.id}
-post={post}
-currentUser={user}
-profile={profile}
-comments={data.comments}
-likes={data.likes}
-onProfile={onProfile}
-onEdit={()=>{}}
-/>
-
-))}
-
-{userPosts.length===0&&(
-<div className="empty">
-No posts yet.
-</div>
-)}
-
-</div>
-);
-}
-
-/* =========================================================
-   NOTIFICATIONS
-========================================================= */
-
-function NotificationsView({user,data}){
-
-const notifications=
-data.notifications
-.filter(x=>x.userId===user.uid)
-.sort(
-(a,b)=>
-timestampMillis(b.createdAt)-
-timestampMillis(a.createdAt)
-);
-
-return(
-<div className="feed">
-
-<div className="side-card">
-
-<h2>Notifications</h2>
-
-{notifications.length===0&&(
-<div className="empty">
-No notifications yet.
-</div>
-)}
-
-{notifications.map(notification=>(
-
-<div
-key={notification.id}
-style={{
-padding:"14px 0",
-borderBottom:"1px solid #222"
-}}
->
-
-<strong>
-{notification.actorName||"Someone"}
-</strong>
-
-{" "}
-
-{notification.type==="like"
-?"liked your post ❤️"
-:notification.type==="comment"
-?"commented on your post 💬"
-:"followed you 👤"}
-
-<div
-style={{
-color:"#666",
-fontSize:12,
-marginTop:5
-}}
->
-{formatTime(notification.createdAt)}
-</div>
-
-</div>
-
-))}
-
-</div>
-</div>
-);
-}
-
-/* =========================================================
-   WHATSAPP STYLE MESSAGING
-========================================================= */
-
-function MessagingView({
-user,
-profile,
-data
-}){
-
-const[selectedUser,setSelectedUser]=useState(null);
-const[recipient,setRecipient]=useState("");
-const[text,setText]=useState("");
-const[search,setSearch]=useState("");
-const[sending,setSending]=useState(false);
-
-const messages=data.messages
-.filter(
-message=>
-message.senderId===user.uid||
-message.receiverId===user.uid
-)
-.sort(
-(a,b)=>
-timestampMillis(a.createdAt)-
-timestampMillis(b.createdAt)
-);
-
-const conversations=useMemo(()=>{
-
-const map={};
-
-messages.forEach(message=>{
-
-const otherId=
-message.senderId===user.uid
-?message.receiverId
-:message.senderId;
-
-if(!otherId)return;
-
-const otherUser=
-data.users.find(x=>x.uid===otherId);
-
-if(!otherUser)return;
-
-const existing=map[otherId];
-
-if(
-!existing||
-timestampMillis(message.createdAt)>
-timestampMillis(existing.lastMessage?.createdAt)
-){
-
-map[otherId]={
-user:otherUser,
-lastMessage:message
-};
-
-}
-
-});
-
-return Object.values(map)
-.sort(
-(a,b)=>
-timestampMillis(b.lastMessage?.createdAt)-
-timestampMillis(a.lastMessage?.createdAt)
-);
-
-},[messages,data.users,user.uid]);
-
-const filteredConversations=
-conversations.filter(item=>
-item.user.displayName
-?.toLowerCase()
-.includes(search.toLowerCase())||
-item.user.username
-?.toLowerCase()
-.includes(search.toLowerCase())
-);
-
-const activeMessages=
-selectedUser
-?
-messages.filter(
-message=>
-(message.senderId===user.uid&&
-message.receiverId===selectedUser.uid)||
-(message.senderId===selectedUser.uid&&
-message.receiverId===user.uid)
-)
-:[]
-;
-
-async function sendMessage(target=selectedUser){
-
-if(!target||!text.trim()||sending)return;
-
-setSending(true);
-
-try{
-
-await collectionPath("messages").add({
-
-senderId:user.uid,
-
-senderName:
-profile?.displayName||"Yash",
-
-receiverId:target.uid,
-
-receiverName:
-target.displayName,
-
-text:text.trim(),
-
-createdAt:
-firebase.firestore.FieldValue.serverTimestamp()
-
-});
-
-setText("");
-
-}catch(error){
-
-alert("Message failed:\n\n"+error.message);
-
-}finally{
-
-setSending(false);
-
-}
-
-}
-
-function startChat(){
-
-const username=
-recipient
-.trim()
-.replace(/^@/,"")
-.toLowerCase();
-
-if(!username)return;
-
-const target=
-data.users.find(
-x=>
-String(x.username||"")
-.toLowerCase()===username
-);
-
-if(!target){
-
-alert("User not found.");
-return;
-
-}
-
-setSelectedUser(target);
-setRecipient("");
-
-}
-
-return(
-
-<div className="chat-app">
-
-{/* CHAT LIST */}
-
-<div className="chat-list">
-
-<div className="chat-list-header">
-Chats
-</div>
-
-<div className="chat-search">
-
-<input
-value={search}
-onChange={e=>setSearch(e.target.value)}
-placeholder="Search chats..."
-/>
-
-</div>
-
-<div style={{overflowY:"auto",flex:1}}>
-
-{filteredConversations.length===0&&(
-
-<div className="chat-empty-list">
-No chats yet.
-</div>
-
-)}
-
-{filteredConversations.map(item=>(
-
-<div
-key={item.user.uid}
-className={
-"chat-user "+
-(selectedUser?.uid===item.user.uid?"active":"")
-}
-onClick={()=>setSelectedUser(item.user)}
->
-
-<div className="avatar small">
-{getInitials(item.user.displayName)}
-</div>
-
-<div className="chat-user-info">
-
-<div className="chat-user-name">
-{item.user.displayName}
-</div>
-
-<div className="chat-user-last">
-{item.lastMessage?.text||"No messages"}
-</div>
-
-</div>
-
-<div className="chat-time">
-{formatChatTime(item.lastMessage?.createdAt)}
-</div>
-
-</div>
-
-))}
-
-</div>
-
-<div className="chat-new-user">
-
-<input
-value={recipient}
-onChange={e=>setRecipient(e.target.value)}
-onKeyDown={e=>{
-if(e.key==="Enter"){
-e.preventDefault();
-startChat();
-}
-}}
-placeholder="@username"
-/>
-
-<button onClick={startChat}>
-New chat
-</button>
-
-</div>
-
-</div>
-
-{/* CHAT WINDOW */}
-
-<div className="chat-window">
-
-{selectedUser?
-
-<>
-
-<div className="chat-header">
-
-<div className="avatar small">
-{getInitials(selectedUser.displayName)}
-</div>
-
-<div className="chat-header-info">
-
-<div className="chat-header-name">
-{selectedUser.displayName}
-</div>
-
-<div className="chat-header-status">
-@{selectedUser.username}
-</div>
-
-</div>
-
-</div>
-
-<div className="chat-messages">
-
-<div className="chat-date">
-Today
-</div>
-
-{activeMessages.length===0&&(
-
-<div className="chat-start">
-
-<div className="chat-start-icon">
-💬
-</div>
-
-<div className="chat-start-title">
-Start the conversation
-</div>
-
-<div className="chat-start-text">
-Send a message to {selectedUser.displayName}.
-</div>
-
-</div>
-
-)}
-
-{activeMessages.map(message=>{
-
-const sent=
-message.senderId===user.uid;
-
-return(
-
-<div
-key={message.id}
-className={
-"message-row "+
-(sent?"sent":"received")
-}
->
-
-<div className="message-bubble">
-
-<div>
-{message.text}
-</div>
-
-<div className="message-meta">
-
-<span>
-{formatChatTime(message.createdAt)}
-</span>
-
-{sent&&(
-<span className="message-check">
-✓✓
-</span>
-)}
-
-</div>
-
-</div>
-
-</div>
-
-);
-
-})}
-
-</div>
-
-<div className="chat-input-area">
-
-<textarea
-className="chat-input"
-rows="1"
-value={text}
-onChange={e=>setText(e.target.value)}
-onKeyDown={e=>{
-
-if(
-e.key==="Enter"&&
-!e.shiftKey
-){
-
-e.preventDefault();
-sendMessage();
-
-}
-
-}}
-placeholder="Type a message"
-/>
-
-<button
-className="chat-send"
-disabled={sending||!text.trim()}
-onClick={()=>sendMessage()}
->
-➤
-</button>
-
-</div>
-
-</>
-
-:
-
-<>
-
-<div className="chat-header">
-
-<div className="chat-header-name">
-Messages
-</div>
-
-</div>
-
-<div className="chat-start">
-
-<div className="chat-start-icon">
-💬
-</div>
-
-<div className="chat-start-title">
-Nexus Chats
-</div>
-
-<div className="chat-start-text">
-Select a conversation or start a new chat.
-</div>
-
-</div>
-
-</>
-
-}
-
-</div>
-
-</div>
-
-);
-}
-
-/* =========================================================
-   MAIN
-========================================================= */
-
-function Nexus(){
-
-const{
-user,
-profile,
-setProfile,
-loading,
-error
-}=useAuth();
-
-const{
-data,
-ready,
-firestoreError
-}=useRealtimeData(user?.uid);
-
-const[page,setPage]=useState("home");
-const[selectedProfile,setSelectedProfile]=useState(null);
-const[editingProfile,setEditingProfile]=useState(false);
-const[editingPost,setEditingPost]=useState(null);
-
-function retry(){
-window.location.reload();
-}
-
-function openProfile(uid){
-
-if(!uid)return;
-
-const target=
-data.users.find(x=>x.uid===uid);
-
-if(!target){
-
-if(uid===user?.uid&&profile){
-
-setSelectedProfile(profile);
-setPage("profile");
-
-}
-
-return;
-}
-
-setSelectedProfile(target);
-setPage("profile");
-
-}
-
-function openMyProfile(){
-
-if(!profile)return;
-
-setSelectedProfile(profile);
-setPage("profile");
-
-}
-
-if(loading)return null;
-
-if(error){
-
-return(
-<FirebaseErrorScreen
-error={error}
-retry={retry}
-/>
-);
-
-}
-
-if(!user||!profile){
-
-return(
-<FirebaseErrorScreen
-error={{
-code:"auth/no-user",
-message:"Firebase did not return a signed-in user."
-}}
-retry={retry}
-/>
-);
-
-}
-
-if(!ready){
-
-return(
-<div
-style={{
-minHeight:"100vh",
-display:"flex",
-alignItems:"center",
-justifyContent:"center",
-background:"#050505",
-color:"#777"
-}}
->
-Loading Nexus data...
-</div>
-);
-
-}
-
-let content=null;
-
-if(page==="home"){
-
-content=(
-<FeedView
-user={user}
-profile={profile}
-data={data}
-onProfile={openProfile}
-onEdit={setEditingPost}
-firestoreError={firestoreError}
-/>
-);
-
-}
-
-if(page==="profile"){
-
-content=(
-<ProfileView
-profile={selectedProfile||profile}
-user={user}
-data={data}
-onEditProfile={()=>setEditingProfile(true)}
-onProfile={openProfile}
-/>
-);
-
-}
-
-if(page==="notifications"){
-
-content=(
-<NotificationsView
-user={user}
-data={data}
-/>
-);
-
-}
-
-if(page==="messages"){
-
-content=(
-<MessagingView
-user={user}
-profile={profile}
-data={data}
-/>
-);
-
-}
-
-return(
-
-<div className="app">
-
-<header className="topbar">
-
-<div className="brand">
-
-<div className="brand-logo">
-N
-</div>
-
-Nexus
-
-</div>
-
-<button
-className="icon-btn"
-onClick={openMyProfile}
-title="Profile"
->
-{getInitials(profile.displayName)}
-</button>
-
-</header>
-
-<div className="layout">
-
-<aside className="sidebar">
-
-<div className="nav-card">
-
-<button
-className={
-"nav-item "+
-(page==="home"?"active":"")
-}
-onClick={()=>{
-setPage("home");
-setSelectedProfile(null);
-}}
->
-🏠 Home
-</button>
-
-<button
-className={
-"nav-item "+
-(page==="profile"?"active":"")
-}
-onClick={openMyProfile}
->
-👤 Profile
-</button>
-
-<button
-className={
-"nav-item "+
-(page==="notifications"?"active":"")
-}
-onClick={()=>setPage("notifications")}
->
-🔔 Notifications
-</button>
-
-<button
-className={
-"nav-item "+
-(page==="messages"?"active":"")
-}
-onClick={()=>setPage("messages")}
->
-💬 Messages
-</button>
-
-</div>
-
-</aside>
-
-<main>
-{content}
-</main>
-
-<aside className="right-sidebar">
-
-<WhoToFollow
-users={data.users}
-currentUser={user}
-follows={data.follows}
-/>
-
-<div
-className="side-card"
-style={{marginTop:15}}
->
-
-<div className="side-title">
-Trending
-</div>
-
-{(()=>{
-
-const counts={};
-
-data.posts.forEach(post=>{
-
-(post.hashtags||[])
-.forEach(tag=>{
-counts[tag]=(counts[tag]||0)+1;
-});
-
-});
-
-const trending=
-Object.entries(counts)
-.sort((a,b)=>b[1]-a[1])
-.slice(0,5);
-
-if(!trending.length){
-
-return(
-<div
-style={{
-color:"#666",
-fontSize:13
-}}
->
-Start posting with hashtags to create trends.
-</div>
-);
-
-}
-
-return trending.map(([tag,count])=>(
-
-<div
-key={tag}
-style={{padding:"8px 0"}}
->
-
-<div
-style={{
-color:"#8ab4ff",
-fontWeight:700
-}}
->
-{tag}
-</div>
-
-<div
-style={{
-color:"#666",
-fontSize:12
-}}
->
-{count} post{count===1?"":"s"}
-</div>
-
-</div>
-
-));
-
-})()}
-
-</div>
-
-<div
-style={{
-color:"#444",
-fontSize:11,
-marginTop:20,
-textAlign:"center"
-}}
->
-Nexus • Made by Yash
-</div>
-
-</aside>
-
-</div>
-
-{editingProfile&&(
-
-<EditProfileModal
-user={user}
-profile={profile}
-onSave={updated=>{
-setProfile(updated);
-setSelectedProfile(updated);
-}}
-onClose={()=>setEditingProfile(false)}
-/>
-
-)}
-
-{editingPost&&(
-
-<EditPostModal
-post={editingPost}
-onClose={()=>setEditingPost(null)}
-/>
-
-)}
-
-</div>
-
-);
-
-}
-
-/* =========================================================
-   START
-========================================================= */
-
-const root=
-ReactDOM.createRoot(
-document.getElementById("root")
-);
-
-root.render(<Nexus/>);
-
-</script>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const {
+      useState,
+      useEffect,
+      useMemo,
+      useRef
+    } = React;
+
+    /* ============================================================
+       FIREBASE
+    ============================================================ */
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDTrvD7c1TUtPUUOSX7_-0VV9itC28LOg0",
+      authDomain: "nexus-37600.firebaseapp.com",
+      projectId: "nexus-37600",
+      storageBucket: "nexus-37600.firebasestorage.app",
+      messagingSenderId: "61496309341",
+      appId: "1:61496309341:web:fdb3711264df47f318bfb4",
+      measurementId: "G-41S50YF5RF"
+    };
+
+    const APP_ID = "nexus-37600";
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const COLLECTIONS = [
+      "users",
+      "posts",
+      "comments",
+      "likes",
+      "follows",
+      "notifications",
+      "messages"
+    ];
+
+    const collectionRef = (name) =>
+      db.collection("artifacts")
+        .doc(APP_ID)
+        .collection("public")
+        .doc("data")
+        .collection(name);
+
+    /* ============================================================
+       HELPERS
+    ============================================================ */
+
+    function uid() {
+      return Math.random().toString(36).slice(2) + Date.now().toString(36);
+    }
+
+    function formatDate(timestamp) {
+      if (!timestamp) return "";
+
+      try {
+        const date =
+          timestamp.toDate
+            ? timestamp.toDate()
+            : new Date(timestamp);
+
+        const diff = Date.now() - date.getTime();
+
+        if (diff < 60 * 1000) return "now";
+        if (diff < 60 * 60 * 1000)
+          return Math.floor(diff / 60000) + "m";
+        if (diff < 24 * 60 * 60 * 1000)
+          return Math.floor(diff / 3600000) + "h";
+        if (diff < 7 * 24 * 60 * 60 * 1000)
+          return Math.floor(diff / 86400000) + "d";
+
+        return date.toLocaleDateString();
+      } catch {
+        return "";
+      }
+    }
+
+    function getInitials(name) {
+      if (!name) return "?";
+
+      return name
+        .split(" ")
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((x) => x[0])
+        .join("")
+        .toUpperCase();
+    }
+
+    function getUsername(user) {
+      if (!user) return "unknown";
+
+      return (
+        user.username ||
+        user.displayName?.replace(/\s+/g, "").toLowerCase() ||
+        "user"
+      );
+    }
+
+    function makeUsername(name) {
+      return (
+        String(name || "user")
+          .toLowerCase()
+          .replace(/[^a-z0-9_]/g, "")
+          .slice(0, 20) || "user"
+      );
+    }
+
+    function escapeHashtags(text) {
+      const parts = String(text || "").split(/(#[a-zA-Z0-9_]+)/g);
+
+      return parts.map((part, index) => {
+        if (/^#[a-zA-Z0-9_]+$/.test(part)) {
+          return (
+            <span className="hashtag" key={index}>
+              {part}
+            </span>
+          );
+        }
+
+        return part;
+      });
+    }
+
+    function normalizeMessage(m) {
+      return {
+        ...m,
+        id: m.id || uid()
+      };
+    }
+
+    /* ============================================================
+       REALTIME HOOK
+    ============================================================ */
+
+    function useRealtimeData() {
+      const [data, setData] = useState({
+        users: [],
+        posts: [],
+        comments: [],
+        likes: [],
+        follows: [],
+        notifications: [],
+        messages: []
+      });
+
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+
+      useEffect(() => {
+        let loaded = 0;
+        const unsubscribers = [];
+
+        COLLECTIONS.forEach((name) => {
+          const unsubscribe = collectionRef(name)
+            .onSnapshot(
+              (snapshot) => {
+                const rows = snapshot.docs.map((doc) => ({
+                  id: doc.id,
+                  ...doc.data()
+                }));
+
+                setData((prev) => ({
+                  ...prev,
+                  [name]: rows
+                }));
+
+                loaded++;
+
+                if (loaded >= COLLECTIONS.length) {
+                  setLoading(false);
+                }
+              },
+              (err) => {
+                console.error(name, err);
+
+                setError(err.message || String(err));
+                loaded++;
+
+                if (loaded >= COLLECTIONS.length) {
+                  setLoading(false);
+                }
+              }
+            );
+
+          unsubscribers.push(unsubscribe);
+        });
+
+        return () => {
+          unsubscribers.forEach((unsubscribe) => unsubscribe());
+        };
+      }, []);
+
+      return {
+        data,
+        loading,
+        error
+      };
+    }
+
+    /* ============================================================
+       AUTH
+    ============================================================ */
+
+    function useFirebaseAuth() {
+      const [user, setUser] = useState(null);
+      const [authLoading, setAuthLoading] = useState(true);
+
+      useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
+          try {
+            if (!currentUser) {
+              await auth.signInAnonymously();
+            } else {
+              setUser(currentUser);
+              setAuthLoading(false);
+            }
+          } catch (error) {
+            console.error(error);
+            setAuthLoading(false);
+          }
+        });
+
+        return unsubscribe;
+      }, []);
+
+      return {
+        user,
+        authLoading
+      };
+    }
+
+    /* ============================================================
+       AVATAR
+    ============================================================ */
+
+    function Avatar({ user, sizeClass = "" }) {
+      if (!user) {
+        return <div className={"avatar " + sizeClass}>?</div>;
+      }
+
+      return (
+        <div className={"avatar " + sizeClass}>
+          {user.photoURL ? (
+            <img src={user.photoURL} alt="" />
+          ) : (
+            getInitials(user.displayName || user.username)
+          )}
+        </div>
+      );
+    }
+
+    /* ============================================================
+       NAVIGATION
+    ============================================================ */
+
+    function Sidebar({
+      page,
+      setPage,
+      profile,
+      unreadNotifications
+    }) {
+      const items = [
+        ["home", "⌂", "Home"],
+        ["messages", "⌁", "Messages"],
+        ["notifications", "◈", "Notifications"],
+        ["profile", "◎", "Profile"]
+      ];
+
+      return (
+        <aside className="left-sidebar">
+          <div className="side-card">
+            <div
+              className="side-profile"
+              onClick={() => setPage("profile")}
+            >
+              <div className="side-profile-main">
+                <Avatar user={profile} />
+                <div>
+                  <div className="side-profile-name">
+                    {profile?.displayName || "Nexus User"}
+                  </div>
+
+                  <div className="side-profile-username">
+                    @{getUsername(profile)}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="nav-list">
+              {items.map(([key, icon, label]) => (
+                <button
+                  key={key}
+                  className={"nav-item " + (page === key ? "active" : "")}
+                  onClick={() => setPage(key)}
+                >
+                  <span className="nav-icon">{icon}</span>
+                  <span className="nav-text">{label}</span>
+
+                  {key === "notifications" &&
+                    unreadNotifications > 0 && (
+                      <span
+                        style={{
+                          marginLeft: "auto",
+                          color: "var(--green)",
+                          fontFamily: "var(--mono)",
+                          fontSize: 9
+                        }}
+                      >
+                        {unreadNotifications}
+                      </span>
+                    )}
+                </button>
+              ))}
+            </div>
+
+            <div className="side-footer">
+              NEXUS CORE<br />
+              connection: <span style={{ color: "var(--green)" }}>ONLINE</span>
+              <br />
+              protocol: realtime
+            </div>
+          </div>
+        </aside>
+      );
+    }
+
+    /* ============================================================
+       TOPBAR
+    ============================================================ */
+
+    function Topbar({
+      profile,
+      page,
+      setPage,
+      search,
+      setSearch,
+      unreadNotifications
+    }) {
+      return (
+        <header className="topbar">
+          <div className="topbar-inner">
+            <div
+              className="brand"
+              onClick={() => setPage("home")}
+            >
+              <div className="brand-mark">&gt;_</div>
+
+              <div>
+                <div className="brand-name">
+                  NEXUS<span>.</span>
+                </div>
+
+                <div className="brand-status">
+                  SOCIAL NETWORK // ONLINE
+                </div>
+              </div>
+            </div>
+
+            <div className="search-wrap">
+              <span className="search-icon">&gt;_</span>
+
+              <input
+                className="search-input"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="search users, posts, #hashtags..."
+              />
+            </div>
+
+            <div className="top-actions">
+              <button
+                className={
+                  "icon-btn " +
+                  (page === "messages" ? "active" : "")
+                }
+                onClick={() => setPage("messages")}
+                title="Messages"
+              >
+                ⌁
+              </button>
+
+              <button
+                className={
+                  "icon-btn hide-mobile " +
+                  (page === "notifications" ? "active" : "")
+                }
+                onClick={() => setPage("notifications")}
+                title="Notifications"
+              >
+                ◈
+
+                {unreadNotifications > 0 && (
+                  <span className="notification-dot" />
+                )}
+              </button>
+
+              <button
+                className="avatar"
+                onClick={() => setPage("profile")}
+                title="Profile"
+              >
+                {profile?.photoURL ? (
+                  <img src={profile.photoURL} alt="" />
+                ) : (
+                  getInitials(profile?.displayName)
+                )}
+              </button>
+            </div>
+          </div>
+        </header>
+      );
+    }
+
+    /* ============================================================
+       FOLLOW SYSTEM
+    ============================================================ */
+
+    function isFollowing(follows, currentUserId, targetUserId) {
+      return follows.some(
+        (follow) =>
+          follow.followerId === currentUserId &&
+          follow.followingId === targetUserId
+      );
+    }
+
+    async function toggleFollow(
+      currentUser,
+      targetUserId,
+      follows
+    ) {
+      if (!currentUser || !targetUserId) return;
+      if (currentUser.uid === targetUserId) return;
+
+      const existing = follows.find(
+        (follow) =>
+          follow.followerId === currentUser.uid &&
+          follow.followingId === targetUserId
+      );
+
+      try {
+        if (existing) {
+          await collectionRef("follows")
+            .doc(existing.id)
+            .delete();
+
+          return;
+        }
+
+        await collectionRef("follows")
+          .doc(uid())
+          .set({
+            followerId: currentUser.uid,
+            followingId: targetUserId,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+      } catch (error) {
+        console.error("Follow error:", error);
+      }
+    }
+
+    /* ============================================================
+       WHO TO FOLLOW
+    ============================================================ */
+
+    function WhoToFollow({
+      currentUser,
+      profile,
+      users,
+      follows
+    }) {
+      const suggestions = users
+        .filter(
+          (u) =>
+            u.id !== currentUser?.uid &&
+            u.id !== profile?.id
+        )
+        .filter(
+          (u) =>
+            !isFollowing(
+              follows,
+              currentUser?.uid,
+              u.id
+            )
+        )
+        .slice(0, 5);
+
+      return (
+        <div className="right-section">
+          <div className="follow-card">
+            <div className="section-title">
+              // WHO_TO_FOLLOW
+            </div>
+
+            {suggestions.length === 0 ? (
+              <div className="empty">
+                NO NEW TARGETS FOUND
+              </div>
+            ) : (
+              suggestions.map((user) => (
+                <div
+                  className="follow-user"
+                  key={user.id}
+                >
+                  <Avatar user={user} />
+
+                  <div className="follow-info">
+                    <div className="follow-name">
+                      {user.displayName || "Nexus User"}
+                    </div>
+
+                    <div className="follow-username">
+                      @{getUsername(user)}
+                    </div>
+                  </div>
+
+                  <button
+                    className="follow-btn"
+                    onClick={() =>
+                      toggleFollow(
+                        currentUser,
+                        user.id,
+                        follows
+                      )
+                    }
+                  >
+                    +FOLLOW
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================================
+       TRENDING
+    ============================================================ */
+
+    function Trending({ posts }) {
+      const hashtags = useMemo(() => {
+        const counts = {};
+
+        posts.forEach((post) => {
+          const matches =
+            String(post.content || "").match(
+              /#[a-zA-Z0-9_]+/g
+            ) || [];
+
+          matches.forEach((tag) => {
+            const key = tag.toLowerCase();
+            counts[key] = (counts[key] || 0) + 1;
+          });
+        });
+
+        return Object.entries(counts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 6);
+      }, [posts]);
+
+      return (
+        <div className="right-section">
+          <div className="trend-card">
+            <div className="section-title">
+              // TRENDING_NODES
+            </div>
+
+            {hashtags.length === 0 ? (
+              <div className="empty">
+                NO SIGNALS DETECTED
+              </div>
+            ) : (
+              hashtags.map(([tag, count]) => (
+                <button
+                  className="trend"
+                  key={tag}
+                >
+                  <div className="trend-tag">
+                    {tag}
+                  </div>
+
+                  <div className="trend-count">
+                    {count} {count === 1 ? "post" : "posts"}
+                  </div>
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    function SystemStatus() {
+      return (
+        <div className="right-section">
+          <div className="status-card">
+            <div className="status-line">
+              <span className="status-dot" />
+              DATABASE
+              <span className="status-value">ONLINE</span>
+            </div>
+
+            <div className="status-line">
+              <span className="status-dot" />
+              REALTIME
+              <span className="status-value">ACTIVE</span>
+            </div>
+
+            <div className="status-line">
+              <span className="status-dot" />
+              NEXUS CORE
+              <span className="status-value">OK</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================================
+       POST COMPOSER
+    ============================================================ */
+
+    function Composer({ currentUser, profile }) {
+      const [content, setContent] = useState("");
+      const [posting, setPosting] = useState(false);
+
+      async function createPost() {
+        const text = content.trim();
+
+        if (!text || !currentUser || posting) return;
+
+        setPosting(true);
+
+        try {
+          await collectionRef("posts")
+            .doc(uid())
+            .set({
+              authorId: currentUser.uid,
+              authorName:
+                profile?.displayName ||
+                currentUser.displayName ||
+                "Nexus User",
+              authorUsername:
+                getUsername(profile),
+              content: text,
+              createdAt:
+                firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+          setContent("");
+        } catch (error) {
+          console.error(error);
+          alert("Could not publish post.");
+        } finally {
+          setPosting(false);
+        }
+      }
+
+      return (
+        <div className="composer">
+          <div className="composer-row">
+            <Avatar user={profile} />
+
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              placeholder="broadcast something to the Nexus..."
+              maxLength={5000}
+            />
+          </div>
+
+          <div className="composer-bottom">
+            <div className="composer-hint">
+              {content.length}/5000 // PUBLIC_BROADCAST
+            </div>
+
+            <button
+              className="primary-btn"
+              disabled={!content.trim() || posting}
+              onClick={createPost}
+            >
+              {posting ? "UPLOADING..." : "PUBLISH →"}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================================
+       COMMENTS
+    ============================================================ */
+
+    function Comments({
+      post,
+      comments,
+      users,
+      currentUser,
+      profile
+    }) {
+      const [text, setText] = useState("");
+      const [open, setOpen] = useState(false);
+
+      const postComments = comments
+        .filter((c) => c.postId === post.id)
+        .sort(
+          (a, b) =>
+            (a.createdAt?.seconds || 0) -
+            (b.createdAt?.seconds || 0)
+        );
+
+      async function addComment() {
+        const value = text.trim();
+
+        if (!value || !currentUser) return;
+
+        try {
+          await collectionRef("comments")
+            .doc(uid())
+            .set({
+              postId: post.id,
+              authorId: currentUser.uid,
+              authorName:
+                profile?.displayName ||
+                "Nexus User",
+              text: value,
+              createdAt:
+                firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+          setText("");
+          setOpen(true);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      return (
+        <>
+          <button
+            className="post-action"
+            onClick={() => setOpen((v) => !v)}
+          >
+            ◌ {postComments.length}
+          </button>
+
+          {open && (
+            <div className="comment-section">
+              {postComments.map((comment) => {
+                const author =
+                  users.find(
+                    (u) => u.id === comment.authorId
+                  ) || {
+                    displayName:
+                      comment.authorName
+                  };
+
+                return (
+                  <div
+                    className="comment"
+                    key={comment.id}
+                  >
+                    <Avatar user={author} />
+
+                    <div className="comment-body">
+                      <div className="comment-name">
+                        @{getUsername(author)}
+                      </div>
+
+                      <div className="comment-text">
+                        {comment.text}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+
+              <div className="comment-input-row">
+                <input
+                  className="small-input"
+                  value={text}
+                  onChange={(e) =>
+                    setText(e.target.value)
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      addComment();
+                    }
+                  }}
+                  placeholder="write a comment..."
+                />
+
+                <button
+                  className="ghost-btn"
+                  onClick={addComment}
+                >
+                  SEND
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+      );
+    }
+
+    /* ============================================================
+       POST CARD
+    ============================================================ */
+
+    function PostCard({
+      post,
+      currentUser,
+      profile,
+      users,
+      comments,
+      likes,
+      follows
+    }) {
+      const author =
+        users.find((u) => u.id === post.authorId) || {
+          id: post.authorId,
+          displayName:
+            post.authorName || "Nexus User",
+          username:
+            post.authorUsername || "user"
+        };
+
+      const postLikes = likes.filter(
+        (like) => like.postId === post.id
+      );
+
+      const liked = postLikes.some(
+        (like) =>
+          like.userId === currentUser?.uid
+      );
+
+      const canEdit =
+        post.authorId === currentUser?.uid;
+
+      async function toggleLike() {
+        if (!currentUser) return;
+
+        const existing = postLikes.find(
+          (like) =>
+            like.userId === currentUser.uid
+        );
+
+        try {
+          if (existing) {
+            await collectionRef("likes")
+              .doc(existing.id)
+              .delete();
+          } else {
+            await collectionRef("likes")
+              .doc(uid())
+              .set({
+                postId: post.id,
+                userId: currentUser.uid,
+                createdAt:
+                  firebase.firestore.FieldValue.serverTimestamp()
+              });
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      async function deletePost() {
+        if (!canEdit) return;
+
+        const confirmed = confirm(
+          "Delete this post?"
+        );
+
+        if (!confirmed) return;
+
+        try {
+          await collectionRef("posts")
+            .doc(post.id)
+            .delete();
+
+          const relatedLikes =
+            likes.filter(
+              (x) => x.postId === post.id
+            );
+
+          const relatedComments =
+            comments.filter(
+              (x) => x.postId === post.id
+            );
+
+          await Promise.all([
+            ...relatedLikes.map((x) =>
+              collectionRef("likes")
+                .doc(x.id)
+                .delete()
+            ),
+            ...relatedComments.map((x) =>
+              collectionRef("comments")
+                .doc(x.id)
+                .delete()
+            )
+          ]);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      async function editPost() {
+        if (!canEdit) return;
+
+        const newContent = prompt(
+          "Edit post:",
+          post.content
+        );
+
+        if (
+          newContent === null ||
+          !newContent.trim()
+        ) {
+          return;
+        }
+
+        try {
+          await collectionRef("posts")
+            .doc(post.id)
+            .update({
+              content: newContent.trim(),
+              updatedAt:
+                firebase.firestore.FieldValue.serverTimestamp()
+            });
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      async function sharePost() {
+        const text =
+          post.content +
+          "\n\n— via NEXUS";
+
+        try {
+          if (navigator.share) {
+            await navigator.share({
+              title: "NEXUS post",
+              text
+            });
+          } else {
+            await navigator.clipboard.writeText(
+              text
+            );
+
+            alert("Post copied.");
+          }
+        } catch {}
+      }
+
+      return (
+        <article className="post">
+          <div className="post-header">
+            <Avatar user={author} />
+
+            <div className="post-user">
+              <div className="post-user-name">
+                {author.displayName ||
+                  "Nexus User"}
+              </div>
+
+              <div className="post-username">
+                @{getUsername(author)}
+              </div>
+            </div>
+
+            <div className="post-time">
+              {formatDate(post.createdAt)}
+            </div>
+
+            {canEdit && (
+              <button
+                className="post-menu"
+                onClick={editPost}
+                title="Edit"
+              >
+                ✎
+              </button>
+            )}
+
+            {canEdit && (
+              <button
+                className="post-menu"
+                onClick={deletePost}
+                title="Delete"
+              >
+                ×
+              </button>
+            )}
+          </div>
+
+          <div className="post-content">
+            {escapeHashtags(post.content)}
+          </div>
+
+          <div className="post-actions">
+            <button
+              className={
+                "post-action " +
+                (liked ? "liked" : "")
+              }
+              onClick={toggleLike}
+            >
+              {liked ? "♥" : "♡"} {postLikes.length}
+            </button>
+
+            <Comments
+              post={post}
+              comments={comments}
+              users={users}
+              currentUser={currentUser}
+              profile={profile}
+            />
+
+            <button
+              className="post-action"
+              onClick={sharePost}
+            >
+              ↗ SHARE
+            </button>
+          </div>
+        </article>
+      );
+    }
+
+    /* ============================================================
+       HOME
+    ============================================================ */
+
+    function HomePage({
+      currentUser,
+      profile,
+      data,
+      search
+    }) {
+      const filteredPosts = useMemo(() => {
+        let posts = [...data.posts];
+
+        posts.sort(
+          (a, b) =>
+            (b.createdAt?.seconds || 0) -
+            (a.createdAt?.seconds || 0)
+        );
+
+        const query = search.trim().toLowerCase();
+
+        if (query) {
+          posts = posts.filter((post) => {
+            const author =
+              data.users.find(
+                (u) => u.id === post.authorId
+              );
+
+            return (
+              String(post.content || "")
+                .toLowerCase()
+                .includes(query) ||
+              String(
+                author?.displayName || ""
+              )
+                .toLowerCase()
+                .includes(query) ||
+              String(
+                author?.username || ""
+              )
+                .toLowerCase()
+                .includes(query)
+            );
+          });
+        }
+
+        return posts;
+      }, [data.posts, data.users, search]);
+
+      return (
+        <>
+          <div className="page-header">
+            <div className="page-kicker">
+              // FEED_CONNECTION
+            </div>
+
+            <h1 className="page-title">
+              Home Feed
+            </h1>
+
+            <div className="page-subtitle">
+              Real-time transmissions from your Nexus.
+            </div>
+          </div>
+
+          <Composer
+            currentUser={currentUser}
+            profile={profile}
+          />
+
+          {filteredPosts.length === 0 ? (
+            <div className="side-card">
+              <div className="empty">
+                NO TRANSMISSIONS FOUND
+              </div>
+            </div>
+          ) : (
+            filteredPosts.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                currentUser={currentUser}
+                profile={profile}
+                users={data.users}
+                comments={data.comments}
+                likes={data.likes}
+                follows={data.follows}
+              />
+            ))
+          )}
+        </>
+      );
+    }
+
+    /* ============================================================
+       FOLLOW LIST MODAL
+    ============================================================ */
+
+    function FollowListModal({
+      targetUser,
+      users,
+      follows,
+      currentUser,
+      initialTab,
+      onClose
+    }) {
+      const [tab, setTab] =
+        useState(initialTab || "followers");
+
+      const followers = follows
+        .filter(
+          (f) => f.followingId === targetUser.id
+        )
+        .map((f) =>
+          users.find(
+            (u) => u.id === f.followerId
+          )
+        )
+        .filter(Boolean);
+
+      const following = follows
+        .filter(
+          (f) => f.followerId === targetUser.id
+        )
+        .map((f) =>
+          users.find(
+            (u) => u.id === f.followingId
+          )
+        )
+        .filter(Boolean);
+
+      const list =
+        tab === "followers"
+          ? followers
+          : following;
+
+      return (
+        <div
+          className="modal-backdrop"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) {
+              onClose();
+            }
+          }}
+        >
+          <div className="modal">
+            <div className="modal-header">
+              <div className="modal-title">
+                <span>//</span> NETWORK
+              </div>
+
+              <button
+                className="ghost-btn"
+                onClick={onClose}
+              >
+                ESC ×
+              </button>
+            </div>
+
+            <div className="modal-tabs">
+              <button
+                className={
+                  "modal-tab " +
+                  (tab === "followers"
+                    ? "active"
+                    : "")
+                }
+                onClick={() =>
+                  setTab("followers")
+                }
+              >
+                FOLLOWERS [{followers.length}]
+              </button>
+
+              <button
+                className={
+                  "modal-tab " +
+                  (tab === "following"
+                    ? "active"
+                    : "")
+                }
+                onClick={() =>
+                  setTab("following")
+                }
+              >
+                FOLLOWING [{following.length}]
+              </button>
+            </div>
+
+            <div className="user-list">
+              {list.length === 0 ? (
+                <div className="empty">
+                  NO USERS IN THIS NETWORK
+                </div>
+              ) : (
+                list.map((user) => {
+                  const followingUser =
+                    isFollowing(
+                      follows,
+                      currentUser?.uid,
+                      user.id
+                    );
+
+                  const self =
+                    currentUser?.uid === user.id;
+
+                  return (
+                    <div
+                      className="user-list-item"
+                      key={user.id}
+                    >
+                      <Avatar user={user} />
+
+                      <div className="user-list-info">
+                        <div className="user-list-name">
+                          {user.displayName ||
+                            "Nexus User"}
+                        </div>
+
+                        <div className="user-list-handle">
+                          @{getUsername(user)}
+                        </div>
+                      </div>
+
+                      {!self && (
+                        <button
+                          className={
+                            "follow-btn " +
+                            (followingUser
+                              ? "following"
+                              : "")
+                          }
+                          onClick={() =>
+                            toggleFollow(
+                              currentUser,
+                              user.id,
+                              follows
+                            )
+                          }
+                        >
+                          {followingUser
+                            ? "FOLLOWING"
+                            : "+FOLLOW"}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================================
+       PROFILE PAGE
+    ============================================================ */
+
+    function ProfilePage({
+      currentUser,
+      profile,
+      users,
+      posts,
+      comments,
+      likes,
+      follows,
+      setSelectedProfileId
+    }) {
+      const [showFollowList, setShowFollowList] =
+        useState(false);
+
+      const [followTab, setFollowTab] =
+        useState("followers");
+
+      const [showEdit, setShowEdit] =
+        useState(false);
+
+      const targetProfile =
+        users.find(
+          (u) =>
+            u.id ===
+            (profile?.id || currentUser?.uid)
+        ) || profile;
+
+      if (!targetProfile) {
+        return (
+          <div className="empty">
+            PROFILE NOT FOUND
+          </div>
+        );
+      }
+
+      const profilePosts = posts
+        .filter(
+          (post) =>
+            post.authorId === targetProfile.id
+        )
+        .sort(
+          (a, b) =>
+            (b.createdAt?.seconds || 0) -
+            (a.createdAt?.seconds || 0)
+        );
+
+      const followerCount = follows.filter(
+        (f) =>
+          f.followingId === targetProfile.id
+      ).length;
+
+      const followingCount = follows.filter(
+        (f) =>
+          f.followerId === targetProfile.id
+      ).length;
+
+      const postCount = profilePosts.length;
+
+      const isOwn =
+        currentUser?.uid === targetProfile.id;
+
+      const following =
+        isFollowing(
+          follows,
+          currentUser?.uid,
+          targetProfile.id
+        );
+
+      async function saveProfile(updates) {
+        try {
+          await collectionRef("users")
+            .doc(targetProfile.id)
+            .set(
+              {
+                ...updates,
+                updatedAt:
+                  firebase.firestore.FieldValue.serverTimestamp()
+              },
+              { merge: true }
+            );
+
+          setShowEdit(false);
+        } catch (error) {
+          console.error(error);
+          alert("Could not update profile.");
+        }
+      }
+
+      return (
+        <>
+          <div className="page-header">
+            <div className="page-kicker">
+              // USER_NODE
+            </div>
+
+            <h1 className="page-title">
+              Profile
+            </h1>
+          </div>
+
+          <div className="profile-card">
+            <div className="profile-cover" />
+
+            <div className="profile-info">
+              <div className="profile-avatar-wrap">
+                <div className="profile-avatar">
+                  <Avatar user={targetProfile} />
+                </div>
+
+                {isOwn ? (
+                  <button
+                    className="ghost-btn profile-edit"
+                    onClick={() =>
+                      setShowEdit(true)
+                    }
+                  >
+                    EDIT PROFILE
+                  </button>
+                ) : (
+                  <button
+                    className={
+                      "follow-btn " +
+                      (following
+                        ? "following"
+                        : "")
+                    }
+                    onClick={() =>
+                      toggleFollow(
+                        currentUser,
+                        targetProfile.id,
+                        follows
+                      )
+                    }
+                    style={{
+                      padding: "9px 15px",
+                      marginBottom: 4
+                    }}
+                  >
+                    {following
+                      ? "FOLLOWING"
+                      : "+ FOLLOW"}
+                  </button>
+                )}
+              </div>
+
+              <h2 className="profile-name">
+                {targetProfile.displayName ||
+                  "Nexus User"}
+              </h2>
+
+              <div className="profile-handle">
+                @{getUsername(targetProfile)}
+              </div>
+
+              {targetProfile.bio && (
+                <div className="profile-bio">
+                  {targetProfile.bio}
+                </div>
+              )}
+
+              <div className="profile-stats">
+                <div className="stat">
+                  <div className="stat-number">
+                    {postCount}
+                  </div>
+
+                  <div className="stat-label">
+                    Posts
+                  </div>
+                </div>
+
+                <button
+                  className="stat"
+                  onClick={() => {
+                    setFollowTab("followers");
+                    setShowFollowList(true);
+                  }}
+                >
+                  <div className="stat-number">
+                    {followerCount}
+                  </div>
+
+                  <div className="stat-label">
+                    Followers
+                  </div>
+                </button>
+
+                <button
+                  className="stat"
+                  onClick={() => {
+                    setFollowTab("following");
+                    setShowFollowList(true);
+                  }}
+                >
+                  <div className="stat-number">
+                    {followingCount}
+                  </div>
+
+                  <div className="stat-label">
+                    Following
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="page-header">
+            <div className="page-kicker">
+              // TRANSMISSIONS
+            </div>
+
+            <h2 className="page-title">
+              {isOwn
+                ? "Your Posts"
+                : "User Posts"}
+            </h2>
+          </div>
+
+          {profilePosts.length === 0 ? (
+            <div className="side-card">
+              <div className="empty">
+                NO TRANSMISSIONS YET
+              </div>
+            </div>
+          ) : (
+            profilePosts.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                currentUser={currentUser}
+                profile={profile}
+                users={users}
+                comments={comments}
+                likes={likes}
+                follows={follows}
+              />
+            ))
+          )}
+
+          {showFollowList && (
+            <FollowListModal
+              targetUser={targetProfile}
+              users={users}
+              follows={follows}
+              currentUser={currentUser}
+              initialTab={followTab}
+              onClose={() =>
+                setShowFollowList(false)
+              }
+            />
+          )}
+
+          {showEdit && (
+            <EditProfileModal
+              profile={targetProfile}
+              onClose={() =>
+                setShowEdit(false)
+              }
+              onSave={saveProfile}
+            />
+          )}
+        </>
+      );
+    }
+
+    /* ============================================================
+       EDIT PROFILE
+    ============================================================ */
+
+    function EditProfileModal({
+      profile,
+      onClose,
+      onSave
+    }) {
+      const [name, setName] =
+        useState(profile?.displayName || "");
+
+      const [username, setUsername] =
+        useState(profile?.username || "");
+
+      const [bio, setBio] =
+        useState(profile?.bio || "");
+
+      const [photoURL, setPhotoURL] =
+        useState(profile?.photoURL || "");
+
+      const [saving, setSaving] =
+        useState(false);
+
+      async function save() {
+        if (!name.trim()) return;
+
+        setSaving(true);
+
+        try {
+          await onSave({
+            displayName: name.trim(),
+            username:
+              makeUsername(username || name),
+            bio: bio.trim(),
+            photoURL: photoURL.trim()
+          });
+        } finally {
+          setSaving(false);
+        }
+      }
+
+      return (
+        <div
+          className="modal-backdrop"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) {
+              onClose();
+            }
+          }}
+        >
+          <div className="modal">
+            <div className="modal-header">
+              <div className="modal-title">
+                <span>//</span> EDIT_PROFILE
+              </div>
+
+              <button
+                className="ghost-btn"
+                onClick={onClose}
+              >
+                ESC ×
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <div className="form-group">
+                <label className="form-label">
+                  Display Name
+                </label>
+
+                <input
+                  className="form-input"
+                  value={name}
+                  onChange={(e) =>
+                    setName(e.target.value)
+                  }
+                  maxLength={50}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">
+                  Username
+                </label>
+
+                <input
+                  className="form-input"
+                  value={username}
+                  onChange={(e) =>
+                    setUsername(
+                      e.target.value
+                        .toLowerCase()
+                        .replace(
+                          /[^a-z0-9_]/g,
+                          ""
+                        )
+                    )
+                  }
+                  maxLength={20}
+                  placeholder="username"
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">
+                  Bio
+                </label>
+
+                <textarea
+                  className="form-textarea"
+                  value={bio}
+                  onChange={(e) =>
+                    setBio(e.target.value)
+                  }
+                  maxLength={300}
+                  placeholder="Tell the Nexus about yourself..."
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">
+                  Avatar URL
+                </label>
+
+                <input
+                  className="form-input"
+                  value={photoURL}
+                  onChange={(e) =>
+                    setPhotoURL(e.target.value)
+                  }
+                  placeholder="https://..."
+                />
+              </div>
+            </div>
+
+            <div className="modal-footer">
+              <button
+                className="ghost-btn"
+                onClick={onClose}
+              >
+                CANCEL
+              </button>
+
+              <button
+                className="primary-btn"
+                disabled={saving || !name.trim()}
+                onClick={save}
+              >
+                {saving
+                  ? "SAVING..."
+                  : "SAVE_CHANGES →"}
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ============================================================
+       NOTIFICATIONS
+    ============================================================ */
+
+    function NotificationsPage({
+      currentUser,
+      data
+    }) {
+      const notifications = data.notifications
+        .filter(
+          (n) =>
+            n.userId === currentUser?.uid ||
+            n.recipientId === currentUser?.uid
+        )
+        .sort(
+          (a, b) =>
+            (b.createdAt?.seconds || 0) -
+            (a.createdAt?.seconds || 0)
+        );
+
+      async function markRead(notification) {
+        try {
+          await collectionRef("notifications")
+            .doc(notification.id)
+            .update({
+              read: true
+            });
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      return (
+        <>
+          <div className="page-header">
+            <div className="page-kicker">
+              // EVENT_STREAM
+            </div>
+
+            <h1 className="page-title">
+              Notifications
+            </h1>
+
+            <div className="page-subtitle">
+              Activity related to your Nexus node.
+            </div>
+          </div>
+
+          <div className="notification-list">
+            {notifications.length === 0 ? (
+              <div className="empty">
+                NO EVENTS DETECTED
+              </div>
+            ) : (
+              notifications.map((notification) => {
+                const actor =
+                  data.users.find(
+                    (u) =>
+                      u.id ===
+                      notification.actorId
+                  );
+
+                return (
+                  <div
+                    className={
+                      "notification " +
+                      (!notification.read
+                        ? "unread"
+                        : "")
+                    }
+                    key={notification.id}
+                    onClick={() =>
+                      markRead(notification)
+                    }
+                  >
+                    <Avatar user={actor} />
+
+                    <div className="notification-text">
+                      <strong>
+                        {actor?.displayName ||
+                          notification.actorName ||
+                          "Nexus User"}
+                      </strong>{" "}
+                      {notification.type ===
+                        "follow"
+                        ? "started following you."
+                        : notification.type ===
+                          "like"
+                        ? "liked your post."
+                        : notification.type ===
+                          "comment"
+                        ? "commented on your post."
+                        : notification.text ||
+                          "interacted with you."}
+                    </div>
+
+                    <div className="notification-time">
+                      {formatDate(
+                        notification.createdAt
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </>
+      );
+    }
+
+    /* ============================================================
+       MESSAGES
+    ============================================================ */
+
+    function conversationKey(a, b) {
+      return [a, b].sort().join("_");
+    }
+
+    function MessagesPage({
+      currentUser,
+      profile,
+      users,
+      messages
+    }) {
+      const [selectedUserId, setSelectedUserId] =
+        useState(null);
+
+      const [search, setSearch] =
+        useState("");
+
+      const [newUsername, setNewUsername] =
+        useState("");
+
+      const [messageText, setMessageText] =
+        useState("");
+
+      const messagesEndRef = useRef(null);
+
+      const selectedUser =
+        users.find(
+          (u) => u.id === selectedUserId
+        ) || null;
+
+      const visibleUsers = users
+        .filter(
+          (u) => u.id !== currentUser?.uid
+        )
+        .filter((u) => {
+          const q = search.toLowerCase();
+
+          return (
+            !q ||
+            String(
+              u.displayName || ""
+            )
+              .toLowerCase()
+              .includes(q) ||
+            String(
+              u.username || ""
+            )
+              .toLowerCase()
+              .includes(q)
+          );
+        });
+
+      const conversationMessages =
+        selectedUser
+          ? messages
+              .filter(
+                (m) =>
+                  m.conversationId ===
+                  conversationKey(
+                    currentUser.uid,
+                    selectedUser.id
+                  )
+              )
+              .sort(
+                (a, b) =>
+                  (a.createdAt?.seconds || 0) -
+                  (b.createdAt?.seconds || 0)
+              )
+          : [];
+
+      useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({
+          behavior: "smooth"
+        });
+      }, [conversationMessages.length]);
+
+      function startChat() {
+        const query = newUsername
+          .trim()
+          .replace(/^@/, "")
+          .toLowerCase();
+
+        if (!query) return;
+
+        const user = users.find(
+          (u) =>
+            String(u.username || "")
+              .toLowerCase() === query
+        );
+
+        if (!user) {
+          alert("User not found.");
+          return;
+        }
+
+        setSelectedUserId(user.id);
+        setNewUsername("");
+      }
+
+      async function sendMessage() {
+        const text = messageText.trim();
+
+        if (
+          !text ||
+          !selectedUser ||
+          !currentUser
+        ) {
+          return;
+        }
+
+        const conversationId =
+          conversationKey(
+            currentUser.uid,
+            selectedUser.id
+          );
+
+        try {
+          await collectionRef("messages")
+            .doc(uid())
+            .set({
+              senderId: currentUser.uid,
+              receiverId: selectedUser.id,
+              conversationId,
+              text,
+              createdAt:
+                firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+          setMessageText("");
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      return (
+        <>
+          <div className="page-header">
+            <div className="page-kicker">
+              // SECURE_CHANNEL
+            </div>
+
+            <h1 className="page-title">
+              Messages
+            </h1>
+          </div>
+
+          <div className="messages-shell">
+            <aside className="chat-list">
+              <div className="new-chat">
+                <div className="new-chat-title">
+                  NEW_CONNECTION
+                </div>
+
+                <div className="new-chat-row">
+                  <input
+                    className="small-input"
+                    value={newUsername}
+                    onChange={(e) =>
+                      setNewUsername(
+                        e.target.value
+                      )
+                    }
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        startChat();
+                      }
+                    }}
+                    placeholder="@username"
+                  />
+
+                  <button
+                    className="ghost-btn"
+                    onClick={startChat}
+                  >
+                    OPEN
+                  </button>
+                </div>
+              </div>
+
+              <div className="chat-search">
+                <input
+                  className="small-input"
+                  value={search}
+                  onChange={(e) =>
+                    setSearch(e.target.value)
+                  }
+                  placeholder="search connections..."
+                />
+              </div>
+
+              {visibleUsers.map((user) => (
+                <button
+                  className={
+                    "chat-item " +
+                    (selectedUserId === user.id
+                      ? "active"
+                      : "")
+                  }
+                  key={user.id}
+                  onClick={() =>
+                    setSelectedUserId(user.id)
+                  }
+                >
+                  <Avatar user={user} />
+
+                  <div className="chat-info">
+                    <div className="chat-name">
+                      {user.displayName ||
+                        "Nexus User"}
+                    </div>
+
+                    <div className="chat-preview">
+                      @{getUsername(user)}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </aside>
+
+            <section className="chat-window">
+              {!selectedUser ? (
+                <div
+                  style={{
+                    flex: 1,
+                    display: "grid",
+                    placeItems: "center"
+                  }}
+                >
+                  <div className="empty">
+                    SELECT A CONNECTION
+                    <br />
+                    <br />
+                    <span
+                      style={{
+                        color: "var(--green)"
+                      }}
+                    >
+                      &gt;_
+                    </span>{" "}
+                    encrypted channel ready
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="chat-header">
+                    <Avatar user={selectedUser} />
+
+                    <div className="chat-header-info">
+                      <div className="chat-header-name">
+                        {selectedUser.displayName ||
+                          "Nexus User"}
+                      </div>
+
+                      <div className="chat-header-status">
+                        ● CHANNEL ACTIVE
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="messages">
+                    {conversationMessages.length ===
+                    0 ? (
+                      <div
+                        className="empty"
+                        style={{
+                          margin: "auto"
+                        }}
+                      >
+                        NO MESSAGES
+                        <br />
+                        START THE CHANNEL
+                      </div>
+                    ) : (
+                      conversationMessages.map(
+                        (message) => (
+                          <div
+                            key={message.id}
+                            className={
+                              "message " +
+                              (message.senderId ===
+                              currentUser.uid
+                                ? "mine"
+                                : "")
+                            }
+                          >
+                            {message.text}
+
+                            <span className="message-time">
+                              {formatDate(
+                                message.createdAt
+                              )}
+                            </span>
+                          </div>
+                        )
+                      )
+                    )}
+
+                    <div
+                      ref={messagesEndRef}
+                    />
+                  </div>
+
+                  <div className="message-input">
+                    <input
+                      value={messageText}
+                      onChange={(e) =>
+                        setMessageText(
+                          e.target.value
+                        )
+                      }
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          sendMessage();
+                        }
+                      }}
+                      placeholder="transmit message..."
+                    />
+
+                    <button
+                      className="primary-btn"
+                      onClick={sendMessage}
+                      disabled={!messageText.trim()}
+                    >
+                      SEND →
+                    </button>
+                  </div>
+                </>
+              )}
+            </section>
+          </div>
+        </>
+      );
+    }
+
+    /* ============================================================
+       RIGHT SIDEBAR
+    ============================================================ */
+
+    function RightSidebar({
+      currentUser,
+      profile,
+      data
+    }) {
+      return (
+        <aside className="right-sidebar">
+          <WhoToFollow
+            currentUser={currentUser}
+            profile={profile}
+            users={data.users}
+            follows={data.follows}
+          />
+
+          <Trending posts={data.posts} />
+
+          <SystemStatus />
+        </aside>
+      );
+    }
+
+    /* ============================================================
+       MOBILE NAV
+    ============================================================ */
+
+    function MobileNav({
+      page,
+      setPage,
+      unreadNotifications
+    }) {
+      const items = [
+        ["home", "⌂"],
+        ["messages", "⌁"],
+        ["notifications", "◈"],
+        ["profile", "◎"]
+      ];
+
+      return (
+        <nav className="mobile-nav">
+          {items.map(([key, icon]) => (
+            <button
+              key={key}
+              className={
+                page === key ? "active" : ""
+              }
+              onClick={() => setPage(key)}
+            >
+              {icon}
+
+              {key === "notifications" &&
+                unreadNotifications > 0 && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      marginLeft: -7,
+                      marginTop: -17,
+                      width: 6,
+                      height: 6,
+                      background:
+                        "var(--green)",
+                      borderRadius: "50%"
+                    }}
+                  />
+                )}
+            </button>
+          ))}
+        </nav>
+      );
+    }
+
+    /* ============================================================
+       PROFILE INITIALIZATION
+    ============================================================ */
+
+    async function ensureProfile(firebaseUser, users) {
+      if (!firebaseUser) return null;
+
+      const existing = users.find(
+        (u) => u.id === firebaseUser.uid
+      );
+
+      if (existing) {
+        return existing;
+      }
+
+      const baseName =
+        firebaseUser.displayName ||
+        "Nexus User";
+
+      const username =
+        makeUsername(baseName) +
+        "_" +
+        firebaseUser.uid
+          .slice(0, 5)
+          .toLowerCase();
+
+      const newProfile = {
+        displayName: baseName,
+        username,
+        bio: "Connected to the Nexus.",
+        photoURL:
+          firebaseUser.photoURL || "",
+        createdAt:
+          firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      try {
+        await collectionRef("users")
+          .doc(firebaseUser.uid)
+          .set(newProfile);
+
+        return {
+          id: firebaseUser.uid,
+          ...newProfile
+        };
+      } catch (error) {
+        console.error(error);
+
+        return {
+          id: firebaseUser.uid,
+          ...newProfile
+        };
+      }
+    }
+
+    /* ============================================================
+       APP
+    ============================================================ */
+
+    function App() {
+      const {
+        user: currentUser,
+        authLoading
+      } = useFirebaseAuth();
+
+      const {
+        data,
+        loading,
+        error
+      } = useRealtimeData();
+
+      const [page, setPage] =
+        useState("home");
+
+      const [search, setSearch] =
+        useState("");
+
+      const [profile, setProfile] =
+        useState(null);
+
+      const [profileReady, setProfileReady] =
+        useState(false);
+
+      /* Initialize profile */
+      useEffect(() => {
+        let cancelled = false;
+
+        async function init() {
+          if (!currentUser) return;
+
+          if (data.users.length === 0) {
+            return;
+          }
+
+          const result =
+            await ensureProfile(
+              currentUser,
+              data.users
+            );
+
+          if (!cancelled) {
+            setProfile(result);
+            setProfileReady(true);
+          }
+        }
+
+        init();
+
+        return () => {
+          cancelled = true;
+        };
+      }, [currentUser, data.users.length]);
+
+      /* Keep profile synced */
+      useEffect(() => {
+        if (!currentUser) return;
+
+        const liveProfile =
+          data.users.find(
+            (u) => u.id === currentUser.uid
+          );
+
+        if (liveProfile) {
+          setProfile(liveProfile);
+          setProfileReady(true);
+        }
+      }, [data.users, currentUser]);
+
+      if (authLoading || loading || !profileReady) {
+        return (
+          <div className="boot-screen">
+            <div className="boot-terminal">
+              <div className="terminal-header">
+                <span className="terminal-dot active" />
+                <span className="terminal-dot" />
+                <span className="terminal-dot" />
+
+                <span className="terminal-title">
+                  nexus_boot_sequence
+                </span>
+              </div>
+
+              <div className="boot-content">
+                <div className="boot-logo">
+                  NEXUS
+                </div>
+
+                <div className="boot-line">
+                  <span>[OK]</span>{" "}
+                  initializing core...
+                </div>
+
+                <div className="boot-line">
+                  <span>[OK]</span>{" "}
+                  establishing Firebase connection...
+                </div>
+
+                <div className="boot-line">
+                  <span>[OK]</span>{" "}
+                  loading realtime data streams...
+                </div>
+
+                <div className="boot-line">
+                  <span>[..]</span>{" "}
+                  authenticating user node...
+                </div>
+
+                <div className="loading-bar" />
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      if (error) {
+        return (
+          <div className="error-screen">
+            <div className="error-card">
+              <h2>
+                CONNECTION_FAILURE
+              </h2>
+
+              <p>
+                Nexus could not connect to the
+                realtime database.
+              </p>
+
+              <code>{error}</code>
+
+              <button
+                className="primary-btn"
+                style={{ marginTop: 18 }}
+                onClick={() =>
+                  window.location.reload()
+                }
+              >
+                RETRY_CONNECTION
+              </button>
+            </div>
+          </div>
+        );
+      }
+
+      const unreadNotifications =
+        data.notifications.filter(
+          (n) =>
+            (n.userId === currentUser?.uid ||
+              n.recipientId ===
+                currentUser?.uid) &&
+            !n.read
+        ).length;
+
+      function renderPage() {
+        switch (page) {
+          case "messages":
+            return (
+              <MessagesPage
+                currentUser={currentUser}
+                profile={profile}
+                users={data.users}
+                messages={data.messages}
+              />
+            );
+
+          case "notifications":
+            return (
+              <NotificationsPage
+                currentUser={currentUser}
+                data={data}
+              />
+            );
+
+          case "profile":
+            return (
+              <ProfilePage
+                currentUser={currentUser}
+                profile={profile}
+                users={data.users}
+                posts={data.posts}
+                comments={data.comments}
+                likes={data.likes}
+                follows={data.follows}
+              />
+            );
+
+          case "home":
+          default:
+            return (
+              <HomePage
+                currentUser={currentUser}
+                profile={profile}
+                data={data}
+                search={search}
+              />
+            );
+        }
+      }
+
+      return (
+        <div className="app">
+          <Topbar
+            profile={profile}
+            page={page}
+            setPage={setPage}
+            search={search}
+            setSearch={setSearch}
+            unreadNotifications={
+              unreadNotifications
+            }
+          />
+
+          <div className="main-layout">
+            <Sidebar
+              page={page}
+              setPage={setPage}
+              profile={profile}
+              unreadNotifications={
+                unreadNotifications
+              }
+            />
+
+            <main>{renderPage()}</main>
+
+            <RightSidebar
+              currentUser={currentUser}
+              profile={profile}
+              data={data}
+            />
+          </div>
+
+          <MobileNav
+            page={page}
+            setPage={setPage}
+            unreadNotifications={
+              unreadNotifications
+            }
+          />
+        </div>
+      );
+    }
+
+    /* ============================================================
+       START
+    ============================================================ */
+
+    ReactDOM.createRoot(
+      document.getElementById("root")
+    ).render(<App />);
+  </script>
 </body>
 </html>
